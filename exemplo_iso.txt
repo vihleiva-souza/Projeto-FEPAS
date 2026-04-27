@@ -1,0 +1,1574 @@
+{HORA________ TID_____} - MENSAGEM__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+aud   | {15:00:00.447 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60> (***** Audit iniciado no arquivo /opt/SoftwareExpress/fepas-cardse-argentina/modulos/006_QRPago/audit/aud_20260303171755.fps *****)
+aud   | {15:00:00.447 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:00:00.447 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:00:00.450 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:00:00.450 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:00:00.450 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:00:00.450 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:00:00.451 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:02:00.451 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:02:00.451 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:02:00.451 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:02:00.454 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:02:00.454 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:02:00.454 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:02:00.454 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:02:00.454 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:04:00.455 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:04:00.455 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:04:00.455 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:04:00.457 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:04:00.457 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:04:00.457 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:04:00.457 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:04:00.457 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:06:00.458 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:06:00.458 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:06:00.458 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:06:00.460 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:06:00.460 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:06:00.460 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:06:00.460 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:06:00.460 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:08:00.460 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:08:00.461 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:08:00.461 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:08:00.463 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:08:00.463 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:08:00.463 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:08:00.463 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:08:00.464 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:10:00.464 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:10:00.464 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:10:00.464 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:10:00.466 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:10:00.466 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:10:00.466 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:10:00.466 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:10:00.467 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:12:00.467 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:12:00.467 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:12:00.467 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:12:00.469 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:12:00.469 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:12:00.469 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:12:00.469 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:12:00.470 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:14:00.470 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:14:00.470 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:14:00.470 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:14:00.473 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:14:00.473 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:14:00.473 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:14:00.473 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:14:00.473 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:16:00.473 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:16:00.474 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:16:00.474 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:16:00.477 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:16:00.477 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:16:00.477 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:16:00.477 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:16:00.477 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:18:00.477 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:18:00.478 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:18:00.478 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:18:00.480 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:18:00.480 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:18:00.480 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:18:00.480 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:18:00.480 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:20:00.480 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:20:00.481 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:20:00.481 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:20:00.482 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:20:00.483 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:20:00.483 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:20:00.483 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:20:00.483 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:22:00.483 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:22:00.483 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:22:00.483 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:22:00.486 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:22:00.486 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:22:00.486 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:22:00.486 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:22:00.487 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:00.487 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:00.487 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:24:00.487 e030a700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:00.489 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:00.489 e030a700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:00.489 e030a700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:00.489 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:00.490 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:24:29.530 e030a700} - ISO . FEPAS: [TrataMsg] Mensagem recebida do Modulo TEF (MODULO TEF -> FEPAS). Canal=<Roteador> IPOrigem=<127.0.0.1:25228> IDCnx=<62171759000000> IDMsg=<63152429003010> Tam=<457> TipoCripto=<0>
+                          00100002003238240100C2804800600000000005998003041824290098371522480304032500046012378888660000200834194832970010080000000025800700000002920200000000000000000018600600100070010264002000090011041008378888662010040000265004000004201500222295       460048525473176;;VERIFONE;QT000560;Vx 8.1.0;Vx 8.1.0;;2380710009DorinkaQ 01011020110302AR04030320508000000010604541107112008341948327000400330230020025200506001032040000000020000005510000000000326030415224800910.29NPAR
+                            1 (  4): [0200]
+                            3 (  6): [006000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304182429]
+                           11 (  6): [009837]
+                           12 (  6): [152248]
+                           13 (  4): [0304]
+                           19 (  3): [032]
+                           22 (  3): [500]
+                           32 (  4): [6012]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+
+                                     [TLV - Bit:47 (297)]
+
+                                     001 (  8) [00000000]
+                                     258 (  7) [0000000]
+                                     292 ( 20) [00000000000000000186]
+                                     006 (  1) [0]
+                                     007 (  1) [0]
+                                     264 (  2) [00]
+                                     009 (  1) [1]
+                                     041 (  8) [37888866]
+                                     201 (  4) [0000]
+                                     265 (  4) [0000]
+                                     042 ( 15) [00222295       ]
+                                     460 ( 48) [525473176;;VERIFONE;QT000560;Vx 8.1.0;Vx 8.1.0;;]
+                                     238 ( 71) [0009DorinkaQ 01011020110302AR0403032050800000001]
+                                               [06045411071120083419483]
+                                     270 (  4) [0033]
+                                     023 (  2) [00]
+                                     252 (  5) [06001]
+
+                           49 (  3): [032]
+                           58 ( 40): [0000000200000055100000000003260304152248]
+                           61 (  9): [10.29NPAR]
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<242> nao encontrado
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.530 e030a700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:24:29.530 e030a700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:24:29.530 e030a700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:24:29.530 e030a700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Iniciou...
+aud   | {15:24:29.530 e030a700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Fim... Nao tem <Confirmacao POS> para enviar!
+aud   | {15:24:29.530 e030a700} - DMP . NUCLEO: [TrataMensagem] Iniciou! _NormaEntrada=<56>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:29.530 e030a700} - DMP . PARAM: [PAR_Pesquisa_Estabelecimentos] Nao encontrou registro na tabela! SessaoProcurada=<0000200834194836012>
+aud   | {15:24:29.530 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<37> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . NUCLEO: [LogaMensagem] Vai montar RegLog para inserir no LOG
+aud   | {15:24:29.531 e030a700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:24:29.531 e030a700} - DMP . PARAM: [PAR_Pesquisa_DePara_EstabelecimentosEx] Nao encontrou registro na tabela! SessaoProcurada=<0000200834194836012>
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:29.531 e030a700} - DMP . CARDSE_TEF: [CARDSE_TEF_MontaDadosLOG] Nao recuperou numero do cartao e/ou trilha2!
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<200> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . PARAM: [PAR_Pesquisa_DePara_TEF_VAN] Nao encontrou registro na tabela! SessaoProcurada=<6012NP>
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<208> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<200> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<5> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<170> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<171> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<299> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<300> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<171> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<273> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<278> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<274> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<8> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<11> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<25> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<51> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<15> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<50> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<51> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<52> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<600> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<214> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<296> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<225> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<50> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<5> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<244> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<291> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.531 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<283> nao encontrado
+aud   | {15:24:29.531 e030a700} - DMP . GERLOG: [PN_ObtemDados] Transacao nao possui cartao!
+aud   | {15:24:29.531 e030a700} - DMP . GERLOG: [LG_InsereLog] Insere LOG
+aud   | {15:24:29.531 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:29.532 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> procedure=<BEGIN :ret := FNC_GERA_NSU(:001,:002,:003,:004,:005,:006,:007,:008); END;>
+aud   | {15:24:29.532 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:29.534 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:29.534 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:29.534 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:29.534 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:29.534 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:29.534 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:29.534 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<INSERT INTO T_DADOS_LOG (HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,Canal
+aud   | {15:24:29.534 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:29.560 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:29.560 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:29.560 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:29.560 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:29.560 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:29.560 e030a700} - DMP . NUCLEO: [LogaMensagem] Insercao da transacao retornou NsuFepas=<040600017>
+aud   | {15:24:29.560 e030a700} - DMP . NUCLEO: [LogaMensagem] Montou CamposLog[BIT_07].pValor=<0304182429> _CamposLog[BIT_07].Tamanho=<10>
+aud   | {15:24:29.560 e030a700} - DMP . NUCLEO: [LogaMensagem] Montou _CamposLog[BIT_37].pValor=<000040600017> _CamposLog[BIT_37].Tamanho=<12>
+aud   | {15:24:29.560 e030a700} - DMP . NUCLEO: [TrataMensagem] Vai tratar chamar Controle.MensagemSaida=<1>
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<295> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<279> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<298> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<312> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<47> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 47
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 48
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 62
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 63
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [MontaListaItensGenericos] Nao conseguiu recuperar o ID047
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<45> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 47
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 48
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 62
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 63
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [MontaListaProdutos] Nao conseguiu recuperar o ID045
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<284> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<290> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<313> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:24:29.561 e030a700} - DMP . PARAM: [PAR_Pesquisa_Estabelecimentos] Nao encontrou registro na tabela! SessaoProcurada=<0000200834194836012>
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<308> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<10> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<600> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<8> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<351> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . CARDSE_TEF_CSE_M: [MontaDadosCredenciadora] Erro ao recuperar o ID 351 com os dados da autorizacao!
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<60> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<295> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<310> nao encontrado
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:29.561 e030a700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:24:29.561 e030a700} - DMP . NUCLEO: TrataTxViaNorma
+aud   | {15:24:29.561 e030a700} -     . WEBS-TX: {"id_terminal":"37888866","id_terminal_autorizador":"37888866","nsu_origem":"009837","nsu_fepas":"000040600017","tempo_expiracao":"000090","callback_url":"https://10.149.0.98:8443/notification-service/v1/status/FEPAS-0-006/0001-63152429003010-040600017-260304","tipo_comunicacao_psp":"02","pagamento":{"valor":"000000059980","moeda":"032","pais":"032","cupom_fiscal":"00000000000000000186","operacao":"22"},"estabelecimento":{"mcc":"5411","nome":"DorinkaQ ","cnpj_loja":"2008*******","tipo_identificacao":"3","identificacao":"2008*******","endereco":{"logradouro":"1","cep":"00000001","cidade":"1","uf":"AR","pais":"032"}},"pinpad":{"nome_fabricante":"VERIFONE","modelo":"QT000560","versao_firmware":"Vx 8.1.0","versao_aplicacao":"Vx 8.1.0","numero_serie":"525473176"},"tef":{"id":"NP","protocolo":"10.29NPAR"},"terminal":{"tipo":"01","capacidade":"0","capacidade_entrada":"01","categoria":"04","permite_aprovacao_parcial":false}}
+aud   | {15:24:29.561 e030a700} - DMP . HTTP-TX: Executando requisicao HTTP - TipoDados: application/json - TamDados: 930 - Proxy:(null) - URL:
+aud   | {15:24:29.561 e030a700} - DMP . HTTP-TX: https://127.0.0.1:20100/servicos_tef/compras_digitais/v1/FP052006202603041824290000406000170000
+aud   | {15:24:29.561 e030a700} - DMP . HTTP-SRV: _CaConfiaveis == NULL
+aud   | {15:24:29.616 e030a700} - DMP . HTTP-SRV: Conexao segura efetuada - TLSv1.2 - TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+aud   | {15:24:29.616 e030a700} - DMP . HTTP-TX: Socket de Saida = <32>
+aud   | {15:24:29.616 e030a700} - DMP . HTTP-TX: Header Http - Tamanho: 336
+aud   | {15:24:29.616 e030a700} - DMP . HTTP-TX: POST /servicos_tef/compras_digitais/v1/FP052006202603041824290000406000170000 HTTP/1.1..Host: 127.0.0.1:20100..Accept-Encoding: identity..User-Agent: FepasCardSE/05.ar.hom.017..Connection: Keep-Alive..Content-Type: application/json; charset=utf-8..Content-Length: 930..Client-Id:2..Codigo-Estab:00222295       ..Codigo-IF:6012..Bin:....
+aud   | {15:24:29.617 e030a700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 30
+aud   | {15:24:31.094 e030a700} - DMP . HTTP-RX: RecebeTCP - Recebido: 730
+aud   | {15:24:31.094 e030a700} - DMP . HTTP-RX: FimRecebeTCP - Tamanho: 0 - TamRecebe: 3366 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 730
+aud   | {15:24:31.094 e030a700} - DMP . HTTP-RX: Retorno requisicao HTTP - RC: 0 - TamDados: 553
+aud   | {15:24:31.094 e030a700} -     . WEBS-RX: {"cod_resp":"00","msg_resp":"Transaction OK","msg_resp_host":"PENDING","origem_resp":2,"msg_display":"TRN_OK","info_trn":{"documento":"378888661772648670784","id_trn_autorizador":"378888661772648670784","qr_code":"000201010212263000112008341948301110000000000043350010com.fiserv98113069226478599020050150011200834194835126002200000680000000022229565204581253030325406599.805802AR5908DorinkaQ6012VILLA GESELL6105071656267012000000000000000000186052137888866177264867078407083788886608020080500010com.fiserv010502.0202020103122603041524300401763040afe"}}.
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<350> nao encontrado
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<273> nao encontrado
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:31.094 e030a700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:31.094 e030a700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Qtd9600=<5>, Qtd9600_Enviada=<0>, IntervaloRestante9600=<14> TempoRestanteFepas=<99> TempoRestanteQRCode=<89>
+aud   | {15:24:31.094 e030a700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Aguarda sinalizacao da notificacao. Timeout <14>
+aud   | {15:24:31.142 e0672700} - DMP . NUCLEO: [NCL_ConsultaMensagemAssincrona] Retirou item da fila com NormaModulo=<56> NormaCanalSaida=<116>
+aud   | {15:24:31.142 e0672700} - DMP . NUCLEO: [NCL_ConsultaMensagemAssincrona] Retorno==RET_MENSAGEM_OK_COM_RESPOSTA
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:24:31.143 e0347700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152429003010> Tam=<534> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<534> TempoSend=<0>
+                          0010009600A23800010AC2000000000040000001009404000304182431009837152431030411000000060120000406000170037888866000020083419483341259335000201010212263000112008341948301110000000000043350010com.fiserv98113069226478599020050150011200834194835126002200000680000000022229565204581253030325406599.805802AR5908DorinkaQ6012VILLA GESELL6105071656267012000000000000000000186052137888866177264867078407083788886608020080500010com.fiserv010502.0202020103122603041524300401763040afe020000983703041522480000406000170000000000027257021378888661772648670784
+                            1 (  4): [9600]
+                            3 (  6): [940400]
+                            7 ( 10): [0304182431]
+                           11 (  6): [009837]
+                           12 (  6): [152431]
+                           13 (  4): [0304]
+                           32 ( 11): [00000006012]
+                           37 ( 12): [000040600017]
+                           39 (  2): [00]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+
+                                     [TLV - Bit:47 (341)]
+
+                                     259 (335) [000201010212263000112008341948301110000000000043]
+                                               [350010com.fiserv98113069226478599020050150011200]
+                                               [834194835126002200000680000000022229565204581253]
+                                               [030325406599.805802AR5908DorinkaQ6012VILLA GESEL]
+                                               [L61050716562670120000000000000000001860521378888]
+                                               [66177264867078407083788886608020080500010com.fis]
+                                               [erv010502.0202020103122603041524300401763040afe]
+
+                           90 ( 42): [020000983703041522480000406000170000000000]
+
+                                     [TLV - Bit:120 (27)]
+
+                                     257 ( 21) [378888661772648670784]
+
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:24:31.143 e0347700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - ISO . FEPAS: [TrataMsg] Mensagem recebida do Modulo TEF (MODULO TEF -> FEPAS). Canal=<Roteador> IPOrigem=<127.0.0.1:25228> IDCnx=<62171759000000> IDMsg=<63152431003030> Tam=<160> TipoCripto=<0>
+                          0010009610A23800010AC0000000000040000000009404000304152431009837152431030411000000060120000406000170037888866000020083419483020000983703041522480000406000170000000000
+                            1 (  4): [9610]
+                            3 (  6): [940400]
+                            7 ( 10): [0304152431]
+                           11 (  6): [009837]
+                           12 (  6): [152431]
+                           13 (  4): [0304]
+                           32 ( 11): [00000006012]
+                           37 ( 12): [000040600017]
+                           39 (  2): [00]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           90 ( 42): [020000983703041522480000406000170000000000]
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:31.229 e0290700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:24:31.229 e0290700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:24:31.229 e0290700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:24:31.229 e0290700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Iniciou...
+aud   | {15:24:31.229 e0290700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Fim... Nao tem <Confirmacao POS> para enviar!
+aud   | {15:24:31.229 e0290700} - DMP . NUCLEO: [TrataMensagem] Iniciou! _NormaEntrada=<56>
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:31.229 e0290700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:31.229 e0290700} - DMP . NUCLEO: [TrataMensagem] Vai tratar chamar Controle.MensagemSaida=<3>
+aud   | {15:24:31.229 e0290700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:24:31.229 e0290700} - DMP . FEPAS: [TrataMsg] Encerrada com retorno <1>
+aud   | {15:24:45.095 e030a700} - DMP . NBASE: [NORMA_Base_NotificacaoAsync_Obtem] Timeout na espera da notificacao
+aud   | {15:24:45.095 e030a700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] AVISO: Retornou da espera da notificacao. RC <110>
+aud   | {15:24:45.095 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:45.095 e030a700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600017 DataTrnFepas 260304 e modulo 006
+aud   | {15:24:45.095 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:24:45.095 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:45.096 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:45.096 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:45.096 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:45.096 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:45.096 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:45.096 e030a700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:45.096 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:45.096 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:45.096 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:45.096 e030a700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:45.096 e030a700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Qtd9600=<5>, Qtd9600_Enviada=<1>, IntervaloRestante9600=<15> TempoRestanteFepas=<85> TempoRestanteQRCode=<75>
+aud   | {15:24:45.096 e030a700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Aguarda sinalizacao da notificacao. Timeout <15>
+aud   | {15:24:45.147 e0672700} - DMP . NUCLEO: [NCL_ConsultaMensagemAssincrona] Retirou item da fila com NormaModulo=<56> NormaCanalSaida=<116>
+aud   | {15:24:45.147 e0672700} - DMP . NUCLEO: [NCL_ConsultaMensagemAssincrona] Retorno==RET_MENSAGEM_OK_COM_RESPOSTA
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152429003010> Tam=<148> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<148> TempoSend=<0>
+                          0010009600A238000102C0000000000040000000009403000304182445009837152445030411000000060127737888866000020083419483020000983703041522480000406000170000000000
+                            1 (  4): [9600]
+                            3 (  6): [940300]
+                            7 ( 10): [0304182445]
+                           11 (  6): [009837]
+                           12 (  6): [152445]
+                           13 (  4): [0304]
+                           32 ( 11): [00000006012]
+                           39 (  2): [77]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           90 ( 42): [020000983703041522480000406000170000000000]
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:45.147 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:48.350 e0290700} - DMP . HTTP-SRV: Endereco IP 172.16.0.6/28 conectado
+aud   | {15:24:48.350 e0290700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 2
+aud   | {15:24:48.350 e0290700} - DMP . HTTP-RX: RecebeTCP - Recebido: 2587
+aud   | {15:24:48.350 e0290700} - DMP . HTTP-RX: FimRecebeTCP - Tamanho: 0 - TamRecebe: 1509 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 2587
+aud   | {15:24:48.350 e0290700} - DMP . HTTP-SRV: Requisicao recebida - Metodo: 2 - url: /notification-services
+aud   | {15:24:48.350 e0290700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:48.350 e0290700} - DMP . NUCLEO: [NCL_ProcessaNotificacaoHttp] Mensagem recebida no Notification-Services. IPOrigem=<172.16.0.6> IDMsg=<63152429003010> Tam=<1566>
+                          104000{"chave":"0001-63152429003010-040600017-260304","extra_fields":{},"notif_body":{"cod_resp":"00","msg_resp":"Transaction OK","cod_resp_host":"APPROVED","origem_resp":2,"msg_display":"TRN_OK","comprovante_cliente":"                 MODO                 @04/03/2026      PAGO QR      15:24:29@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600017@                                   (Q)@ @Autoriz.: 3D5W61@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 1@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648670784@@ @","comprovante_estab":"                 MODO                 @04/03/2026      PAGO QR      15:24:29@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600017@                                   (Q)@ @Autoriz.: 3D5W61@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 1@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648670784@@ @","info_trn":{"data":"20260304","hora":"212429","documento":"378888661772648670784","cod_autorizacao":"3D5W61","id_trn_autorizador":"378888661772648670784","tipo_transacao":"PAGAMENTO_INSTANTANEO"},"carteira_digital":{"identificacao":"1300386","alias":""},"comprador":{"numero_conta":"9970001400000011433880"},"info_pagamento":{"pagamento":{},"cupom_digital":{"nome_carteira_digital":"MODO"}}}}
+aud   | {15:24:48.350 e0290700} - DMP . CSE_MODSERV: [CSE_MODSERV_TrataNotificacaoHttp] Dados da notificacao. chave <0001-63152429003010-040600017-260304>
+aud   | {15:24:48.350 e030a700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] AVISO: Retornou da espera da notificacao. RC <0>
+aud   | {15:24:48.350 e0290700} - DMP . NBASE: [NORMA_Base_NotificacaoAsync_Notifica] INFO: Status do tratamento da notificacao: CodProc <0001> NsuFepas <040600017>. RC <0>
+aud   | {15:24:48.350 e030a700} - DMP . CSE_MODSERV: [RemoveTabelaNotificacao] Retorno NORMA_Base_NotificacaoAsync_Remove=<0>
+aud   | {15:24:48.350 e0290700} - DMP . CSE_MODSERV: [CSE_MODSERV_TrataNotificacaoHttp] AVISO: Retorno da notificacao. RC <0>
+aud   | {15:24:48.350 e0290700} - DMP . NUCLEO: [NCL_ProcessaNotificacaoHttp] Mensagem  enviada no Notification-Services. IPOrigem=<172.16.0.6> IDMsg=<63152429003010> Tam=<46>  Enviado=<0> TempoProc=<0> TempoSend = <0>
+                          104000{"message":"Resposta OK","response_code":"00"}
+aud   | {15:24:48.351 e0290700} - DMP . HTTP-SRV: Requisicao finalizada via Callback - rc: 0 - http status: 200
+aud   | {15:24:48.351 e0290700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 2
+aud   | {15:24:48.350 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<12> nao encontrado
+aud   | {15:24:48.351 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:48.351 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, CodResposta = :2, CodAutorizacao = :3, NsuAutorizadorExt = :4, IdCredencial = :5, PrjDadosTransacao = :6, PrjCodEstabConciliacao = :7, PrjPosTerminalCapability = :8, PrjFornecedorTEF = :9 WHERE HeaderNsuLog = :10 AND DtTrnFepas = :11 AND HeaderSequenciaAlteracaoLOG <= :12 AND IdMod = :13>
+aud   | {15:24:48.351 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:48.353 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:48.353 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:24:48.353 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=< select Versao, Interface, Hash  from T_INIC_VERSAO_MODULO  where  CodEstab = :1>
+aud   | {15:24:48.353 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:48.353 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:48.353 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:48.353 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:48.354 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:48.354 e030a700} - DMP . CARDSE_TEF: [ComparaVersaoModuloISOxVersaoModuloFEPAS] Versao estabelecimento no FEPAS=<00000018>
+aud   | {15:24:48.354 e030a700} - DMP . CARDSE_TEF: [ComparaVersaoModuloISOxVersaoModuloFEPAS] Versao Modulo na ISO=<00000000>
+aud   | {15:24:48.354 e030a700} - DMP . CARDSE_TEF: [FlagCargaTabId002] Montou o Id da carga com o ID <0020011>
+aud   | {15:24:48.354 e030a700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:24:48.354 e030a700} - DMP . NUCLEO: [TrataMensagem] Retorno com sucesso!
+aud   | {15:24:48.354 e030a700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[0]
+aud   | {15:24:48.354 e030a700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[1]
+aud   | {15:24:48.354 e030a700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[2]
+aud   | {15:24:48.354 e030a700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[3]
+aud   | {15:24:48.354 e030a700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:24:48.354 e030a700} - DMP . FEPAS: [TrataMsg] Encerrada com retorno <0>
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:24:48.354 e05bb700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152429003010> Tam=<1276> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<1276> TempoSend=<0>
+                          0010000210B23800010EC300440000000000000102006000000000059980030418244800983715224803040460120000406000173D5W6100378888660000200834194830932750190204MODO03071300386501010AUTORIZADO502010AUTORIZADO002001125302302310000000000599800000474506468                 MODO                 @04/03/2026      PAGO QR      15:24:29@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600017@                                   (Q)@ @Autoriz.: 3D5W61@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 1@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648670784@@ @0400000000200000055100000000003260304152248474505468                 MODO                 @04/03/2026      PAGO QR      15:24:29@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600017@                                   (Q)@ @Autoriz.: 3D5W61@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 1@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648670784@@ @027257021378888661772648670784021378888661772648670784
+                            1 (  4): [0210]
+                            3 (  6): [006000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304182448]
+                           11 (  6): [009837]
+                           12 (  6): [152248]
+                           13 (  4): [0304]
+                           32 (  4): [6012]
+                           37 ( 12): [000040600017]
+                           38 (  6): [3D5W61]
+                           39 (  2): [00]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+
+                                     [TLV - Bit:47 (93)]
+
+                                     275 ( 19) [0204MODO03071300386]
+                                     501 ( 10) [AUTORIZADO]
+                                     502 ( 10) [AUTORIZADO]
+                                     002 (  1) [1]
+                                     253 ( 23) [02310000000000599800000]
+
+
+                                     [TLV - Bit:48 (474)]
+
+                                     506 (468) [                 MODO                 @04/03/202]
+                                               [6      PAGO QR      15:24:29@ @               Do]
+                                               [rinkaQ               @                  1       ]
+                                               [           @            20-08341948-3           ]
+                                               [ @ @                        Term: 37888866@     ]
+                                               [              Cupon: 000040600017@              ]
+                                               [                     (Q)@ @Autoriz.: 3D5W61@(ONL]
+                                               [INE)@Imp. Total: -$- 599.8        Cuotas: 1@ @Ve]
+                                               [r. Soft.: 1@            APROBADA (00)           ]
+                                               [ @ @ID QR: 378888661772648670784@@ @]
+
+                           58 ( 40): [0000000200000055100000000003260304152248]
+
+                                     [TLV - Bit:62 (474)]
+
+                                     505 (468) [                 MODO                 @04/03/202]
+                                               [6      PAGO QR      15:24:29@ @               Do]
+                                               [rinkaQ               @                  1       ]
+                                               [           @            20-08341948-3           ]
+                                               [ @ @                        Term: 37888866@     ]
+                                               [              Cupon: 000040600017@              ]
+                                               [                     (Q)@ @Autoriz.: 3D5W61@(ONL]
+                                               [INE)@Imp. Total: -$- 599.8        Cuotas: 1@ @Ve]
+                                               [r. Soft.: 1@            APROBADA (00)           ]
+                                               [ @ @ID QR: 378888661772648670784@@ @]
+
+
+                                     [TLV - Bit:120 (27)]
+
+                                     257 ( 21) [378888661772648670784]
+
+                          127 ( 21): [378888661772648670784]
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:24:48.354 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:24:50.352 e0290700} - DMP . HTTP-RX: FimRecebeTCP - rc: 10
+aud   | {15:24:50.352 e0290700} - DMP . HTTP-SRV: Endereco IP 172.16.0.6/28/10 desconectado 
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - ISO . FEPAS: [TrataMsg] Mensagem recebida do Modulo TEF (MODULO TEF -> FEPAS). Canal=<Roteador> IPOrigem=<127.0.0.1:25228> IDCnx=<62171759000000> IDMsg=<63152454003050> Tam=<209> TipoCripto=<0>
+                          0010000202B23820010CC000480000000000000002006000000000059980030415245400983715224803040320460120000406000173D5W6137888866000020083419483040000000020000005510000000000326030415224800910.29NPAR021378888661772648670784
+                            1 (  4): [0202]
+                            3 (  6): [006000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304152454]
+                           11 (  6): [009837]
+                           12 (  6): [152248]
+                           13 (  4): [0304]
+                           19 (  3): [032]
+                           32 (  4): [6012]
+                           37 ( 12): [000040600017]
+                           38 (  6): [3D5W61]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           58 ( 40): [0000000200000055100000000003260304152248]
+                           61 (  9): [10.29NPAR]
+                          127 ( 21): [378888661772648670784]
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:24:54.198 e05bb700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:24:54.198 e05bb700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:24:54.198 e05bb700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Iniciou...
+aud   | {15:24:54.198 e05bb700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Fim... Nao tem <Confirmacao POS> para enviar!
+aud   | {15:24:54.198 e05bb700} - DMP . NUCLEO: [TrataMensagem] Iniciou! _NormaEntrada=<56>
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.198 e05bb700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:24:54.198 e05bb700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<1>
+aud   | {15:24:54.198 e05bb700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:54.198 e05bb700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600017 DataTrnFepas 260304 e modulo 006
+aud   | {15:24:54.199 e05bb700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:24:54.199 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:54.199 e05bb700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:54.199 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:54.199 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:54.199 e05bb700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:54.200 e05bb700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:54.200 e05bb700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:24:54.200 e05bb700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<1>
+aud   | {15:24:54.200 e05bb700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:54.200 e05bb700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600017 DataTrnFepas 260304 e modulo 006
+aud   | {15:24:54.200 e05bb700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:24:54.200 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:54.200 e05bb700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:54.200 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:54.200 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:54.200 e05bb700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:54.201 e05bb700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:54.201 e05bb700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:54.201 e05bb700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, StatusTransacao = :2, R3PProcessadora = :3, R3PDtHrUltReenvio = :4, DtResolucao = :5, R3PStatusReenvio = :6, PrjPosTerminalCapability = :7, PrjFornecedorTEF = :8 WHERE HeaderNsuLog = :9 AND DtTrnFepas = :10 AND HeaderSequenciaAlteracaoLOG <= :11 AND IdMod = :12>
+aud   | {15:24:54.201 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:54.203 e05bb700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:54.203 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:54.203 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:54.203 e05bb700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:54.203 e05bb700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:54.203 e05bb700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:24:54.203 e05bb700} - DMP . NUCLEO: [TrataMensagem] Vai tratar chamar Controle.MensagemSaida=<1>
+aud   | {15:24:54.203 e05bb700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:24:54.203 e05bb700} - DMP . NUCLEO: TrataTxViaNorma
+aud   | {15:24:54.203 e05bb700} -     . WEBS-TX: {"confirma":true}
+aud   | {15:24:54.203 e05bb700} - DMP . HTTP-TX: Executando requisicao HTTP - TipoDados: application/json - TamDados: 17 - Proxy:(null) - URL:
+aud   | {15:24:54.203 e05bb700} - DMP . HTTP-TX: https://127.0.0.1:20100/servicos_tef/compras_digitais/v1/FP052006202603041824290000406000170000
+aud   | {15:24:54.203 e05bb700} - DMP . HTTP-SRV: _CaConfiaveis == NULL
+aud   | {15:24:54.257 e05bb700} - DMP . HTTP-SRV: Conexao segura efetuada - TLSv1.2 - TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+aud   | {15:24:54.258 e05bb700} - DMP . HTTP-TX: Socket de Saida = <28>
+aud   | {15:24:54.258 e05bb700} - DMP . HTTP-TX: Header Http - Tamanho: 334
+aud   | {15:24:54.258 e05bb700} - DMP . HTTP-TX: PUT /servicos_tef/compras_digitais/v1/FP052006202603041824290000406000170000 HTTP/1.1..Host: 127.0.0.1:20100..Accept-Encoding: identity..User-Agent: FepasCardSE/05.ar.hom.017..Connection: Keep-Alive..Content-Type: application/json; charset=utf-8..Content-Length: 17..Client-Id:2..Codigo-Estab:00222295       ..Codigo-IF:6012..Bin:....
+aud   | {15:24:54.258 e05bb700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 30
+aud   | {15:24:54.566 e05bb700} - DMP . HTTP-RX: RecebeTCP - Recebido: 331
+aud   | {15:24:54.566 e05bb700} - DMP . HTTP-RX: FimRecebeTCP - Tamanho: 0 - TamRecebe: 3765 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 331
+aud   | {15:24:54.566 e05bb700} - DMP . HTTP-RX: Retorno requisicao HTTP - RC: 0 - TamDados: 155
+aud   | {15:24:54.566 e05bb700} -     . WEBS-RX: {"cod_resp":"00","msg_resp":"Transaction OK","cod_resp_host":"5700","msg_resp_host":"CONFIRMED OPERACION CORRECTA","origem_resp":2,"msg_display":"TRN_OK"}.
+aud   | {15:24:54.566 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<12> nao encontrado
+aud   | {15:24:54.566 e05bb700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:24:54.566 e05bb700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, R3PRecebeuResposta = :2, R3PStatusReenvio = :3, PrjPosTerminalCapability = :4, PrjFornecedorTEF = :5 WHERE HeaderNsuLog = :6 AND DtTrnFepas = :7 AND HeaderSequenciaAlteracaoLOG <= :8 AND IdMod = :9>
+aud   | {15:24:54.566 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:24:54.568 e05bb700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:24:54.568 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:24:54.568 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:24:54.568 e05bb700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:24:54.568 e05bb700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:24:54.568 e05bb700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:24:54.568 e05bb700} - DMP . NUCLEO: [TrataMensagem] Retorno com sucesso!
+aud   | {15:24:54.568 e05bb700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[0]
+aud   | {15:24:54.568 e05bb700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:24:54.568 e05bb700} - DMP . FEPAS: [TrataMsg] Encerrada com retorno <0>
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152454003050> Tam=<196> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<196> TempoSend=<0>
+                          0010000212B23800010EC000400000000000000002006000000000059980030418245400983715224803040460120000406000173D5W6100378888660000200834194830400000000200000055100000000003260304152248021378888661772648670784
+                            1 (  4): [0212]
+                            3 (  6): [006000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304182454]
+                           11 (  6): [009837]
+                           12 (  6): [152248]
+                           13 (  4): [0304]
+                           32 (  4): [6012]
+                           37 ( 12): [000040600017]
+                           38 (  6): [3D5W61]
+                           39 (  2): [00]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           58 ( 40): [0000000200000055100000000003260304152248]
+                          127 ( 21): [378888661772648670784]
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:24:54.568 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:00.490 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:00.490 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:00.490 e0290700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:00.493 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:00.493 e0290700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:00.493 e0290700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:00.493 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:00.493 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:26:12.236 e0290700} - ISO . FEPAS: [TrataMsg] Mensagem recebida do Modulo TEF (MODULO TEF -> FEPAS). Canal=<Roteador> IPOrigem=<127.0.0.1:25228> IDCnx=<62171759000000> IDMsg=<63152612003060> Tam=<458> TipoCripto=<0>
+                          0010000400B238240100C20048000000400000000096600000000005998003041526120098381524310304032500046012378888660000200834194832430010080000000025800700000002920200000000000000000018700600100070010264002000090011041008378888662010040000265004000004201500222295       2380710009DorinkaQ 01011020110302AR04030320508000000010604541107112008341948327000400330230020025200506001040000000020000005510000000000326030415224800910.29NPAR020000983703041522480000406000170000000000
+                            1 (  4): [0400]
+                            3 (  6): [966000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304152612]
+                           11 (  6): [009838]
+                           12 (  6): [152431]
+                           13 (  4): [0304]
+                           19 (  3): [032]
+                           22 (  3): [500]
+                           32 (  4): [6012]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+
+                                     [TLV - Bit:47 (243)]
+
+                                     001 (  8) [00000000]
+                                     258 (  7) [0000000]
+                                     292 ( 20) [00000000000000000187]
+                                     006 (  1) [0]
+                                     007 (  1) [0]
+                                     264 (  2) [00]
+                                     009 (  1) [1]
+                                     041 (  8) [37888866]
+                                     201 (  4) [0000]
+                                     265 (  4) [0000]
+                                     042 ( 15) [00222295       ]
+                                     238 ( 71) [0009DorinkaQ 01011020110302AR0403032050800000001]
+                                               [06045411071120083419483]
+                                     270 (  4) [0033]
+                                     023 (  2) [00]
+                                     252 (  5) [06001]
+
+                           58 ( 40): [0000000200000055100000000003260304152248]
+                           61 (  9): [10.29NPAR]
+                           90 ( 42): [020000983703041522480000406000170000000000]
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<242> nao encontrado
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.236 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.236 e0290700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:26:12.236 e0290700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:26:12.237 e0290700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:26:12.237 e0290700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Iniciou...
+aud   | {15:26:12.237 e0290700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Fim... Nao tem <Confirmacao POS> para enviar!
+aud   | {15:26:12.237 e0290700} - DMP . NUCLEO: [TrataMensagem] Iniciou! _NormaEntrada=<56>
+aud   | {15:26:12.237 e0290700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:26:12.237 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:26:12.237 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:26:12.237 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:26:12.237 e0290700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:26:12.237 e0290700} - DMP . PARAM: [PAR_Pesquisa_Estabelecimentos] Nao encontrou registro na tabela! SessaoProcurada=<0000200834194836012>
+aud   | {15:26:12.237 e0290700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:26:12.237 e0290700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<2>
+aud   | {15:26:12.237 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:12.237 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:12.237 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:12.251 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:12.251 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:12.251 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:12.251 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:12.251 e0290700} - DMP . LOG_BD: [LeLogDBAValida] Encontrou o NSU [040600017] na data [260304]. Validando...!
+aud   | {15:26:12.251 e0290700} - DMP . PEND: [PN_ValidaDadosLog] Encontrou!
+aud   | {15:26:12.251 e0290700} - DMP . LOG_BD: [LeLogDBAValida] Encontrou o NSU [040600017] na data [260304]. Registro valido!
+aud   | {15:26:12.251 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:12.252 e0290700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:26:12.252 e0290700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<2>
+aud   | {15:26:12.252 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:12.252 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:12.252 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:12.255 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:12.255 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:12.255 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:12.255 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:12.255 e0290700} - DMP . LOG_BD: [LeLogDBAValida] Encontrou o NSU [040600017] na data [260304]. Validando...!
+aud   | {15:26:12.255 e0290700} - DMP . PEND: [PN_ValidaDadosLog] Encontrou!
+aud   | {15:26:12.255 e0290700} - DMP . LOG_BD: [LeLogDBAValida] Encontrou o NSU [040600017] na data [260304]. Registro valido!
+aud   | {15:26:12.255 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:12.255 e0290700} - DMP . NUCLEO: [LogaMensagem] Vai montar RegLog para inserir no LOG
+aud   | {15:26:12.255 e0290700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:26:12.255 e0290700} - DMP . PARAM: [PAR_Pesquisa_DePara_EstabelecimentosEx] Nao encontrou registro na tabela! SessaoProcurada=<0000200834194836012>
+aud   | {15:26:12.255 e0290700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:26:12.255 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:26:12.256 e0290700} - DMP . CARDSE_TEF: [CARDSE_TEF_MontaDadosLOG] Nao recuperou numero do cartao e/ou trilha2!
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<200> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . PARAM: [PAR_Pesquisa_DePara_TEF_VAN] Nao encontrou registro na tabela! SessaoProcurada=<6012NP>
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<208> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<200> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<5> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<170> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<171> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<299> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<300> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<171> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<273> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<278> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<274> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<8> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<11> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<25> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<51> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<15> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<50> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<51> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<52> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<600> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<214> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<296> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<225> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<50> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<5> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<244> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<291> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.256 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<283> nao encontrado
+aud   | {15:26:12.256 e0290700} - DMP . GERLOG: [PN_ObtemDados] Transacao nao possui cartao!
+aud   | {15:26:12.256 e0290700} - DMP . GERLOG: [LG_InsereLog] Insere LOG
+aud   | {15:26:12.256 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:12.256 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> procedure=<BEGIN :ret := FNC_GERA_NSU(:001,:002,:003,:004,:005,:006,:007,:008); END;>
+aud   | {15:26:12.256 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:12.258 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:12.258 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:12.258 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:12.258 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:12.258 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:12.258 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:12.258 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<INSERT INTO T_DADOS_LOG (HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,Canal
+aud   | {15:26:12.258 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:12.259 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:12.259 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:12.259 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:12.259 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:12.259 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:12.259 e0290700} - DMP . NUCLEO: [LogaMensagem] Insercao da transacao retornou NsuFepas=<040600018>
+aud   | {15:26:12.259 e0290700} - DMP . NUCLEO: [LogaMensagem] Montou CamposLog[BIT_07].pValor=<0304152612> _CamposLog[BIT_07].Tamanho=<10>
+aud   | {15:26:12.259 e0290700} - DMP . NUCLEO: [LogaMensagem] Montou _CamposLog[BIT_37].pValor=<000040600018> _CamposLog[BIT_37].Tamanho=<12>
+aud   | {15:26:12.259 e0290700} - DMP . NUCLEO: [TrataMensagem] Vai tratar chamar Controle.MensagemSaida=<1>
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<295> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<279> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<298> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<312> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<47> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 47
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 48
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 62
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID047 no bit 63
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [MontaListaItensGenericos] Nao conseguiu recuperar o ID047
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<45> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 47
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 48
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 62
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [RecuperaID_BitsTLV] Nao conseguiu recuperar o ID045 no bit 63
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [MontaListaProdutos] Nao conseguiu recuperar o ID045
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<284> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<290> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<313> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:26:12.259 e0290700} - DMP . PARAM: [PAR_Pesquisa_Estabelecimentos] Nao encontrou registro na tabela! SessaoProcurada=<0000200834194836012>
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<460> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . CARDSE_TEF_CSE_M: [MontaDadosPinPad] Dados do PinPad nao enviados (ID460)!
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<308> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<10> nao encontrado
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.259 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<600> nao encontrado
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<8> nao encontrado
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<351> nao encontrado
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . CARDSE_TEF_CSE_M: [MontaDadosCredenciadora] Erro ao recuperar o ID 351 com os dados da autorizacao!
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<60> nao encontrado
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<295> nao encontrado
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<310> nao encontrado
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:12.260 e0290700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:26:12.260 e0290700} - DMP . NUCLEO: TrataTxViaNorma
+aud   | {15:26:12.260 e0290700} -     . WEBS-TX: {"id_terminal":"37888866","id_terminal_autorizador":"37888866","nsu_origem":"009838","nsu_fepas":"000040600018","tempo_expiracao":"000090","tid_cancelada":"FP052006202603041824290000406000170000","callback_url":"https://10.149.0.98:8443/notification-service/v1/status/FEPAS-0-006/0001-63152612003060-040600018-260304","tipo_comunicacao_psp":"02","pagamento":{"valor":"000000059980","pais":"032","cupom_fiscal":"00000000000000000187","operacao":"24"},"estabelecimento":{"mcc":"5411","nome":"DorinkaQ ","cnpj_loja":"2008*******","tipo_identificacao":"3","identificacao":"2008*******","endereco":{"logradouro":"1","cep":"00000001","cidade":"1","uf":"AR","pais":"032"}},"tef":{"id":"NP","protocolo":"10.29NPAR"},"terminal":{"tipo":"01","capacidade":"0","capacidade_entrada":"01","categoria":"04","permite_aprovacao_parcial":false}}
+aud   | {15:26:12.260 e0290700} - DMP . HTTP-TX: Executando requisicao HTTP - TipoDados: application/json - TamDados: 827 - Proxy:(null) - URL:
+aud   | {15:26:12.260 e0290700} - DMP . HTTP-TX: https://127.0.0.1:20100/servicos_tef/cancelamentos_digitais/v1/FP052006202603041826120000406000180000
+aud   | {15:26:12.260 e0290700} - DMP . HTTP-SRV: _CaConfiaveis == NULL
+aud   | {15:26:12.314 e0290700} - DMP . HTTP-SRV: Conexao segura efetuada - TLSv1.2 - TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+aud   | {15:26:12.314 e0290700} - DMP . HTTP-TX: Socket de Saida = <28>
+aud   | {15:26:12.314 e0290700} - DMP . HTTP-TX: Header Http - Tamanho: 342
+aud   | {15:26:12.315 e0290700} - DMP . HTTP-TX: POST /servicos_tef/cancelamentos_digitais/v1/FP052006202603041826120000406000180000 HTTP/1.1..Host: 127.0.0.1:20100..Accept-Encoding: identity..User-Agent: FepasCardSE/05.ar.hom.017..Connection: Keep-Alive..Content-Type: application/json; charset=utf-8..Content-Length: 827..Client-Id:2..Codigo-Estab:00222295       ..Codigo-IF:6012..Bin:....
+aud   | {15:26:12.315 e0290700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 30
+aud   | {15:26:14.750 e0290700} - DMP . HTTP-RX: RecebeTCP - Recebido: 381
+aud   | {15:26:14.750 e0290700} - DMP . HTTP-RX: FimRecebeTCP - Tamanho: 0 - TamRecebe: 3715 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 381
+aud   | {15:26:14.750 e0290700} - DMP . HTTP-RX: Retorno requisicao HTTP - RC: 0 - TamDados: 205
+aud   | {15:26:14.750 e0290700} -     . WEBS-RX: {"cod_resp":"00","msg_resp":"Transaction OK","msg_resp_host":"PENDING","origem_resp":2,"msg_display":"TRN_OK","info_trn":{"documento":"378888661772648772641","id_trn_autorizador":"378888661772648772641"}}.
+aud   | {15:26:14.751 e0290700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Qtd9600=<5>, Qtd9600_Enviada=<0>, IntervaloRestante9600=<13> TempoRestanteFepas=<98> TempoRestanteQRCode=<88>
+aud   | {15:26:14.751 e0290700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Aguarda sinalizacao da notificacao. Timeout <13>
+aud   | {15:26:27.751 e0290700} - DMP . NBASE: [NORMA_Base_NotificacaoAsync_Obtem] Timeout na espera da notificacao
+aud   | {15:26:27.751 e0290700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] AVISO: Retornou da espera da notificacao. RC <110>
+aud   | {15:26:27.751 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:27.751 e0290700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600018 DataTrnFepas 260304 e modulo 006
+aud   | {15:26:27.751 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:27.751 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:27.752 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:27.752 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:27.752 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:27.752 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:27.752 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:27.752 e0290700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:26:27.752 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:26:27.752 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:26:27.752 e0290700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:26:27.752 e0290700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:26:27.752 e0290700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Qtd9600=<5>, Qtd9600_Enviada=<1>, IntervaloRestante9600=<15> TempoRestanteFepas=<85> TempoRestanteQRCode=<75>
+aud   | {15:26:27.752 e0290700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] Aguarda sinalizacao da notificacao. Timeout <15>
+aud   | {15:26:27.931 e0672700} - DMP . NUCLEO: [NCL_ConsultaMensagemAssincrona] Retirou item da fila com NormaModulo=<56> NormaCanalSaida=<116>
+aud   | {15:26:27.931 e0672700} - DMP . NUCLEO: [NCL_ConsultaMensagemAssincrona] Retorno==RET_MENSAGEM_OK_COM_RESPOSTA
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152612003060> Tam=<148> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<148> TempoSend=<0>
+                          0010009600A238000102C0000000000040000000009403000304182627009838152627030411000000060127737888866000020083419483040000983803041524310000406000180000000000
+                            1 (  4): [9600]
+                            3 (  6): [940300]
+                            7 ( 10): [0304182627]
+                           11 (  6): [009838]
+                           12 (  6): [152627]
+                           13 (  4): [0304]
+                           32 ( 11): [00000006012]
+                           39 (  2): [77]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           90 ( 42): [040000983803041524310000406000180000000000]
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:27.931 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-SRV: Endereco IP 172.16.0.6/28 conectado
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 2
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-RX: RecebeTCP - Recebido: 2650
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-RX: FimRecebeTCP - Tamanho: 0 - TamRecebe: 1446 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 2650
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-SRV: Requisicao recebida - Metodo: 2 - url: /notification-services
+aud   | {15:26:33.261 e05bb700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:26:33.261 e05bb700} - DMP . NUCLEO: [NCL_ProcessaNotificacaoHttp] Mensagem recebida no Notification-Services. IPOrigem=<172.16.0.6> IDMsg=<63152612003060> Tam=<1734>
+                          104000{"chave":"0001-63152612003060-040600018-260304","extra_fields":{},"notif_body":{"cod_resp":"00","msg_resp":"Transaction OK","cod_resp_host":"APPROVED","origem_resp":2,"msg_display":"TRN_OK","comprovante_cliente":"                 MODO                 @04/03/2026     ANULACION     15:26:12@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600018@                                   (Q)@Cupon orig.: 000040600017@Fecha orig.: 04/03/2026@ @Autoriz.: XJ8G7V@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 0@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648772641@ID QR Orig: 378888661772648670784@@ @","comprovante_estab":"                 MODO                 @04/03/2026     ANULACION     15:26:12@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600018@                                   (Q)@Cupon orig.: 000040600017@Fecha orig.: 04/03/2026@ @Autoriz.: XJ8G7V@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 0@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648772641@ID QR Orig: 378888661772648670784@@ @","info_trn":{"data":"20260304","hora":"212612","documento":"378888661772648772641","cod_autorizacao":"XJ8G7V","id_trn_autorizador":"378888661772648772641","tipo_transacao":"PAGAMENTO_INSTANTANEO"},"carteira_digital":{"identificacao":"1300386","alias":""},"comprador":{"numero_conta":"9970001400000011433880"},"info_pagamento":{"pagamento":{},"cupom_digital":{"nome_carteira_digital":"MODO"}}}}
+aud   | {15:26:33.261 e05bb700} - DMP . CSE_MODSERV: [CSE_MODSERV_TrataNotificacaoHttp] Dados da notificacao. chave <0001-63152612003060-040600018-260304>
+aud   | {15:26:33.261 e05bb700} - DMP . NBASE: [NORMA_Base_NotificacaoAsync_Notifica] INFO: Status do tratamento da notificacao: CodProc <0001> NsuFepas <040600018>. RC <0>
+aud   | {15:26:33.261 e05bb700} - DMP . CSE_MODSERV: [CSE_MODSERV_TrataNotificacaoHttp] AVISO: Retorno da notificacao. RC <0>
+aud   | {15:26:33.261 e0290700} - DMP . CSE_MODSERV: [FluxoTransacaoDigitalWebhook] AVISO: Retornou da espera da notificacao. RC <0>
+aud   | {15:26:33.261 e0290700} - DMP . CSE_MODSERV: [RemoveTabelaNotificacao] Retorno NORMA_Base_NotificacaoAsync_Remove=<0>
+aud   | {15:26:33.261 e05bb700} - DMP . NUCLEO: [NCL_ProcessaNotificacaoHttp] Mensagem  enviada no Notification-Services. IPOrigem=<172.16.0.6> IDMsg=<63152612003060> Tam=<46>  Enviado=<0> TempoProc=<0> TempoSend = <0>
+                          104000{"message":"Resposta OK","response_code":"00"}
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-SRV: Requisicao finalizada via Callback - rc: 0 - http status: 200
+aud   | {15:26:33.261 e05bb700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 2
+aud   | {15:26:33.261 e0290700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<12> nao encontrado
+aud   | {15:26:33.261 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:33.261 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, CodResposta = :2, CodAutorizacao = :3, NsuAutorizadorExt = :4, IdCredencial = :5, PrjCodEstabConciliacao = :6, PrjDadosEmv = :7, PrjDadosAdicionaisEstadia = :8, PrjDadosAdicionaisRestaurante = :9, PrjPosTerminalCapability = :10, PrjFornecedorTEF = :11 WHERE HeaderNsuLog = :12 AND DtTrnFepas = :13 AND HeaderSequenciaAlteracaoLOG <= :14 AND IdMod = :15>
+aud   | {15:26:33.261 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:33.266 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:33.266 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:33.266 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:33.266 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:33.266 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:33.266 e0290700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600018 atualizado com sucesso!
+aud   | {15:26:33.266 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:33.266 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, StatusTransacao = :2, PrjDadosEmv = :3, PrjPosTerminalCapability = :4, PrjFornecedorTEF = :5 WHERE HeaderNsuLog = :6 AND DtTrnFepas = :7 AND HeaderSequenciaAlteracaoLOG <= :8 AND IdMod = :9>
+aud   | {15:26:33.266 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:33.270 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:33.270 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:33.270 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:33.270 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:33.270 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:33.270 e0290700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:26:33.270 e0290700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:33.270 e0290700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=< select Versao, Interface, Hash  from T_INIC_VERSAO_MODULO  where  CodEstab = :1>
+aud   | {15:26:33.270 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:33.271 e0290700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:33.271 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:33.271 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:33.271 e0290700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:33.271 e0290700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:33.271 e0290700} - DMP . CARDSE_TEF: [ComparaVersaoModuloISOxVersaoModuloFEPAS] Versao estabelecimento no FEPAS=<00000018>
+aud   | {15:26:33.271 e0290700} - DMP . CARDSE_TEF: [ComparaVersaoModuloISOxVersaoModuloFEPAS] Versao Modulo na ISO=<00000000>
+aud   | {15:26:33.271 e0290700} - DMP . CARDSE_TEF: [FlagCargaTabId002] Montou o Id da carga com o ID <0020011>
+aud   | {15:26:33.271 e0290700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:26:33.271 e0290700} - DMP . NUCLEO: [TrataMensagem] Retorno com sucesso!
+aud   | {15:26:33.271 e0290700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[0]
+aud   | {15:26:33.271 e0290700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[1]
+aud   | {15:26:33.271 e0290700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[2]
+aud   | {15:26:33.271 e0290700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[3]
+aud   | {15:26:33.271 e0290700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:26:33.271 e0290700} - DMP . FEPAS: [TrataMsg] Encerrada com retorno <0>
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:26:33.271 e030a700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152612003060> Tam=<1385> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<1385> TempoSend=<0>
+                          0010000410B23800010EC30044000000000000000296600000000005998003041826330098381524310304046012000040600018XJ8G7V00378888660000200834194830642750190204MODO03071300386501010AUTORIZADO502010AUTORIZADO0020011558506552                 MODO                 @04/03/2026     ANULACION     15:26:12@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600018@                                   (Q)@Cupon orig.: 000040600017@Fecha orig.: 04/03/2026@ @Autoriz.: XJ8G7V@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 0@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648772641@ID QR Orig: 378888661772648670784@@ @0400000000200000055100000000003260304152248558505552                 MODO                 @04/03/2026     ANULACION     15:26:12@ @               DorinkaQ               @                  1                  @            20-08341948-3            @ @                        Term: 37888866@                   Cupon: 000040600018@                                   (Q)@Cupon orig.: 000040600017@Fecha orig.: 04/03/2026@ @Autoriz.: XJ8G7V@(ONLINE)@Imp. Total: -$- 599.8        Cuotas: 0@ @Ver. Soft.: 1@            APROBADA (00)            @ @ID QR: 378888661772648772641@ID QR Orig: 378888661772648670784@@ @021378888661772648772641
+                            1 (  4): [0410]
+                            3 (  6): [966000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304182633]
+                           11 (  6): [009838]
+                           12 (  6): [152431]
+                           13 (  4): [0304]
+                           32 (  4): [6012]
+                           37 ( 12): [000040600018]
+                           38 (  6): [XJ8G7V]
+                           39 (  2): [00]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+
+                                     [TLV - Bit:47 (64)]
+
+                                     275 ( 19) [0204MODO03071300386]
+                                     501 ( 10) [AUTORIZADO]
+                                     502 ( 10) [AUTORIZADO]
+                                     002 (  1) [1]
+
+
+                                     [TLV - Bit:48 (558)]
+
+                                     506 (552) [                 MODO                 @04/03/202]
+                                               [6     ANULACION     15:26:12@ @               Do]
+                                               [rinkaQ               @                  1       ]
+                                               [           @            20-08341948-3           ]
+                                               [ @ @                        Term: 37888866@     ]
+                                               [              Cupon: 000040600018@              ]
+                                               [                     (Q)@Cupon orig.: 0000406000]
+                                               [17@Fecha orig.: 04/03/2026@ @Autoriz.: XJ8G7V@(O]
+                                               [NLINE)@Imp. Total: -$- 599.8        Cuotas: 0@ @]
+                                               [Ver. Soft.: 1@            APROBADA (00)         ]
+                                               [   @ @ID QR: 378888661772648772641@ID QR Orig: 3]
+                                               [78888661772648670784@@ @]
+
+                           58 ( 40): [0000000200000055100000000003260304152248]
+
+                                     [TLV - Bit:62 (558)]
+
+                                     505 (552) [                 MODO                 @04/03/202]
+                                               [6     ANULACION     15:26:12@ @               Do]
+                                               [rinkaQ               @                  1       ]
+                                               [           @            20-08341948-3           ]
+                                               [ @ @                        Term: 37888866@     ]
+                                               [              Cupon: 000040600018@              ]
+                                               [                     (Q)@Cupon orig.: 0000406000]
+                                               [17@Fecha orig.: 04/03/2026@ @Autoriz.: XJ8G7V@(O]
+                                               [NLINE)@Imp. Total: -$- 599.8        Cuotas: 0@ @]
+                                               [Ver. Soft.: 1@            APROBADA (00)         ]
+                                               [   @ @ID QR: 378888661772648772641@ID QR Orig: 3]
+                                               [78888661772648670784@@ @]
+
+                          127 ( 21): [378888661772648772641]
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<802> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<835> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<27> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<251> nao encontrado
+aud   | {15:26:33.271 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<262> nao encontrado
+aud   | {15:26:35.262 e05bb700} - DMP . HTTP-RX: FimRecebeTCP - rc: 10
+aud   | {15:26:35.262 e05bb700} - DMP . HTTP-SRV: Endereco IP 172.16.0.6/28/10 desconectado 
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - ISO . FEPAS: [TrataMsg] Mensagem recebida do Modulo TEF (MODULO TEF -> FEPAS). Canal=<Roteador> IPOrigem=<127.0.0.1:25228> IDCnx=<62171759000000> IDMsg=<63152639003080> Tam=<209> TipoCripto=<0>
+                          0010000402B23820010CC00048000000000000000296600000000005998003041526390098381524310304032046012000040600018XJ8G7V37888866000020083419483040000000020000005510000000000326030415224800910.29NPAR021378888661772648772641
+                            1 (  4): [0402]
+                            3 (  6): [966000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304152639]
+                           11 (  6): [009838]
+                           12 (  6): [152431]
+                           13 (  4): [0304]
+                           19 (  3): [032]
+                           32 (  4): [6012]
+                           37 ( 12): [000040600018]
+                           38 (  6): [XJ8G7V]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           58 ( 40): [0000000200000055100000000003260304152248]
+                           61 (  9): [10.29NPAR]
+                          127 ( 21): [378888661772648772641]
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:26:39.304 e030a700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:26:39.304 e030a700} - DMP . TABELAS: [TAB_IniciaProibicaoCargaTabelas] Utilizando versao=<17> de parametros. Sessao=<1>
+aud   | {15:26:39.304 e030a700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Iniciou...
+aud   | {15:26:39.304 e030a700} - DMP . NUCLEO: [TrataConfirmacaoPOS] Fim... Nao tem <Confirmacao POS> para enviar!
+aud   | {15:26:39.304 e030a700} - DMP . NUCLEO: [TrataMensagem] Iniciou! _NormaEntrada=<56>
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [DIV_ObtemCodigoProcessadoraAtivo] Codigo de Processadora Ativo = <0001>
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001>
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] _CodigoProcessadora=<0001> / Conexao.CodigoProcessadora=<0001>
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [DIV_ObtemIndiceTabCanalSaida] Indice do Canal de Saida=<0>
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [DIV_ObtemCanalSaidaEx] _CanalSaida=<0001> / _NormaCanalSaida=<116>
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:39.304 e030a700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:26:39.304 e030a700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<1>
+aud   | {15:26:39.304 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.304 e030a700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600018 DataTrnFepas 260304 e modulo 006
+aud   | {15:26:39.305 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:39.305 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.306 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.306 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:26:39.306 e030a700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<1>
+aud   | {15:26:39.306 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600018 DataTrnFepas 260304 e modulo 006
+aud   | {15:26:39.306 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:39.306 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.306 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.306 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.306 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, StatusTransacao = :2, R3PProcessadora = :3, R3PDtHrUltReenvio = :4, DtResolucao = :5, R3PStatusReenvio = :6, PrjPosTerminalCapability = :7, PrjFornecedorTEF = :8 WHERE HeaderNsuLog = :9 AND DtTrnFepas = :10 AND HeaderSequenciaAlteracaoLOG <= :11 AND IdMod = :12>
+aud   | {15:26:39.306 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.308 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.308 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600018 atualizado com sucesso!
+aud   | {15:26:39.308 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600017 DataTrnFepas 260304 e modulo 006
+aud   | {15:26:39.308 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:39.308 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.308 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.308 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.308 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, StatusTransacao = :2, DtResolucao = :3, PrjPosTerminalCapability = :4, PrjFornecedorTEF = :5 WHERE HeaderNsuLog = :6 AND DtTrnFepas = :7 AND HeaderSequenciaAlteracaoLOG <= :8 AND IdMod = :9>
+aud   | {15:26:39.308 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.312 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.312 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.312 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.312 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.312 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.312 e030a700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:26:39.312 e030a700} - DMP . GERLOG: [LG_LeLogEx] Norma=<56>
+aud   | {15:26:39.312 e030a700} - DMP . GERLOG: [LG_LeLogEx] NORMA_MontaDadosLeLog retornou TipoProcura=<1>
+aud   | {15:26:39.312 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.312 e030a700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600018 DataTrnFepas 260304 e modulo 006
+aud   | {15:26:39.312 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:39.312 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.312 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.313 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.313 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . LOG_BD: [LeLogDBADataCnx] Procurando reglog com nsu 040600017 DataTrnFepas 260304 e modulo 006
+aud   | {15:26:39.313 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:26:39.313 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.313 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.313 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:39.313 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, PrjPosTerminalCapability = :2, PrjFornecedorTEF = :3 WHERE HeaderNsuLog = :4 AND DtTrnFepas = :5 AND HeaderSequenciaAlteracaoLOG <= :6 AND IdMod = :7>
+aud   | {15:26:39.313 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:39.315 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:39.315 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:39.315 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:39.315 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:39.315 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:39.315 e030a700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:26:39.315 e030a700} - DMP . NUCLEO: [TrataMensagem] Vai tratar chamar Controle.MensagemSaida=<1>
+aud   | {15:26:39.315 e030a700} - DMP . PARAM: [PAR_Pesquisa_Autorizadores] Encontrou registro! SessaoProcurada=<6012> - Nome=<QR Pago             >
+aud   | {15:26:39.315 e030a700} - DMP . NUCLEO: TrataTxViaNorma
+aud   | {15:26:39.315 e030a700} -     . WEBS-TX: {"confirma":true}
+aud   | {15:26:39.315 e030a700} - DMP . HTTP-TX: Executando requisicao HTTP - TipoDados: application/json - TamDados: 17 - Proxy:(null) - URL:
+aud   | {15:26:39.315 e030a700} - DMP . HTTP-TX: https://127.0.0.1:20100/servicos_tef/cancelamentos_digitais/v1/FP052006202603041826120000406000180000
+aud   | {15:26:39.315 e030a700} - DMP . HTTP-SRV: _CaConfiaveis == NULL
+aud   | {15:26:39.369 e030a700} - DMP . HTTP-SRV: Conexao segura efetuada - TLSv1.2 - TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256
+aud   | {15:26:39.369 e030a700} - DMP . HTTP-TX: Socket de Saida = <28>
+aud   | {15:26:39.369 e030a700} - DMP . HTTP-TX: Header Http - Tamanho: 340
+aud   | {15:26:39.369 e030a700} - DMP . HTTP-TX: PUT /servicos_tef/cancelamentos_digitais/v1/FP052006202603041826120000406000180000 HTTP/1.1..Host: 127.0.0.1:20100..Accept-Encoding: identity..User-Agent: FepasCardSE/05.ar.hom.017..Connection: Keep-Alive..Content-Type: application/json; charset=utf-8..Content-Length: 17..Client-Id:2..Codigo-Estab:00222295       ..Codigo-IF:6012..Bin:....
+aud   | {15:26:39.370 e030a700} - DMP . HTTP-RX: RecebeTCP - Tamanho: 0 - TamRecebe: 4096 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 0 - Timeout: 30
+aud   | {15:26:40.170 e030a700} - DMP . HTTP-RX: RecebeTCP - Recebido: 358
+aud   | {15:26:40.170 e030a700} - DMP . HTTP-RX: FimRecebeTCP - Tamanho: 0 - TamRecebe: 3738 - _BufSaida->TamAlocado: 4096 - _BufSaida->Tamanho: 358
+aud   | {15:26:40.170 e030a700} - DMP . HTTP-RX: Retorno requisicao HTTP - RC: 0 - TamDados: 182
+aud   | {15:26:40.170 e030a700} -     . WEBS-RX: {"cod_resp":"00","msg_resp":"Transaction OK","cod_resp_host":"5600","msg_resp_host":"CONSUMED_CONFIRMED CONTRA-CARGO REALIZADO CORRECTAMENTE","origem_resp":2,"msg_display":"TRN_OK"}.
+aud   | {15:26:40.170 e030a700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] Id=<12> nao encontrado
+aud   | {15:26:40.170 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:40.170 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, R3PRecebeuResposta = :2, R3PStatusReenvio = :3, PrjDadosEmv = :4, PrjDadosAdicionaisEstadia = :5, PrjDadosAdicionaisRestaurante = :6, PrjPosTerminalCapability = :7, PrjFornecedorTEF = :8 WHERE HeaderNsuLog = :9 AND DtTrnFepas = :10 AND HeaderSequenciaAlteracaoLOG <= :11 AND IdMod = :12>
+aud   | {15:26:40.170 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:40.172 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:40.172 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:40.172 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:40.172 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:40.172 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:40.172 e030a700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600018 atualizado com sucesso!
+aud   | {15:26:40.172 e030a700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:26:40.172 e030a700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<UPDATE T_DADOS_LOG SET HeaderSequenciaAlteracaoLOG = :1, PrjPosTerminalCapability = :2, PrjFornecedorTEF = :3 WHERE HeaderNsuLog = :4 AND DtTrnFepas = :5 AND HeaderSequenciaAlteracaoLOG <= :6 AND IdMod = :7>
+aud   | {15:26:40.172 e0347700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:26:40.173 e030a700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:26:40.173 e0347700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:26:40.173 e0347700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:26:40.173 e030a700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:26:40.173 e030a700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:26:40.173 e030a700} - DMP . LOG_BD: [GravaLogBDEx] RegLog com NSU 040600017 atualizado com sucesso!
+aud   | {15:26:40.173 e030a700} - DMP . NUCLEO: [TrataMensagem] Retorno com sucesso!
+aud   | {15:26:40.173 e030a700} - DMP . NUCLEO: [FinalizaTrataMensagem] Limpando _Ctx->InfoWebsVect[0]
+aud   | {15:26:40.173 e030a700} - DMP . TABELAS: [TAB_EncerraProibicaoCargaTabelas] Encerrando sessao=<1> da versao=<17> de parametros
+aud   | {15:26:40.173 e030a700} - DMP . FEPAS: [TrataMsg] Encerrada com retorno <0>
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - ISO . FEPAS: [TrataTxMsg] Mensagem  enviada ao Modulo TEF (FEPAS -> MODULO TEF). Canal=<Roteador> Porta=<5299> IDCnx=<62171759000000> IDMsg=<63152639003080> Tam=<196> TipoCripto=<0> NivelCripto=<0> TamMetadados=<0> Enviado=<196> TempoSend=<0>
+                          0010000412B23800010EC00040000000000000000296600000000005998003041826400098381524310304046012000040600018XJ8G7V00378888660000200834194830400000000200000055100000000003260304152248021378888661772648772641
+                            1 (  4): [0412]
+                            3 (  6): [966000]
+                            4 ( 12): [000000059980]
+                            7 ( 10): [0304182640]
+                           11 (  6): [009838]
+                           12 (  6): [152431]
+                           13 (  4): [0304]
+                           32 (  4): [6012]
+                           37 ( 12): [000040600018]
+                           38 (  6): [XJ8G7V]
+                           39 (  2): [00]
+                           41 (  8): [37888866]
+                           42 ( 15): [000020083419483]
+                           58 ( 40): [0000000200000055100000000003260304152248]
+                          127 ( 21): [378888661772648772641]
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:26:40.173 e05bb700} - DMP . DIVERSOS: [RecuperaSubcampoTexto] ERRO: TamCampo = 0
+aud   | {15:28:00.493 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:28:00.493 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:28:00.493 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:28:00.496 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:28:00.496 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:28:00.496 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:28:00.496 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:28:00.496 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:30:00.496 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:30:00.496 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:30:00.496 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:30:00.500 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:30:00.501 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:30:00.501 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:30:00.501 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:30:00.501 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:32:00.501 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:32:00.501 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:32:00.501 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:32:00.504 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:32:00.504 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:32:00.504 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:32:00.504 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:32:00.504 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:34:00.505 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:34:00.505 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:34:00.505 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:34:00.507 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:34:00.507 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:34:00.507 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:34:00.507 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:34:00.508 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:36:00.508 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:36:00.508 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:36:00.508 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:36:00.510 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:36:00.510 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:36:00.510 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:36:00.510 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:36:00.510 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:38:00.511 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:38:00.511 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:38:00.511 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:38:00.513 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:38:00.513 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:38:00.513 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:38:00.513 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:38:00.514 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:40:00.514 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:40:00.514 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:40:00.514 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:40:00.516 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:40:00.516 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:40:00.516 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:40:00.516 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:40:00.517 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:42:00.517 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:42:00.517 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:42:00.517 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:42:00.521 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:42:00.521 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:42:00.521 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:42:00.521 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:42:00.521 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>
+aud   | {15:44:00.521 e2694700} - DMP . DBA: [DBA_AllocCnx] Alocando _CnxPool->Pool[0] cnx=<0x1229f60>
+aud   | {15:44:00.522 e2694700} - DMP . OCICNX: OCIStmtExecute cnx=<0x1229f60> query=<SELECT HeaderNsuLog,HeaderSequenciaAlteracaoLOG,CodTransacao,StatusTransacao,CodResposta,DadoOrig_DtTransacaoMMDD,DadoOrig_NsuFepas,CodProcessamento,ValorTransacao,DtHrTransacaoGmtMMDDHHMMSS,NsuModulo,HrTransacaoHHMMSS,DtTransacaoMMDD,CodRedeCaptura,NsuRedeCaptura,CodAutorizacao,CodTerminal,CodEstabelecimento,NsuAutorizador,CartaoCripto,CartaoCriptoRand,NroCartaoMask,DtValidade,TipoMensagem,DtTrnFepas,HrTrnFepas,VersaoParametros,AnoTransacaoAAAA,CanalEntrada,QuantParce
+aud   | {15:44:00.522 e05bb700} - DMP . OCICNX: ThreadTimeout() iniciou para cnx=<0x1229f60>
+aud   | {15:44:00.524 e2694700} - DMP . OCICNX: Finalizou OCIStmtExecute cnx=<0x1229f60>
+aud   | {15:44:00.524 e05bb700} - DMP . OCICNX: ThreadTimeout()::SE_SemaphoreP()::rcse=<0/SE_SUCCESS> cnx=<0x1229f60>
+aud   | {15:44:00.524 e05bb700} - DMP . OCICNX: ThreadTimeout() finalizou para cnx=<0x1229f60>
+aud   | {15:44:00.524 e2694700} - DMP . OCICNX: Fim FinalizaTimeout cnx=<0x1229f60>
+aud   | {15:44:00.524 e2694700} - DMP . DBA: _CnxPool->Pool[0]->State = CNXS_FREE cnx=<0x1229f60>

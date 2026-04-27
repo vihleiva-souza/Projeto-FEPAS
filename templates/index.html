@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homologador ISO 8583</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="page">
+    <div class="brand-bar">
+      <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
+      <span class="brand-product">Homologador ISO 8583</span>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Validador de Homologacao</p>
+      <h1>Importe o log e valide todas as pernas por objetivo de teste</h1>
+      <p class="subtitle">Resultado por perna com status e motivo, comparando o fluxo real com o objetivo esperado do teste selecionado.</p>
+    </header>
+
+    <section class="panel form-panel">
+      <form id="validateForm">
+        <div class="field-grid">
+          <label class="field">
+            <span>Teste de homologacao</span>
+            <select id="testSelect" name="teste_id" required>
+              <option value="">Carregando testes...</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Arquivo de log</span>
+            <div class="field-inline-row">
+              <select id="logSelect" name="log_name" required class="field-grow">
+                <option value="">Carregando logs...</option>
+              </select>
+              <button type="button" id="refreshLogsBtn" class="icon-btn" title="Recarregar lista" aria-label="Recarregar lista de logs">&#8635;</button>
+            </div>
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>DE11 / Bit 11 (opcional)</span>
+            <input id="de11" name="de11" type="text" placeholder="6 dígitos" maxlength="6" />
+          </label>
+
+          <label class="field">
+            <span>DE41 / Bit 41 (opcional)</span>
+            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" />
+          </label>
+        </div>
+
+        <p class="filter-hint" id="filterHint">Dica: Use DE11 e DE41 para filtrar uma TRN específica no log.</p>
+
+        <div class="goal" id="goalBox">Selecione um teste para ver o objetivo esperado.</div>
+
+        <button class="btn" id="submitBtn" type="submit">Validar Log</button>
+      </form>
+    </section>
+
+    <section class="panel result-panel hidden" id="resultPanel">
+      <div class="status-row">
+        <div>
+          <p class="status-label">Status geral</p>
+          <h2 id="overallStatus">-</h2>
+        </div>
+        <div class="status-chip" id="statusChip">-</div>
+      </div>
+
+      <div class="result-summary-grid">
+        <div class="result-summary-card goal-card">
+          <div class="result-summary-label">Objetivo esperado</div>
+          <div class="result-summary-value" id="resultGoalText">-</div>
+        </div>
+        <div class="result-summary-card legs-card">
+          <div class="result-summary-label">Pernas encontradas</div>
+          <div id="legsSummaryChips" class="legs-count-list"></div>
+        </div>
+      </div>
+
+      <h3>Passos do objetivo</h3>
+      <div id="stepsList" class="steps-list"></div>
+
+      <h3>Pernas encontradas</h3>
+      <div class="legs-toolbar">
+        <label class="field field-inline">
+          <span>Filtrar MTI</span>
+          <select id="legsMtiFilter">
+            <option value="">Todos</option>
+          </select>
+        </label>
+        <label class="field field-inline">
+          <span>Filtrar status</span>
+          <select id="legsStatusFilter">
+            <option value="">Todos</option>
+            <option value="APROVADO">Aprovado</option>
+            <option value="REPROVADO">Reprovado</option>
+            <option value="Não Aplica">Não aplica</option>
+          </select>
+        </label>
+        <label class="field field-inline field-search">
+          <span>Buscar</span>
+          <input id="legsSearchFilter" type="text" placeholder="MTI, DE03, DE11, DE41, motivo..." />
+        </label>
+        <label class="toggle">
+          <input id="legsObjectiveOnly" type="checkbox" />
+          <span>Somente objetivo</span>
+        </label>
+        <label class="toggle">
+          <input id="legsWithErrorsOnly" type="checkbox" />
+          <span>Somente com erro</span>
+        </label>
+        <div class="legs-counter" id="legsCounter">0 exibidas</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>MTI</th>
+              <th>DE03</th>
+              <th>DE11</th>
+              <th>DE41</th>
+              <th>Status</th>
+              <th>Motivo</th>
+              <th>Ref. objetivo</th>
+            </tr>
+          </thead>
+          <tbody id="legsTableBody"></tbody>
+        </table>
+      </div>
+
+      <section id="legDetailPanel" class="iso-viewer hidden">
+        <div class="iso-viewer-head">
+          <h3 id="legDetailTitle">Detalhes da perna</h3>
+          <p id="legDetailMeta">Clique em uma perna da tabela para visualizar.</p>
+        </div>
+        <pre id="isoViewerContent">Clique em uma perna para ver a mensagem ISO formatada com Bits/IDs/TAGS.</pre>
+
+        <div class="error-inspector">
+          <div class="error-grid">
+            <article class="error-card">
+              <h4>Erros</h4>
+              <div id="legErrors" class="structured-message">Sem erros para exibir.</div>
+            </article>
+            <article class="error-card">
+              <h4>Avisos</h4>
+              <div id="legWarnings" class="structured-message">Sem avisos para exibir.</div>
+            </article>
+          </div>
+          <article class="error-card" style="margin-top: 12px;">
+            <h4>ISO bruto</h4>
+            <pre id="isoRawContent" style="white-space: pre-wrap; word-break: break-all; margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; max-height: 220px; overflow: auto;">Sem ISO bruto disponível para esta perna.</pre>
+          </article>
+        </div>
+      </section>
+
+
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
