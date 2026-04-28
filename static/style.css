@@ -131,6 +131,21 @@ body {
   background: linear-gradient(90deg, #ff8c46 0%, #ffc18f 42%, #0d63c8 100%);
 }
 
+.approve-panel {
+  border-color: #8ed4b5;
+  background: linear-gradient(180deg, rgba(235, 255, 245, 0.96), rgba(247, 255, 251, 0.96));
+}
+
+.approve-panel::before {
+  background: linear-gradient(90deg, #2fbe83 0%, #9be8c8 100%);
+}
+
+.approve-panel h2 {
+  margin: 6px 0;
+  color: #0f6e4f;
+  font-size: clamp(1.3rem, 2.1vw, 2rem);
+}
+
 .field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

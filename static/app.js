@@ -5,6 +5,10 @@ const goalBox = document.getElementById("goalBox");
 const form = document.getElementById("validateForm");
 const submitBtn = document.getElementById("submitBtn");
 const resultPanel = document.getElementById("resultPanel");
+const approvedPanel = document.getElementById("approvedPanel");
+const approvedTitle = document.getElementById("approvedTitle");
+const approvedMessage = document.getElementById("approvedMessage");
+const downloadEvidenceBtn = document.getElementById("downloadEvidenceBtn");
 const overallStatus = document.getElementById("overallStatus");
 const statusChip = document.getElementById("statusChip");
 const resultGoalText = document.getElementById("resultGoalText");
@@ -30,6 +34,7 @@ let logsCache = [];
 let legsCache = [];
 let filteredLegsCache = [];
 let selectedLegKey = "";
+let evidenceCache = null;
 
 function normalizeTestLabel(test) {
   const normalized = { ...(test || {}) };
@@ -75,6 +80,124 @@ function showToast(msg) {
   toast.textContent = msg;
   toast.classList.add("visible");
   setTimeout(() => toast.classList.remove("visible"), 4000);
+}
+
+function buildEvidenceContentFallback(data) {
+  const teste = data.teste || {};
+  const resumo = data.resumo || {};
+  const pernas = Array.isArray(data.pernas) ? data.pernas : [];
+  const passos = Array.isArray(data.passos_objetivo) ? data.passos_objetivo : [];
+  const motivos = Array.isArray(data.motivos_status_geral) ? data.motivos_status_geral : [];
+
+  const lines = [];
+  lines.push("EVIDENCIA DE HOMOLOGACAO ISO 8583");
+  lines.push("=".repeat(80));
+  lines.push(`Teste: ${String(teste.id || "").padStart(2, "0")} - ${teste.nome || ""}`);
+  lines.push(`Status geral: ${data.status || "-"}`);
+  lines.push(`Objetivo esperado: ${teste.objetivo_esperado || "-"}`);
+  lines.push("");
+  lines.push("RESUMO");
+  lines.push("-".repeat(80));
+  lines.push(`Total de pernas: ${Number(resumo.total_pernas || 0)}`);
+  lines.push(`Pernas aprovadas: ${Number(resumo.pernas_aprovadas || 0)}`);
+  lines.push(`Pernas reprovadas: ${Number(resumo.pernas_negadas || 0)}`);
+  lines.push(`Pernas nao aplicam: ${Number(resumo.pernas_nao_aplicam || 0)}`);
+
+  if (motivos.length > 0) {
+    lines.push("");
+    lines.push("MOTIVOS STATUS GERAL");
+    lines.push("-".repeat(80));
+    motivos.forEach((motivo, idx) => lines.push(`${idx + 1}. ${motivo}`));
+  }
+
+  if (passos.length > 0) {
+    lines.push("");
+    lines.push("PASSOS DO OBJETIVO");
+    lines.push("-".repeat(80));
+    passos.forEach((passo) => {
+      lines.push(`${passo.ordem || "-"} | ${passo.label || "-"} | ${passo.status || "-"} | ${passo.motivo || "-"}`);
+    });
+  }
+
+  lines.push("");
+  lines.push("TROCA DE MENSAGENS ISO");
+  lines.push("-".repeat(80));
+  pernas.forEach((leg, index) => {
+    lines.push(`PERNA ${index + 1}`);
+    lines.push(`Ordem no log: ${leg.ordem_log || "-"}`);
+    lines.push(`MTI: ${leg.mti || "-"}`);
+    lines.push(`DE03: ${leg.de03 || "-"}`);
+    lines.push(`DE11: ${leg.de11 || "-"}`);
+    lines.push(`DE41: ${leg.de41 || "-"}`);
+    lines.push(`Status: ${leg.status || "-"}`);
+    lines.push(`Motivo: ${leg.motivo || "-"}`);
+    lines.push("ISO BRUTO:");
+    lines.push((leg.raw_iso || "").trim() || "(sem ISO bruto)");
+    lines.push("ISO FORMATADO:");
+    lines.push((leg.iso_formatado || "").trim() || "(sem ISO formatado)");
+    lines.push("-".repeat(80));
+  });
+
+  return lines.join("\n");
+}
+
+function buildEvidenceFileName(data) {
+  const evid = data.evidencia || {};
+  if (evid.file_name) {
+    return String(evid.file_name);
+  }
+  const teste = data.teste || {};
+  const testId = String(teste.id || "00").padStart(2, "0");
+  return `evidencia_teste_${testId}.txt`;
+}
+
+function setupApprovedPanel(data) {
+  const isApproved = String(data.status || "") === "APROVADO";
+  if (!approvedPanel) {
+    return;
+  }
+
+  if (!isApproved) {
+    approvedPanel.classList.add("hidden");
+    evidenceCache = null;
+    return;
+  }
+
+  const teste = normalizeTestLabel(data.teste || {});
+  if (approvedTitle) {
+    approvedTitle.textContent = `Teste ${teste.id || "--"} Aprovado`;
+  }
+  if (approvedMessage) {
+    approvedMessage.textContent = "Validacao concluida com sucesso. Baixe a evidencia completa da troca de mensagens ISO em .txt.";
+  }
+
+  const evid = data.evidencia || {};
+  evidenceCache = {
+    fileName: buildEvidenceFileName(data),
+    content: (evid.content && String(evid.content)) || buildEvidenceContentFallback(data),
+  };
+
+  approvedPanel.classList.remove("hidden");
+  approvedPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+if (downloadEvidenceBtn) {
+  downloadEvidenceBtn.addEventListener("click", () => {
+    if (!evidenceCache || !evidenceCache.content) {
+      showToast("Evidencia indisponivel para download.");
+      return;
+    }
+
+    const blob = new Blob([evidenceCache.content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = evidenceCache.fileName || "evidencia.txt";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  });
 }
 
 function setStatusVisual(status) {
@@ -381,12 +504,17 @@ form.addEventListener("submit", async (ev) => {
     renderResultSummary(data);
     renderSteps(data.passos_objetivo || []);
     renderLegs(data.pernas || []);
+    setupApprovedPanel(data);
     resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
     const msg = err instanceof Error && err.message
       ? err.message
       : "Não foi possível validar o log. Verifique a seleção e tente novamente.";
     showToast(msg);
+    if (approvedPanel) {
+      approvedPanel.classList.add("hidden");
+    }
+    evidenceCache = null;
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("loading");

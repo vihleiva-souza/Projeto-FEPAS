@@ -1830,6 +1830,7 @@ def validar_log_iso_formatado(
         legs.append({
             "idx": idx,
             "header_line": block.get("header_line"),
+            "header_text": block.get("header_text"),
             "raw_iso_line": block.get("raw_iso_line"),
             "raw_iso": raw_iso,
             "direction": block.get("direction"),

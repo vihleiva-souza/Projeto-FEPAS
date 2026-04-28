@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import re
 from copy import deepcopy
+from datetime import datetime
 from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Tuple
@@ -23,6 +24,194 @@ ALLOWED_EXTENSIONS = {".txt", ".log"}
 _CACHE_LOCK = Lock()
 _TEXT_CACHE: Dict[Tuple[str, int, int], str] = {}
 _VALIDATION_CACHE: Dict[Tuple[str, int, int, str, str, str, bool], Dict[str, Any]] = {}
+
+
+def _safe_filename_part(value: str) -> str:
+    normalized = re.sub(r"[^A-Za-z0-9._-]+", "_", str(value or "").strip())
+    normalized = re.sub(r"_+", "_", normalized).strip("._-")
+    return normalized or "arquivo"
+
+
+def _collect_flow_by_header_line(result: Dict[str, Any]) -> Dict[int, Dict[str, str]]:
+    flow_map: Dict[int, Dict[str, str]] = {}
+    resultado_log = result.get("resultado_log") or {}
+
+    candidate_transactions: List[Dict[str, Any]] = []
+    transacao_unica = resultado_log.get("transacao_selecionada")
+    if isinstance(transacao_unica, dict):
+        candidate_transactions.append(transacao_unica)
+    for tx in resultado_log.get("transacoes") or []:
+        if isinstance(tx, dict):
+            candidate_transactions.append(tx)
+
+    for tx in candidate_transactions:
+        for leg in tx.get("pernas") or []:
+            try:
+                header_line = int(leg.get("header_line"))
+            except (TypeError, ValueError):
+                continue
+
+            if header_line in flow_map:
+                continue
+
+            flow_map[header_line] = {
+                "direction": str(leg.get("direction") or "-").strip() or "-",
+                "header_text": str(leg.get("header_text") or "-").strip() or "-",
+            }
+
+    return flow_map
+
+
+def _extract_bit47_tlv_lines(iso_formatado: str) -> List[str]:
+    lines = [str(line) for line in str(iso_formatado or "").splitlines()]
+    extracted: List[str] = []
+    in_bit47 = False
+    in_sub238 = False
+
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        if line.startswith("[TLV - Bit:47]"):
+            in_bit47 = True
+            in_sub238 = False
+            extracted.append("[TLV - Bit:47]")
+            continue
+
+        if in_bit47 and line.startswith("[TLV - Bit:") and not line.startswith("[TLV - Bit:47]"):
+            break
+
+        if not in_bit47:
+            continue
+
+        if line.startswith("ID "):
+            in_sub238 = False
+            extracted.append(line)
+            continue
+
+        if line.startswith("[SubTLV - ID:238]"):
+            in_sub238 = True
+            extracted.append("  [SubTLV - ID:238]")
+            continue
+
+        if in_sub238 and line.startswith("TAG "):
+            extracted.append(f"  {line}")
+
+    return extracted
+
+
+def _strip_bit47_tlv_section(iso_formatado: str) -> str:
+    lines = [str(line) for line in str(iso_formatado or "").splitlines()]
+    kept: List[str] = []
+    in_bit47 = False
+
+    for raw_line in lines:
+        line = raw_line.strip()
+        if line.startswith("[TLV - Bit:47]"):
+            in_bit47 = True
+            continue
+
+        if in_bit47 and line.startswith("[TLV - Bit:") and not line.startswith("[TLV - Bit:47]"):
+            in_bit47 = False
+
+        if in_bit47:
+            continue
+
+        kept.append(raw_line)
+
+    return "\n".join(kept).strip()
+
+
+def _build_evidence_payload(result: Dict[str, Any], log_name: str) -> Dict[str, str]:
+    teste = result.get("teste") or {}
+    resumo = result.get("resumo") or {}
+    passos = result.get("passos_objetivo") or []
+    pernas = result.get("pernas") or []
+    motivos = result.get("motivos_status_geral") or []
+    flow_by_header_line = _collect_flow_by_header_line(result)
+
+    test_id = str(teste.get("id") or "00").zfill(2)
+    test_name = str(teste.get("nome") or "").strip()
+    status = str(result.get("status") or "-")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    lines: List[str] = []
+    lines.append("EVIDENCIA DE HOMOLOGACAO ISO 8583")
+    lines.append("=" * 80)
+    lines.append(f"Gerado em: {timestamp}")
+    lines.append(f"Arquivo de log: {log_name}")
+    lines.append(f"Teste: {test_id} - {test_name}")
+    lines.append(f"Status geral: {status}")
+    lines.append(f"Objetivo esperado: {teste.get('objetivo_esperado') or '-'}")
+    lines.append("")
+    lines.append("RESUMO")
+    lines.append("-" * 80)
+    lines.append(f"Total de pernas: {resumo.get('total_pernas', 0)}")
+    lines.append(f"Pernas aprovadas: {resumo.get('pernas_aprovadas', 0)}")
+    lines.append(f"Pernas reprovadas: {resumo.get('pernas_negadas', 0)}")
+    lines.append(f"Pernas nao aplicam: {resumo.get('pernas_nao_aplicam', 0)}")
+
+    if motivos:
+        lines.append("")
+        lines.append("MOTIVOS STATUS GERAL")
+        lines.append("-" * 80)
+        for idx, motivo in enumerate(motivos, start=1):
+            lines.append(f"{idx}. {motivo}")
+
+    if passos:
+        lines.append("")
+        lines.append("PASSOS DO OBJETIVO")
+        lines.append("-" * 80)
+        for passo in passos:
+            lines.append(
+                f"{passo.get('ordem', '-')} | {passo.get('label', '-')} | {passo.get('status', '-')} | {passo.get('motivo', '-') }"
+            )
+
+    lines.append("")
+    lines.append("TROCA DE MENSAGENS ISO")
+    lines.append("-" * 80)
+    for idx, leg in enumerate(pernas, start=1):
+        try:
+            header_line_key = int(leg.get("header_line"))
+        except (TypeError, ValueError):
+            header_line_key = None
+        flow_info = flow_by_header_line.get(header_line_key or -1, {})
+
+        lines.append(f"PERNA {idx}")
+        lines.append(f"Ordem no log: {leg.get('ordem_log', '-')}")
+        lines.append(f"Fluxo: {flow_info.get('direction', '-')}")
+        lines.append(f"Cabecalho de direcao: {flow_info.get('header_text', '-')}")
+        lines.append(f"MTI: {leg.get('mti', '-')}")
+        lines.append(f"DE03: {leg.get('de03', '-')}")
+        lines.append(f"DE11: {leg.get('de11', '-')}")
+        lines.append(f"DE41: {leg.get('de41', '-')}")
+        lines.append(f"Status: {leg.get('status', '-')}")
+        lines.append(f"Motivo: {leg.get('motivo', '-')}")
+
+        raw_iso = str(leg.get("raw_iso") or "").strip()
+        formatted_iso = str(leg.get("iso_formatado") or "").strip()
+        formatted_iso_without_bit47 = _strip_bit47_tlv_section(formatted_iso)
+
+        lines.append("ISO BRUTO:")
+        lines.append(raw_iso or "(sem ISO bruto)")
+        lines.append("ISO FORMATADO:")
+        lines.append(formatted_iso_without_bit47 or formatted_iso or "(sem ISO formatado)")
+
+        tlv47_lines = _extract_bit47_tlv_lines(formatted_iso)
+        lines.append("TLV DO BIT 47 (IDS/TAGS):")
+        if tlv47_lines:
+            lines.extend(tlv47_lines)
+        else:
+            lines.append("(Bit 47 nao encontrado ou sem IDs/TAGS detalhados nesta mensagem)")
+        lines.append("-" * 80)
+
+    log_stem = Path(log_name).stem
+    file_name = f"evidencia_teste_{test_id}_{_safe_filename_part(log_stem)}.txt"
+    return {
+        "file_name": file_name,
+        "content": "\n".join(lines),
+    }
 
 
 def _cache_key_for_file(path: Path) -> Tuple[str, int, int]:
@@ -381,6 +570,11 @@ def validate_log_payload(
         debug=debug,
     )
     result = _decorate_validation_payload(result)
+    if str(result.get("status") or "") == "APROVADO":
+        result["evidencia"] = _build_evidence_payload(result, path.name)
+    else:
+        result["evidencia"] = None
+
     result["api_metadata"] = {
         "log_name": path.name,
         "log_size_bytes": file_key[2],
