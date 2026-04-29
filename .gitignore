@@ -17,3 +17,6 @@ BACKUP_*/
 
 # Optional local debug artifacts
 *.tmp
+
+# Runtime data
+HOMOLOGACAO_CLIENTES/

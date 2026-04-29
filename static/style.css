@@ -313,6 +313,11 @@ body {
   cursor: not-allowed;
 }
 
+.secondary-btn {
+  background: linear-gradient(130deg, #0d63c8 0%, #0a4b99 100%);
+  box-shadow: 0 8px 20px rgba(13, 99, 200, 0.28);
+}
+
 .btn.loading {
   position: relative;
   color: transparent;
@@ -775,10 +780,137 @@ tr.leg-na {
   pointer-events: auto;
 }
 
+.role-grid-panel {
+  padding: 26px;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.role-card {
+  border: 1px solid #c8dbf3;
+  border-radius: 16px;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(241, 248, 255, 0.92));
+  box-shadow: 0 8px 18px rgba(9, 49, 97, 0.12);
+}
+
+.role-card h2 {
+  margin: 8px 0;
+}
+
+.role-card p {
+  color: var(--muted);
+}
+
+.role-tag {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0d57ad;
+  font-weight: 700;
+}
+
+.role-btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.login-panel {
+  max-width: 560px;
+}
+
+.client-workspace-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+/* ---- Admin tabs ---- */
+.admin-tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.admin-tab {
+  border: 1px solid rgba(203, 223, 246, 0.5);
+  border-radius: 12px 12px 0 0;
+  padding: 10px 22px;
+  font-weight: 700;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.9rem;
+  background: rgba(8, 31, 64, 0.30);
+  color: #c8dcf0;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.admin-tab:hover {
+  background: rgba(13, 99, 200, 0.28);
+  color: #e8f2ff;
+}
+
+.admin-tab.active {
+  background: rgba(248, 251, 255, 0.9);
+  color: #10243d;
+  border-bottom-color: transparent;
+}
+
+.admin-tab-panel {
+  border-top: 2px solid rgba(203, 223, 246, 0.5);
+}
+
+.clients-row:hover td {
+  filter: brightness(0.97);
+}
+
+@media (max-width: 860px) {
+  .admin-tabs { gap: 4px; }
+  .admin-tab  { padding: 8px 12px; font-size: 0.82rem; }
+}
+
+.login-form {
+  display: grid;
+  gap: 14px;
+}
+
+.login-error {
+  margin: 0;
+  border: 1px solid #ebc9c9;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff4f4;
+  color: #9e2424;
+  font-weight: 600;
+}
+
+.login-back-link {
+  margin-top: 14px;
+}
+
+.login-back-link a {
+  color: #0d57ad;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-back-link a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 860px) {
   .field-grid { grid-template-columns: 1fr; }
   .result-summary-grid { grid-template-columns: 1fr; }
   .error-grid { grid-template-columns: 1fr; }
+  .role-grid { grid-template-columns: 1fr; }
   .page { width: 94vw; padding-top: 24px; }
   body { background-attachment: scroll; }
 }

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Administrador | Homologacao ISO 8583</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="page">
+    <div class="brand-bar">
+      <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
+      <span class="brand-product">Administrador</span>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Login</p>
+      <h1>Acesso ao painel interno</h1>
+      <p class="subtitle">Informe usuário e senha para continuar.</p>
+    </header>
+
+    <section class="panel login-panel">
+      <form method="post" action="/admin/login" class="login-form">
+        <label class="field">
+          <span>Usuário</span>
+          <input type="text" name="username" placeholder="admin" required />
+        </label>
+
+        <label class="field">
+          <span>Senha</span>
+          <input type="password" name="password" placeholder="********" required />
+        </label>
+
+        {% if error %}
+        <p class="login-error">{{ error }}</p>
+        {% endif %}
+
+        <button class="btn" type="submit">Entrar</button>
+      </form>
+
+      <p class="login-back-link"><a href="/">Voltar para seleção de perfil</a></p>
+    </section>
+  </main>
+</body>
+</html>
