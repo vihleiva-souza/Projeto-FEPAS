@@ -78,6 +78,29 @@ body {
   font-size: 0.82rem;
 }
 
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.language-switcher label {
+  color: #d8e8ff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.language-switcher select {
+  border: 1px solid rgba(180, 205, 236, 0.7);
+  border-radius: 10px;
+  background: rgba(243, 249, 255, 0.95);
+  color: #0f2f59;
+  padding: 6px 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+}
+
 .page {
   width: min(1120px, 92vw);
   margin: 0 auto;
@@ -611,6 +634,13 @@ tr.leg-na {
 .tag.bad { background: #f6dada; color: #9e2424; }
 .tag.na { background: #dde9f9; color: var(--na); }
 
+.status-icon-ok {
+  display: inline-block;
+  margin-right: 6px;
+  color: #0f8f5e;
+  font-weight: 900;
+}
+
 .hidden { display: none; }
 
 .iso-viewer {
@@ -913,4 +943,6 @@ tr.leg-na {
   .role-grid { grid-template-columns: 1fr; }
   .page { width: 94vw; padding-top: 24px; }
   body { background-attachment: scroll; }
+  .brand-bar { flex-wrap: wrap; }
+  .language-switcher { margin-left: 0; }
 }

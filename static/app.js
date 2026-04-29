@@ -28,6 +28,8 @@ const isoViewerContent = document.getElementById("isoViewerContent");
 const isoRawContent = document.getElementById("isoRawContent");
 const legErrors = document.getElementById("legErrors");
 const legWarnings = document.getElementById("legWarnings");
+const i18n = window.I18N || { t: (key) => key };
+const t = (key, vars) => i18n.t(key, vars);
 
 let testsCache = [];
 let logsCache = [];
@@ -44,6 +46,28 @@ function normalizeTestLabel(test) {
     normalized.nome = `${nome} (PCT)`;
   }
   return normalized;
+}
+
+function localizedTestName(testId, fallbackName) {
+  if (i18n.translateTestName) {
+    return i18n.translateTestName(testId, fallbackName);
+  }
+  return String(fallbackName || "");
+}
+
+function localizedStatusLabel(status) {
+  const raw = String(status || "").toUpperCase().replace(/_/g, " ");
+  if (raw === "APROVADO") return String(t("status.approved")).toUpperCase();
+  if (raw === "REPROVADO") return String(t("status.reproved")).toUpperCase();
+  if (raw === "NAO APLICA" || raw === "NÃO APLICA") return String(t("status.na")).toUpperCase();
+  if (raw === "NAO INICIADO" || raw === "NÃO INICIADO") return String(t("status.notStarted")).toUpperCase();
+  if (raw === "EM ANDAMENTO") return String(t("status.inProgress")).toUpperCase();
+  return raw || "-";
+}
+
+function isNotApplicableStatus(status) {
+  const raw = String(status || "").toUpperCase().replace(/_/g, " ");
+  return raw === "NAO APLICA" || raw === "NÃO APLICA" || raw === "NO APLICA";
 }
 
 function escapeHtml(str) {
@@ -184,7 +208,7 @@ function setupApprovedPanel(data) {
 if (downloadEvidenceBtn) {
   downloadEvidenceBtn.addEventListener("click", () => {
     if (!evidenceCache || !evidenceCache.content) {
-      showToast("Evidencia indisponivel para download.");
+      showToast(t("validator.toastUnavailableEvidence"));
       return;
     }
 
@@ -202,16 +226,16 @@ if (downloadEvidenceBtn) {
 
 function setStatusVisual(status) {
   const ok = status === "APROVADO";
-  statusChip.textContent = status;
+  statusChip.textContent = localizedStatusLabel(status);
   statusChip.style.background = ok ? "#d5f1e5" : "#f6dada";
   statusChip.style.color = ok ? "#0f6e4f" : "#9e2424";
 }
 
 function renderResultSummary(data) {
-  const t = data.teste || {};
+  const testInfo = data.teste || {};
   const r = data.resumo || {};
 
-  resultGoalText.textContent = t.objetivo_esperado || "-";
+  resultGoalText.textContent = testInfo.objetivo_esperado || "-";
 
   const aprovadas = Number(r.pernas_aprovadas ?? 0);
   const negadas = Number(r.pernas_negadas ?? 0);
@@ -219,28 +243,29 @@ function renderResultSummary(data) {
   const total = Number(r.total_pernas ?? 0);
 
   legsSummaryChips.innerHTML = [
-    aprovadas > 0 ? `<span class="legs-chip chip-ok">✓ ${aprovadas} Aprovada${aprovadas !== 1 ? "s" : ""}</span>` : "",
-    negadas > 0 ? `<span class="legs-chip chip-bad">✗ ${negadas} Reprovada${negadas !== 1 ? "s" : ""}</span>` : "",
-    naoAplicam > 0 ? `<span class="legs-chip chip-na">– ${naoAplicam} N\u00e3o aplica</span>` : "",
-    `<span class="legs-chip chip-total">${total} total</span>`,
+    aprovadas > 0 ? `<span class="legs-chip chip-ok">✓ ${escapeHtml(t("chips.approved", { count: aprovadas, suffix: aprovadas !== 1 ? "s" : "" }))}</span>` : "",
+    negadas > 0 ? `<span class="legs-chip chip-bad">✗ ${escapeHtml(t("chips.reproved", { count: negadas, suffix: negadas !== 1 ? "s" : "" }))}</span>` : "",
+    naoAplicam > 0 ? `<span class="legs-chip chip-na">– ${escapeHtml(t("chips.na", { count: naoAplicam }))}</span>` : "",
+    `<span class="legs-chip chip-total">${escapeHtml(t("chips.total", { count: total }))}</span>`,
   ].filter(Boolean).join("");
 }
 
 function renderSteps(steps) {
   if (!Array.isArray(steps) || steps.length === 0) {
-    stepsList.innerHTML = '<div class="step bad">Nenhum passo configurado para este teste.</div>';
+    stepsList.innerHTML = `<div class="step bad">${escapeHtml(t("result.noSteps"))}</div>`;
     return;
   }
 
   stepsList.innerHTML = steps
     .map((s) => {
-      const isNa = s.aprovado === null || String(s.status || "").toLowerCase() === "não aplica";
+      const isNa = s.aprovado === null || isNotApplicableStatus(s.status);
       const ok = !!s.aprovado;
       const stepClass = isNa ? "na" : (ok ? "ok" : "bad");
+      const localizedStepStatus = localizedStatusLabel(s.status);
       return `
         <article class="step ${stepClass}">
           <strong>${escapeHtml(s.ordem)}. ${escapeHtml(s.label)}</strong>
-          <div>${escapeHtml(s.status)} - ${escapeHtml(s.motivo)}</div>
+          <div>${escapeHtml(localizedStepStatus)} - ${escapeHtml(s.motivo)}</div>
         </article>
       `;
     })
@@ -251,7 +276,7 @@ function renderLegFilterOptions(legs) {
   const mtis = Array.from(new Set((legs || []).map((leg) => String(leg.mti || "")).filter(Boolean))).sort();
   const current = legsMtiFilter.value;
   legsMtiFilter.innerHTML = [
-    '<option value="">Todos</option>',
+    `<option value="">${escapeHtml(t("common.all"))}</option>`,
     ...mtis.map((mti) => `<option value="${escapeHtml(mti)}"${mti === current ? ' selected' : ''}>${escapeHtml(mti)}</option>`),
   ].join("");
 }
@@ -301,10 +326,10 @@ function applyLegFilters() {
 }
 
 function renderLegRows(legs) {
-  legsCounter.textContent = `${legs.length} exibidas`;
+  legsCounter.textContent = t("result.shownCount", { count: legs.length });
 
   if (!Array.isArray(legs) || legs.length === 0) {
-    legsTableBody.innerHTML = '<tr><td colspan="8">Nenhuma perna encontrada para os filtros atuais.</td></tr>';
+    legsTableBody.innerHTML = `<tr><td colspan="8">${escapeHtml(t("result.noneForFilters"))}</td></tr>`;
     clearLegDetail();
     return;
   }
@@ -333,7 +358,7 @@ function renderLegRows(legs) {
           <td>${escapeHtml(leg.de03 || "-")}</td>
           <td>${escapeHtml(leg.de11 || "-")}</td>
           <td>${escapeHtml(leg.de41 || "-")}</td>
-          <td><span class="tag ${tagClass}">${escapeHtml(leg.status || "-")}</span></td>
+          <td><span class="tag ${tagClass}">${escapeHtml(localizedStatusLabel(leg.status))}</span></td>
           <td>${escapeHtml(leg.motivo || "-")}</td>
           <td>${escapeHtml(refs)}</td>
         </tr>
@@ -387,19 +412,19 @@ function showLegDetail(leg) {
     legDetailTitle.textContent = `Perna ${leg.ordem_log || "-"} - MTI ${leg.mti || "-"}`;
   }
   if (legDetailMeta) {
-    legDetailMeta.textContent = `DE03 ${leg.de03 || "-"} | DE11 ${leg.de11 || "-"} | DE41 ${leg.de41 || "-"} | Status ${leg.status || "-"}`;
+    legDetailMeta.textContent = `DE03 ${leg.de03 || "-"} | DE11 ${leg.de11 || "-"} | DE41 ${leg.de41 || "-"} | ${t("result.overall")}: ${localizedStatusLabel(leg.status)}`;
   }
   if (isoViewerContent) {
-    isoViewerContent.textContent = leg.iso_formatado || "Sem ISO formatado para esta perna.";
+    isoViewerContent.textContent = leg.iso_formatado || t("result.noIsoFormatted");
   }
   if (isoRawContent) {
-    isoRawContent.textContent = leg.raw_iso || "Sem ISO bruto disponível para esta perna.";
+    isoRawContent.textContent = leg.raw_iso || t("result.noIsoRaw");
   }
   if (legErrors) {
-    legErrors.innerHTML = legStructuredList(leg.erros || [], "Sem erros para exibir.");
+    legErrors.innerHTML = legStructuredList(leg.erros || [], t("result.noErrors"));
   }
   if (legWarnings) {
-    legWarnings.innerHTML = legStructuredList(leg.avisos || [], "Sem avisos para exibir.");
+    legWarnings.innerHTML = legStructuredList(leg.avisos || [], t("result.noWarnings"));
   }
 
   renderLegRows(filteredLegsCache);
@@ -431,34 +456,35 @@ async function loadTests() {
   const data = await resp.json();
   testsCache = (data.tests || []).map(normalizeTestLabel);
 
-  const options = ['<option value="">Selecione...</option>'];
-  for (const t of testsCache) {
-    options.push(`<option value="${escapeHtml(t.id)}">${escapeHtml(t.id)} - ${escapeHtml(t.nome)}</option>`);
+  const options = [`<option value="">${escapeHtml(t("common.select"))}</option>`];
+  for (const testItem of testsCache) {
+    const testName = localizedTestName(testItem.id, testItem.nome);
+    options.push(`<option value="${escapeHtml(testItem.id)}">${escapeHtml(testItem.id)} - ${escapeHtml(testName)}</option>`);
   }
   testSelect.innerHTML = options.join("");
 }
 
 async function loadLogs() {
   const prev = logSelect.value;
-  logSelect.innerHTML = '<option value="">Carregando...</option>';
+  logSelect.innerHTML = `<option value="">${escapeHtml(t("common.loading"))}</option>`;
   try {
     const resp = await fetch("/api/logs");
     const data = await resp.json();
     logsCache = data.logs || [];
 
     if (!Array.isArray(logsCache) || logsCache.length === 0) {
-      logSelect.innerHTML = '<option value="">Nenhum log encontrado</option>';
+      logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.noneLogs"))}</option>`;
       return;
     }
 
-    const options = ['<option value="">Selecione o log...</option>'];
+    const options = [`<option value="">${escapeHtml(t("validator.selectLog"))}</option>`];
     for (const item of logsCache) {
       const name = typeof item === "string" ? item : item.name;
       options.push(`<option value="${escapeHtml(name)}"${name === prev ? ' selected' : ''}>${escapeHtml(name)}</option>`);
     }
     logSelect.innerHTML = options.join("");
   } catch (err) {
-    logSelect.innerHTML = '<option value="">Falha ao carregar logs</option>';
+    logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failLogs"))}</option>`;
   }
 }
 
@@ -466,10 +492,10 @@ refreshLogsBtn.addEventListener("click", () => loadLogs());
 
 testSelect.addEventListener("change", () => {
   const testId = testSelect.value;
-  const t = testsCache.find((x) => x.id === testId);
-  goalBox.textContent = t
-    ? `Objetivo esperado: ${t.objetivo_esperado}`
-    : "Selecione um teste para ver o objetivo esperado.";
+  const selectedTest = testsCache.find((x) => x.id === testId);
+  goalBox.textContent = selectedTest
+    ? t("validator.goalExpected", { goal: selectedTest.objetivo_esperado })
+    : t("validator.goalDefault");
 });
 
 legsMtiFilter.addEventListener("change", applyLegFilters);
@@ -483,7 +509,7 @@ form.addEventListener("submit", async (ev) => {
 
   submitBtn.disabled = true;
   submitBtn.classList.add("loading");
-  submitBtn.textContent = "Validando...";
+  submitBtn.textContent = t("validator.validating");
 
   try {
     const formData = new FormData(form);
@@ -494,12 +520,13 @@ form.addEventListener("submit", async (ev) => {
 
     const data = await resp.json();
     if (!resp.ok) {
-      throw new Error(data.error || "Falha na validacao");
+      throw new Error(data.error || t("validator.failValidation"));
     }
 
     resultPanel.classList.remove("hidden");
     const displayTest = normalizeTestLabel(data.teste || {});
-    overallStatus.textContent = `${data.status} - ${displayTest.id || ""} ${displayTest.nome || ""}`;
+    const displayName = localizedTestName(displayTest.id, displayTest.nome || "");
+    overallStatus.textContent = `${localizedStatusLabel(data.status)} - ${displayTest.id || ""} ${displayName || ""}`;
     setStatusVisual(data.status);
     renderResultSummary(data);
     renderSteps(data.passos_objetivo || []);
@@ -509,7 +536,7 @@ form.addEventListener("submit", async (ev) => {
   } catch (err) {
     const msg = err instanceof Error && err.message
       ? err.message
-      : "Não foi possível validar o log. Verifique a seleção e tente novamente.";
+      : t("validator.toastValidateFail");
     showToast(msg);
     if (approvedPanel) {
       approvedPanel.classList.add("hidden");
@@ -518,14 +545,25 @@ form.addEventListener("submit", async (ev) => {
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("loading");
-    submitBtn.textContent = "Validar Log";
+    submitBtn.textContent = t("validator.validate");
   }
 });
 
 loadTests().catch((err) => {
-  testSelect.innerHTML = '<option value="">Falha ao carregar testes</option>';
-  goalBox.textContent = `Erro ao carregar testes: ${err.message}`;
+  testSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failTests"))}</option>`;
+  goalBox.textContent = t("validator.testsLoadError", { message: err.message });
 });
 loadLogs().catch(() => {
-  logSelect.innerHTML = '<option value="">Falha ao carregar logs</option>';
+  logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failLogs"))}</option>`;
+});
+
+window.addEventListener("app-language-changed", () => {
+  loadTests().catch(() => {});
+  loadLogs().catch(() => {});
+  renderLegFilterOptions(legsCache);
+  applyLegFilters();
+  if (!testSelect.value) {
+    goalBox.textContent = t("validator.goalDefault");
+  }
+  submitBtn.textContent = t("validator.validate");
 });

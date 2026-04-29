@@ -5,6 +5,8 @@
 // ---- Abas ----
 const adminTabs = document.querySelectorAll(".admin-tab");
 const adminPanels = document.querySelectorAll(".admin-tab-panel");
+const i18n = window.I18N || { t: (key) => key };
+const t = (key, vars) => i18n.t(key, vars);
 
 adminTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -46,9 +48,39 @@ function showAdminToast(msg) {
 }
 
 function formatInternalStatus(status) {
-  return String(status || "-")
-    .replace(/_/g, " ")
-    .toUpperCase();
+  const raw = String(status || "").toUpperCase().replace(/_/g, " ");
+  if (raw === "APROVADO") return String(t("status.approved")).toUpperCase();
+  if (raw === "REPROVADO") return String(t("status.reproved")).toUpperCase();
+  if (raw === "NAO APLICA" || raw === "NÃO APLICA") return String(t("status.na")).toUpperCase();
+  if (raw === "NAO INICIADO" || raw === "NÃO INICIADO") return String(t("status.notStarted")).toUpperCase();
+  if (raw === "EM ANDAMENTO") return String(t("status.inProgress")).toUpperCase();
+  return raw || "-";
+}
+
+function localizedTestName(testId, fallbackName) {
+  if (i18n.translateTestName) {
+    return i18n.translateTestName(testId, fallbackName);
+  }
+  return String(fallbackName || "");
+}
+
+function localizedResultLabel(result) {
+  const raw = String(result || "").toUpperCase().replace(/_/g, " ");
+  if (raw === "APROVADO") return String(t("status.approved")).toUpperCase();
+  if (raw === "REPROVADO") return String(t("status.reproved")).toUpperCase();
+  if (raw === "NAO APLICA" || raw === "NÃO APLICA") return String(t("status.na")).toUpperCase();
+  if (raw === "NAO INICIADO" || raw === "NÃO INICIADO") return String(t("status.notStarted")).toUpperCase();
+  if (raw === "EM ANDAMENTO") return String(t("status.inProgress")).toUpperCase();
+  return String(result || "-");
+}
+
+function formatInternalStatusWithIcon(status) {
+  const raw = String(status || "").toUpperCase();
+  const label = formatInternalStatus(status);
+  if (raw === "APROVADO") {
+    return `<span class="status-icon-ok" title="${escapeAdm(t("status.approved"))}">&#10003;</span> ${escapeAdm(label)}`;
+  }
+  return escapeAdm(label);
 }
 
 // =====================================================================
@@ -65,17 +97,17 @@ let clientsCache = [];
 
 async function loadClients() {
   if (clientsTableBody) {
-    clientsTableBody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
+    clientsTableBody.innerHTML = `<tr><td colspan="7">${escapeAdm(t("admin.loadingClients"))}</td></tr>`;
   }
   try {
     const resp = await fetch("/api/admin/clients");
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || "Erro ao listar clientes.");
+    if (!resp.ok) throw new Error(data.error || t("admin.errorListClients"));
     clientsCache = data.clients || [];
     renderClientsTable(clientsCache);
   } catch (err) {
     if (clientsTableBody) {
-      clientsTableBody.innerHTML = `<tr><td colspan="7">Falha: ${escapeAdm(err.message)}</td></tr>`;
+      clientsTableBody.innerHTML = `<tr><td colspan="7">${escapeAdm(t("admin.fail", { message: err.message }))}</td></tr>`;
     }
   }
 }
@@ -84,15 +116,15 @@ function renderClientsTable(clients) {
   if (!clientsTableBody) return;
 
   if (!clients || clients.length === 0) {
-    clientsTableBody.innerHTML = '<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';
+    clientsTableBody.innerHTML = `<tr><td colspan="7">${escapeAdm(t("admin.noneClients"))}</td></tr>`;
     return;
   }
 
   clientsTableBody.innerHTML = clients
     .map((item) => {
       const onbStatus = item.onboarding_completed
-        ? '<span class="tag ok">Concluido</span>'
-        : '<span class="tag na">Pendente</span>';
+        ? `<span class="tag ok">${escapeAdm(t("clients.onboardingDone"))}</span>`
+        : `<span class="tag na">${escapeAdm(t("clients.onboardingPending"))}</span>`;
       const pct = Number(item.percentual_aprovacao_geral || 0).toFixed(2);
       return `
         <tr class="clients-row" data-cnpj="${escapeAdm(item.cnpj)}" style="cursor:pointer;">
@@ -121,34 +153,38 @@ async function loadClientDetail(cnpj) {
 
   clientDetailPanel.classList.remove("hidden");
   clientDetailTitle.textContent = cnpj;
-  clientDetailTableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
+  clientDetailTableBody.innerHTML = `<tr><td colspan="6">${escapeAdm(t("common.loading"))}</td></tr>`;
   clientDetailPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 
   try {
     const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(cnpj)}`);
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || "Erro ao carregar detalhe.");
+    if (!resp.ok) throw new Error(data.error || t("admin.errorLoadDetail"));
 
     const tests = Array.isArray(data.tests) ? data.tests : [];
     if (tests.length === 0) {
-      clientDetailTableBody.innerHTML = '<tr><td colspan="6">Nenhum teste realizado ainda.</td></tr>';
+      clientDetailTableBody.innerHTML = `<tr><td colspan="6">${escapeAdm(t("admin.noneTestsYet"))}</td></tr>`;
       return;
     }
 
     clientDetailTableBody.innerHTML = tests
-      .map((item) => `
+      .map((item) => {
+        const testName = localizedTestName(item.teste_id, item.teste_nome || "");
+        const lastResult = localizedResultLabel(item.last_result);
+        return `
         <tr>
-          <td>${escapeAdm(item.teste_id)} - ${escapeAdm(item.teste_nome || "")}</td>
-          <td>${escapeAdm(formatInternalStatus(item.status))}</td>
+          <td>${escapeAdm(item.teste_id)} - ${escapeAdm(testName)}</td>
+          <td>${formatInternalStatusWithIcon(item.status)}</td>
           <td>${escapeAdm(item.attempts_total)}</td>
           <td>${escapeAdm(item.attempts_until_approval ?? "-")}</td>
           <td>${escapeAdm(Number(item.percentual_sucesso || 0).toFixed(2))}%</td>
-          <td>${escapeAdm(item.last_result || "-")}</td>
+          <td>${escapeAdm(lastResult)}</td>
         </tr>
-      `)
+      `;
+      })
       .join("");
   } catch (err) {
-    clientDetailTableBody.innerHTML = `<tr><td colspan="6">Falha: ${escapeAdm(err.message)}</td></tr>`;
+    clientDetailTableBody.innerHTML = `<tr><td colspan="6">${escapeAdm(t("admin.fail", { message: err.message }))}</td></tr>`;
   }
 }
 
@@ -198,10 +234,11 @@ function renderGestaoChecklist(assignedIds) {
     .map((item) => {
       const tid = String(item.id || "").padStart(2, "0");
       const checked = assigned.has(tid) ? "checked" : "";
+      const testName = localizedTestName(tid, item.nome || "");
       return `
         <label class="step" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
           <input type="checkbox" name="gestao_test" value="${escapeAdm(tid)}" ${checked} />
-          <span><strong>${escapeAdm(tid)} - ${escapeAdm(item.nome || "")}</strong><br>
+          <span><strong>${escapeAdm(tid)} - ${escapeAdm(testName)}</strong><br>
           <small style="color:#4a5f7d;">${escapeAdm(item.objetivo_esperado || "")}</small></span>
         </label>
       `;
@@ -213,18 +250,18 @@ if (gestaoCarregarBtn) {
   gestaoCarregarBtn.addEventListener("click", async () => {
     const cnpj = (gestaoClienteInput ? gestaoClienteInput.value.trim() : "");
     if (!cnpj) {
-      showAdminToast("Informe o CNPJ do cliente.");
+      showAdminToast(t("admin.enterCnpj"));
       return;
     }
 
     gestaoCarregarBtn.disabled = true;
-    gestaoCarregarBtn.textContent = "Carregando...";
+    gestaoCarregarBtn.textContent = t("common.loading");
 
     try {
       await loadAllTestsForGestao();
       const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(cnpj)}`);
       const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || "Erro ao carregar cliente.");
+      if (!resp.ok) throw new Error(data.error || t("admin.errorLoadClient"));
 
       gestaoCnpjAtual = cnpj;
       if (gestaoClienteLabel) gestaoClienteLabel.textContent = cnpj;
@@ -233,10 +270,10 @@ if (gestaoCarregarBtn) {
       const assignedIds = (data.assigned_tests || []).map((item) => String(item.id || "")).filter(Boolean);
       renderGestaoChecklist(assignedIds);
     } catch (err) {
-      showAdminToast(`Falha ao carregar: ${err.message}`);
+      showAdminToast(t("admin.failLoad", { message: err.message }));
     } finally {
       gestaoCarregarBtn.disabled = false;
-      gestaoCarregarBtn.textContent = "Carregar cliente";
+      gestaoCarregarBtn.textContent = t("admin.loadClient");
     }
   });
 }
@@ -250,12 +287,12 @@ if (gestaoSalvarTestesBtn) {
     ).map((el) => el.value);
 
     if (checked.length === 0) {
-      showAdminToast("Selecione ao menos um teste.");
+      showAdminToast(t("admin.selectAtLeastOne"));
       return;
     }
 
     gestaoSalvarTestesBtn.disabled = true;
-    gestaoSalvarTestesBtn.textContent = "Salvando...";
+    gestaoSalvarTestesBtn.textContent = t("common.loading");
 
     try {
       const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/tests`, {
@@ -264,13 +301,13 @@ if (gestaoSalvarTestesBtn) {
         body: JSON.stringify({ selected_tests: checked }),
       });
       const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || "Erro ao salvar.");
-      showAdminToast(`Testes salvos para ${gestaoCnpjAtual}.`);
+      if (!resp.ok) throw new Error(data.error || t("admin.errorSave"));
+      showAdminToast(t("admin.testsSaved", { cnpj: gestaoCnpjAtual }));
     } catch (err) {
-      showAdminToast(`Falha: ${err.message}`);
+      showAdminToast(t("admin.fail", { message: err.message }));
     } finally {
       gestaoSalvarTestesBtn.disabled = false;
-      gestaoSalvarTestesBtn.textContent = "Salvar testes habilitados";
+      gestaoSalvarTestesBtn.textContent = t("admin.saveEnabledTests");
     }
   });
 }
@@ -279,7 +316,7 @@ if (gestaoResetOnboardingBtn) {
   gestaoResetOnboardingBtn.addEventListener("click", async () => {
     if (!gestaoCnpjAtual) return;
 
-    if (!confirm(`Confirmar reset de onboarding para ${gestaoCnpjAtual}? O cliente precisará selecionar os testes novamente no próximo acesso.`)) {
+    if (!confirm(t("admin.confirmReset", { cnpj: gestaoCnpjAtual }))) {
       return;
     }
 
@@ -290,13 +327,23 @@ if (gestaoResetOnboardingBtn) {
         method: "POST",
       });
       const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || "Erro ao resetar.");
-      showAdminToast(`Onboarding do cliente ${gestaoCnpjAtual} foi resetado.`);
+      if (!resp.ok) throw new Error(data.error || t("admin.errorReset"));
+      showAdminToast(t("admin.onboardingReset", { cnpj: gestaoCnpjAtual }));
       renderGestaoChecklist([]);
     } catch (err) {
-      showAdminToast(`Falha: ${err.message}`);
+      showAdminToast(t("admin.fail", { message: err.message }));
     } finally {
       gestaoResetOnboardingBtn.disabled = false;
     }
   });
 }
+
+window.addEventListener("app-language-changed", () => {
+  renderClientsTable(clientsCache);
+  if (gestaoSalvarTestesBtn && !gestaoSalvarTestesBtn.disabled) {
+    gestaoSalvarTestesBtn.textContent = t("admin.saveEnabledTests");
+  }
+  if (gestaoCarregarBtn && !gestaoCarregarBtn.disabled) {
+    gestaoCarregarBtn.textContent = t("admin.loadClient");
+  }
+});

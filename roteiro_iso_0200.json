@@ -933,7 +933,7 @@
       "descricao": "Realizar uma transação de crédito e fazer mudança de MID (número de comércio) no meio do fluxo.",
       "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
       "rule": {
-        "require_campos_correspondentes": false,
+        "require_campos_correspondentes": true,
         "presence_only_required_chain": true,
         "ignore_leg_campos_bits": [
           {
@@ -1306,7 +1306,7 @@
       "descricao": "Realizar uma compra PCT seguida de cancelamento total, validando que o Bit 04 da 0400 seja igual ao Bit 04 da 0210 e que o STAN original do DE90 da 0400 corresponda ao DE11 da 0200.",
       "objetivo_esperado": "0200 - 9600 pcode 940400 - 9610 pcode 940400 - 0210 - 0202 - 0212 - 0400 - 0410 - 0402 - 0412",
       "rule": {
-        "require_campos_correspondentes": false,
+        "require_campos_correspondentes": true,
         "require_pernas_completas": false,
         "forbidden_steps": [
           {

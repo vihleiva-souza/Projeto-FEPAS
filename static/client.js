@@ -18,6 +18,7 @@ const selectedTestSummary = document.getElementById("clientSelectedTestSummary")
 const progressTableBody = document.getElementById("clientProgressTableBody");
 const form = document.getElementById("clientValidateForm");
 const testSelect = document.getElementById("testSelect");
+const clientGoalBox = document.getElementById("clientGoalBox");
 const submitBtn = document.getElementById("submitBtn");
 
 const resultPanel = document.getElementById("clientResultPanel");
@@ -26,6 +27,8 @@ const statusChip = document.getElementById("clientStatusChip");
 const protocol = document.getElementById("clientProtocol");
 const deniedLeg = document.getElementById("clientDeniedLeg");
 const deniedReason = document.getElementById("clientDeniedReason");
+const i18n = window.I18N || { t: (key) => key };
+const t = (key, vars) => i18n.t(key, vars);
 
 const CNPJ_STORAGE_KEY = "homolog_client_cnpj";
 let testsCache = [];
@@ -53,12 +56,38 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove("visible"), 4000);
 }
 
+function formatStatusLabel(status) {
+  const raw = String(status || "").toUpperCase().replace(/_/g, " ");
+  if (raw === "APROVADO") return String(t("status.approved")).toUpperCase();
+  if (raw === "REPROVADO") return String(t("status.reproved")).toUpperCase();
+  if (raw === "NAO APLICA" || raw === "NÃO APLICA") return String(t("status.na")).toUpperCase();
+  if (raw === "NAO INICIADO" || raw === "NÃO INICIADO") return String(t("status.notStarted")).toUpperCase();
+  if (raw === "EM ANDAMENTO") return String(t("status.inProgress")).toUpperCase();
+  return raw || "-";
+}
+
+function formatStatusWithIcon(status) {
+  const raw = String(status || "").toUpperCase();
+  const label = formatStatusLabel(status);
+  if (raw === "APROVADO") {
+    return `<span class="status-icon-ok" title="${escapeHtml(t("status.approved"))}">&#10003;</span> ${escapeHtml(label)}`;
+  }
+  return escapeHtml(label);
+}
+
 function normalizeCnpj(value) {
   return String(value || "").trim();
 }
 
 function formatCnpj(value) {
   return normalizeCnpj(value);
+}
+
+function localizedTestName(testId, fallbackName) {
+  if (i18n.translateTestName) {
+    return i18n.translateTestName(testId, fallbackName);
+  }
+  return String(fallbackName || "");
 }
 
 function setWorkspaceCnpj(cnpj) {
@@ -85,21 +114,46 @@ function clearWorkspaceCnpj() {
 function renderAllowedTestsSelect() {
   const allowedTests = testsCache.filter((item) => assignedTestIds.includes(String(item.id || "").padStart(2, "0")));
 
-  const options = ['<option value="">Selecione...</option>'];
-  for (const t of allowedTests) {
-    options.push(`<option value="${escapeHtml(t.id)}">${escapeHtml(t.id)} - ${escapeHtml(t.nome || "")}</option>`);
+  const options = [`<option value="">${escapeHtml(t("common.select"))}</option>`];
+  for (const testItem of allowedTests) {
+    const testName = localizedTestName(testItem.id, testItem.nome || "");
+    options.push(`<option value="${escapeHtml(testItem.id)}">${escapeHtml(testItem.id)} - ${escapeHtml(testName)}</option>`);
   }
   testSelect.innerHTML = options.join("");
+
+  if (clientGoalBox) {
+    clientGoalBox.textContent = t("client.goalDefault");
+  }
+}
+
+function updateClientGoalBySelectedTest() {
+  if (!clientGoalBox) {
+    return;
+  }
+
+  const selectedId = String(testSelect.value || "").padStart(2, "0");
+  if (!selectedId) {
+    clientGoalBox.textContent = t("client.goalDefault");
+    return;
+  }
+
+  const selectedTest = testsCache.find((item) => String(item.id || "").padStart(2, "0") === selectedId);
+  clientGoalBox.textContent = selectedTest
+    ? String(selectedTest.objetivo_esperado || t("client.goalMissing"))
+    : t("client.goalNotFound");
 }
 
 function renderOnboardingChecklist() {
   onboardingChecklist.innerHTML = testsCache
-    .map((item) => `
+    .map((item) => {
+      const testName = localizedTestName(item.id, item.nome || "");
+      return `
       <label class="step" style="display: flex; align-items: center; gap: 10px;">
         <input type="checkbox" name="selected_tests" value="${escapeHtml(item.id)}" />
-        <span><strong>${escapeHtml(item.id)} - ${escapeHtml(item.nome || "")}</strong><br>${escapeHtml(item.objetivo_esperado || "")}</span>
+        <span><strong>${escapeHtml(item.id)} - ${escapeHtml(testName)}</strong><br>${escapeHtml(item.objetivo_esperado || "")}</span>
       </label>
-    `)
+    `;
+    })
     .join("");
 }
 
@@ -138,32 +192,48 @@ function renderProgress(data, selectedTest) {
   const overallPercent = Number(summary.percentual_aprovacao_geral || 0);
 
   progressPanel.classList.remove("hidden");
-  progressTitle.textContent = `${summary.testes_aprovados || 0} de ${summary.total_testes_planejados || 0} testes aprovados`;
+  progressTitle.textContent = t("client.progressTitleText", {
+    approved: summary.testes_aprovados || 0,
+    planned: summary.total_testes_planejados || 0,
+  });
   progressChip.textContent = `${overallPercent.toFixed(2)}%`;
-  progressSummary.textContent = `${summary.testes_iniciados || 0} testes iniciados, ${summary.testes_aprovados || 0} aprovados, de ${summary.total_testes_planejados || 0} planejados.`;
+  progressSummary.textContent = t("client.progressSummaryText", {
+    started: summary.testes_iniciados || 0,
+    approved: summary.testes_aprovados || 0,
+    planned: summary.total_testes_planejados || 0,
+  });
 
   if (selectedTest) {
-    selectedTestSummary.textContent = `${selectedTest.teste_id} - ${selectedTest.teste_nome || "Teste"}: ${selectedTest.attempts_total} tentativa(s), ${selectedTest.percentual_sucesso.toFixed(2)}% de sucesso.`;
+    const selectedName = localizedTestName(selectedTest.teste_id, selectedTest.teste_nome || "Teste");
+    selectedTestSummary.textContent = t("client.selectedTestLine", {
+      id: selectedTest.teste_id,
+      name: selectedName,
+      attempts: selectedTest.attempts_total,
+      success: Number(selectedTest.percentual_sucesso || 0).toFixed(2),
+    });
   } else {
-    selectedTestSummary.textContent = "Nenhum teste selecionado recentemente.";
+    selectedTestSummary.textContent = t("client.noRecentTest");
   }
 
   if (tests.length === 0) {
-    progressTableBody.innerHTML = '<tr><td colspan="6">Nenhum teste realizado para este CNPJ.</td></tr>';
+    progressTableBody.innerHTML = `<tr><td colspan="6">${escapeHtml(t("client.noTestsForCnpj"))}</td></tr>`;
     return;
   }
 
   progressTableBody.innerHTML = tests
-    .map((item) => `
+    .map((item) => {
+      const testName = localizedTestName(item.teste_id, item.teste_nome || "");
+      return `
       <tr>
-        <td>${escapeHtml(item.teste_id)} - ${escapeHtml(item.teste_nome || "")}</td>
-        <td>${escapeHtml(item.status || "-")}</td>
+        <td>${escapeHtml(item.teste_id)} - ${escapeHtml(testName)}</td>
+        <td>${formatStatusWithIcon(item.status)}</td>
         <td>${escapeHtml(item.attempts_total)}</td>
         <td>${escapeHtml(item.attempts_until_approval ?? "-")}</td>
         <td>${escapeHtml(Number(item.percentual_sucesso || 0).toFixed(2))}%</td>
         <td>${escapeHtml(Number(item.percentual_ate_aprovacao || 0).toFixed(2))}%</td>
       </tr>
-    `)
+    `;
+    })
     .join("");
 }
 
@@ -172,7 +242,7 @@ async function loadClientProgress(cnpj, selectedTest) {
   const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(normalized)}`);
   const data = await resp.json();
   if (!resp.ok) {
-    throw new Error(data.error || "Falha ao carregar progresso do cliente.");
+    throw new Error(data.error || t("client.errorLoadProgress"));
   }
   applyClientProgressState(data, selectedTest);
 }
@@ -183,8 +253,8 @@ function renderResult(data) {
 
   resultPanel.classList.remove("hidden");
 
-  overallStatus.textContent = isApproved ? "APROVADO" : "NEGADO";
-  statusChip.textContent = isApproved ? "APROVADO" : "NEGADO";
+  overallStatus.textContent = isApproved ? t("client.resultApproved") : t("client.resultDenied");
+  statusChip.textContent = isApproved ? t("client.resultApproved") : t("client.resultDenied");
   statusChip.style.background = isApproved ? "#d5f1e5" : "#f6dada";
   statusChip.style.color = isApproved ? "#0f6e4f" : "#9e2424";
 
@@ -192,10 +262,10 @@ function renderResult(data) {
 
   if (isApproved) {
     deniedLeg.textContent = "-";
-    deniedReason.textContent = "Resultado aprovado. Nenhum detalhe adicional necessario.";
+    deniedReason.textContent = t("client.approvedHint");
   } else {
-    deniedLeg.textContent = data.perna_negada || "Perna nao identificada";
-    deniedReason.textContent = data.motivo_negacao || "Motivo nao identificado";
+    deniedLeg.textContent = data.perna_negada || t("client.deniedLegUnknown");
+    deniedReason.textContent = data.motivo_negacao || t("client.deniedReasonUnknown");
   }
 
   if (data.progresso) {
@@ -220,13 +290,13 @@ accessForm.addEventListener("submit", async (ev) => {
 
   const normalized = normalizeCnpj(cnpjInput.value);
   if (!normalized) {
-    showToast("Informe o CNPJ do cliente.");
+    showToast(t("client.errorEnterCnpj"));
     return;
   }
 
   accessSubmitBtn.disabled = true;
   accessSubmitBtn.classList.add("loading");
-  accessSubmitBtn.textContent = "Acessando...";
+  accessSubmitBtn.textContent = t("client.accessing");
 
   try {
     setWorkspaceCnpj(normalized);
@@ -236,12 +306,12 @@ accessForm.addEventListener("submit", async (ev) => {
     clearWorkspaceCnpj();
     const msg = err instanceof Error && err.message
       ? err.message
-      : "Não foi possível carregar o progresso deste CNPJ.";
+      : t("client.errorCannotLoadCnpj");
     showToast(msg);
   } finally {
     accessSubmitBtn.disabled = false;
     accessSubmitBtn.classList.remove("loading");
-    accessSubmitBtn.textContent = "Acessar homologacoes";
+    accessSubmitBtn.textContent = t("client.access");
   }
 });
 
@@ -253,7 +323,7 @@ onboardingForm.addEventListener("submit", async (ev) => {
   ev.preventDefault();
 
   if (!cnpjHidden.value) {
-    showToast("Informe o CNPJ antes de selecionar os testes.");
+    showToast(t("client.errorCnpjBeforeSelect"));
     return;
   }
 
@@ -261,13 +331,13 @@ onboardingForm.addEventListener("submit", async (ev) => {
     .map((item) => item.value);
 
   if (selectedTests.length === 0) {
-    showToast("Selecione ao menos um teste para este cliente.");
+    showToast(t("client.errorSelectAtLeastOne"));
     return;
   }
 
   onboardingSubmitBtn.disabled = true;
   onboardingSubmitBtn.classList.add("loading");
-  onboardingSubmitBtn.textContent = "Salvando...";
+  onboardingSubmitBtn.textContent = t("client.saving");
 
   try {
     const formData = new FormData();
@@ -281,33 +351,37 @@ onboardingForm.addEventListener("submit", async (ev) => {
 
     const data = await resp.json();
     if (!resp.ok) {
-      throw new Error(data.error || "Falha ao salvar testes do cliente.");
+      throw new Error(data.error || t("client.errorSaveTests"));
     }
 
     applyClientProgressState(data);
   } catch (err) {
     const msg = err instanceof Error && err.message
       ? err.message
-      : "Não foi possível salvar os testes deste cliente.";
+      : t("client.errorCannotSaveTests");
     showToast(msg);
   } finally {
     onboardingSubmitBtn.disabled = false;
     onboardingSubmitBtn.classList.remove("loading");
-    onboardingSubmitBtn.textContent = "Salvar testes do cliente";
+    onboardingSubmitBtn.textContent = t("client.saveTests");
   }
+});
+
+testSelect.addEventListener("change", () => {
+  updateClientGoalBySelectedTest();
 });
 
 form.addEventListener("submit", async (ev) => {
   ev.preventDefault();
 
   if (!cnpjHidden.value) {
-    showToast("Informe o CNPJ antes de realizar homologações.");
+    showToast(t("client.errorCnpjBeforeValidate"));
     return;
   }
 
   submitBtn.disabled = true;
   submitBtn.classList.add("loading");
-  submitBtn.textContent = "Processando...";
+  submitBtn.textContent = t("client.processing");
 
   try {
     const formData = new FormData(form);
@@ -318,24 +392,24 @@ form.addEventListener("submit", async (ev) => {
 
     const data = await resp.json();
     if (!resp.ok) {
-      throw new Error(data.error || "Falha ao processar validacao.");
+      throw new Error(data.error || t("client.errorValidate"));
     }
 
     renderResult(data);
   } catch (err) {
     const msg = err instanceof Error && err.message
       ? err.message
-      : "Nao foi possivel validar seu teste. Tente novamente.";
+      : t("client.errorCannotValidate");
     showToast(msg);
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("loading");
-    submitBtn.textContent = "Enviar para validacao";
+    submitBtn.textContent = t("client.sendValidation");
   }
 });
 
 loadTests().catch(() => {
-  testSelect.innerHTML = '<option value="">Falha ao carregar testes</option>';
+  testSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failTests"))}</option>`;
 });
 
 const savedCnpj = normalizeCnpj(sessionStorage.getItem(CNPJ_STORAGE_KEY) || "");
@@ -346,3 +420,11 @@ if (savedCnpj) {
     clearWorkspaceCnpj();
   });
 }
+
+window.addEventListener("app-language-changed", () => {
+  renderAllowedTestsSelect();
+  updateClientGoalBySelectedTest();
+  accessSubmitBtn.textContent = t("client.access");
+  onboardingSubmitBtn.textContent = t("client.saveTests");
+  submitBtn.textContent = t("client.sendValidation");
+});

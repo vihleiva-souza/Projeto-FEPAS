@@ -16,48 +16,50 @@
   <main class="page">
     <div class="brand-bar">
       <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
-      <span class="brand-product">Portal do Cliente - Auto-homologacao</span>
+      <span class="brand-product" data-i18n="client.brand">Portal do Cliente - Auto-homologacao</span>
+      <div style="margin-left: auto;">
+        <button type="button" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px;" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='/'; }" data-i18n="common.back">Voltar</button>
+      </div>
     </div>
 
     <header class="hero">
-      <p class="eyebrow">Stage 2</p>
-      <h1>Envie seu teste de homologacao com dados minimos</h1>
-      <p class="subtitle">Este portal retorna apenas o resultado final: aprovado ou negado. Em caso de negacao, informa perna e motivo.</p>
+      <p class="eyebrow" data-i18n="client.stage">Stage 2</p>
+      <h1 data-i18n="client.title">Envie seu teste de homologacao com dados minimos</h1>
     </header>
 
     <section class="panel login-panel" id="clientAccessPanel">
       <form id="clientAccessForm" class="login-form">
         <label class="field">
-          <span>CNPJ</span>
-          <input id="cnpjInput" type="text" placeholder="Informe o CNPJ do cliente" required />
+          <span data-i18n="client.cnpj">CNPJ/CUIT</span>
+          <input id="cnpjInput" type="text" placeholder="Informe o CNPJ/CUIT do cliente" required data-i18n-placeholder="client.cnpjPlaceholder" />
         </label>
 
-        <button class="btn" id="accessSubmitBtn" type="submit">Acessar homologacoes</button>
+        <button class="btn" id="accessSubmitBtn" type="submit" data-i18n="client.access">Acessar homologacoes</button>
       </form>
     </section>
 
     <section class="panel hidden" id="clientOnboardingPanel">
       <div class="client-workspace-head">
         <div>
-          <p class="status-label">Primeiro acesso do cliente</p>
-          <h2 id="clientOnboardingTitle">Selecione os testes que este CNPJ vai homologar</h2>
+          <p class="status-label" data-i18n="client.firstAccess">Primeiro acesso do cliente</p>
+          <h2 id="clientOnboardingTitle" data-i18n="client.onboardingTitle">Selecione os testes que este CNPJ/CUIT vai homologar</h2>
         </div>
       </div>
 
       <form id="clientOnboardingForm">
-        <div class="goal">Essa seleção será salva para este CNPJ e não será solicitada novamente nos próximos acessos.</div>
+        <div class="goal" data-i18n="client.onboardingHint">Essa seleção será salva para este CNPJ/CUIT e não será solicitada novamente nos próximos acessos.</div>
         <div id="clientOnboardingChecklist" class="steps-list" style="margin-top: 16px;"></div>
-        <button class="btn" id="onboardingSubmitBtn" type="submit">Salvar testes do cliente</button>
+        <button class="btn" id="onboardingSubmitBtn" type="submit" data-i18n="client.saveTests">Salvar testes do cliente</button>
       </form>
     </section>
 
     <section class="panel form-panel hidden" id="clientWorkspacePanel">
       <div class="client-workspace-head">
         <div>
-          <p class="status-label">Cliente autenticado por CNPJ</p>
+          <p class="status-label" data-i18n="client.authByCnpj">Cliente autenticado por CNPJ/CUIT</p>
           <h2 id="clientCnpjLabel">-</h2>
         </div>
-        <button class="btn secondary-btn" id="changeCnpjBtn" type="button">Trocar CNPJ</button>
+        <button class="btn secondary-btn" id="changeCnpjBtn" type="button" data-i18n="client.changeCnpj">Trocar CNPJ/CUIT</button>
       </div>
 
       <form id="clientValidateForm">
@@ -65,45 +67,45 @@
 
         <div class="field-grid">
           <label class="field">
-            <span>Data do teste</span>
+            <span data-i18n="client.testDate">Data do teste</span>
             <input id="dataTeste" name="data_teste" type="date" required />
           </label>
         </div>
 
         <div class="field-grid">
           <label class="field">
-            <span>Teste em homologacao</span>
+            <span data-i18n="client.testInHomolog">Teste em homologacao</span>
             <select id="testSelect" name="teste_id" required>
               <option value="">Carregando testes...</option>
             </select>
           </label>
 
           <label class="field">
-            <span>Bit 11 (DE11)</span>
-            <input id="de11" name="de11" type="text" placeholder="6 digitos" maxlength="6" required />
+            <span data-i18n="client.de11">Bit 11 (Stan)</span>
+            <input id="de11" name="de11" type="text" placeholder="6 digitos" maxlength="6" required data-i18n-placeholder="validator.de11Placeholder" />
           </label>
         </div>
 
         <div class="field-grid">
           <label class="field">
-            <span>Bit 41 (DE41)</span>
-            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" required />
+            <span data-i18n="client.de41">Bit 41 (Identificação de Terminal)</span>
+            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" required data-i18n-placeholder="validator.de41Placeholder" />
           </label>
 
           <div class="field">
-            <span>Resultado esperado</span>
-            <div class="goal">A aplicacao processa o teste internamente e retorna somente o resultado permitido para o cliente.</div>
+            <span data-i18n="client.expectedResult">Resultado esperado</span>
+            <div class="goal" id="clientGoalBox" data-i18n="client.goalDefault">Selecione um teste para visualizar o objetivo esperado.</div>
           </div>
         </div>
 
-        <button class="btn" id="submitBtn" type="submit">Enviar para validacao</button>
+        <button class="btn" id="submitBtn" type="submit" data-i18n="client.sendValidation">Enviar para validacao</button>
       </form>
     </section>
 
     <section class="panel hidden" id="clientProgressPanel">
       <div class="status-row">
         <div>
-          <p class="status-label">Progresso do cliente</p>
+          <p class="status-label" data-i18n="client.progress">Progresso do cliente</p>
           <h2 id="clientProgressTitle">-</h2>
         </div>
         <div class="status-chip" id="clientProgressChip">0%</div>
@@ -111,12 +113,12 @@
 
       <div class="result-summary-grid">
         <div class="result-summary-card goal-card">
-          <div class="result-summary-label">Resumo geral</div>
+          <div class="result-summary-label" data-i18n="client.summary">Resumo geral</div>
           <div class="result-summary-value" id="clientProgressSummary">-</div>
         </div>
         <div class="result-summary-card legs-card">
-          <div class="result-summary-label">Teste selecionado</div>
-          <div class="result-summary-value" id="clientSelectedTestSummary">Selecione um CNPJ e execute um teste.</div>
+          <div class="result-summary-label" data-i18n="client.selectedTest">Teste selecionado</div>
+          <div class="result-summary-value" id="clientSelectedTestSummary" data-i18n="client.selectCnpjAndRun">Selecione um CNPJ/CUIT e execute um teste.</div>
         </div>
       </div>
 
@@ -124,16 +126,16 @@
         <table>
           <thead>
             <tr>
-              <th>Teste</th>
-              <th>Status</th>
-              <th>Tentativas</th>
-              <th>Aprovado na tentativa</th>
-              <th>% sucesso</th>
-              <th>% ate aprovacao</th>
+              <th data-i18n="client.tableTest">Teste</th>
+              <th data-i18n="client.tableStatus">Status</th>
+              <th data-i18n="client.tableAttempts">Tentativas</th>
+              <th data-i18n="client.tableApprovedAttempt">Aprovado na tentativa</th>
+              <th data-i18n="client.tableSuccess">% sucesso</th>
+              <th data-i18n="client.tableUntilApproval">% ate aprovacao</th>
             </tr>
           </thead>
           <tbody id="clientProgressTableBody">
-            <tr><td colspan="6">Nenhum teste realizado para este CNPJ.</td></tr>
+            <tr><td colspan="6" data-i18n="client.noTestsForCnpj">Nenhum teste realizado para este CNPJ/CUIT.</td></tr>
           </tbody>
         </table>
       </div>
@@ -142,7 +144,7 @@
     <section class="panel result-panel hidden" id="clientResultPanel">
       <div class="status-row">
         <div>
-          <p class="status-label">Resultado final</p>
+          <p class="status-label" data-i18n="result.final">Resultado final</p>
           <h2 id="clientOverallStatus">-</h2>
         </div>
         <div class="status-chip" id="clientStatusChip">-</div>
@@ -150,19 +152,20 @@
 
       <div class="result-summary-grid">
         <div class="result-summary-card goal-card">
-          <div class="result-summary-label">Protocolo</div>
+          <div class="result-summary-label" data-i18n="client.protocol">Protocolo</div>
           <div class="result-summary-value" id="clientProtocol">-</div>
         </div>
         <div class="result-summary-card legs-card">
-          <div class="result-summary-label">Detalhe da negacao</div>
+          <div class="result-summary-label" data-i18n="client.deniedDetail">Detalhe da negacao</div>
           <div class="result-summary-value" id="clientDeniedLeg">-</div>
         </div>
       </div>
 
-      <div class="goal" id="clientDeniedReason">Quando negado, o motivo aparece aqui.</div>
+      <div class="goal" id="clientDeniedReason" data-i18n="client.deniedReasonDefault">Quando negado, o motivo aparece aqui.</div>
     </section>
   </main>
 
+  <script src="/static/i18n.js"></script>
   <script src="/static/client.js"></script>
 </body>
 </html>
