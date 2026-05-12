@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="/static/Fiserv_Logo.svg.png" type="image/png">
 </head>
 <body>
   <div class="bg-orb orb-a"></div>
@@ -17,6 +18,8 @@
     <div class="brand-bar">
       <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
       <span class="brand-product" data-i18n="client.brand">Portal do Cliente - Auto-homologacao</span>
+      <span class="brand-bar-sep"></span>
+      <span class="brand-version">v2.0</span>
       <div style="margin-left: auto;">
         <button type="button" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px;" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='/'; }" data-i18n="common.back">Voltar</button>
       </div>
@@ -27,7 +30,44 @@
       <h1 data-i18n="client.title">Envie seu teste de homologacao com dados minimos</h1>
     </header>
 
-    <section class="panel login-panel" id="clientAccessPanel">
+    <!-- ============================================================ -->
+    <!-- LAYOUT SIDEBAR + CONTENT (CLIENTE)                           -->
+    <!-- ============================================================ -->
+    <div class="workspace-container">
+      <!-- SIDEBAR ESQUERDO -->
+      <aside class="workspace-sidebar">
+        <nav class="workspace-nav">
+          <button class="workspace-nav-item active" data-section="access" title="Acesso ao Portal">
+            <span class="nav-icon">🔐</span>
+            <div class="nav-content">
+              <h3 data-i18n="client.accessTab">Acesso ao Portal</h3>
+              <p data-i18n="client.accessDesc">Informe seu CNPJ</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-section="submit" title="Enviar Testes">
+            <span class="nav-icon">📤</span>
+            <div class="nav-content">
+              <h3 data-i18n="client.submitTab">Enviar Testes</h3>
+              <p data-i18n="client.submitDesc">Execute homologações</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-section="progress" title="Estado de Homologacao">
+            <span class="nav-icon">📊</span>
+            <div class="nav-content">
+              <h3 data-i18n="client.progressTab">Ver Estado</h3>
+              <p data-i18n="client.progressDesc">Acompanhe o progresso</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <main class="workspace-main">
+
+    <section class="panel login-panel client-section" id="clientAccessPanel">
       <form id="clientAccessForm" class="login-form">
         <label class="field">
           <span data-i18n="client.cnpj">CNPJ/CUIT</span>
@@ -38,7 +78,7 @@
       </form>
     </section>
 
-    <section class="panel hidden" id="clientOnboardingPanel">
+    <section class="panel hidden client-section" id="clientOnboardingPanel">
       <div class="client-workspace-head">
         <div>
           <p class="status-label" data-i18n="client.firstAccess">Primeiro acesso do cliente</p>
@@ -53,7 +93,7 @@
       </form>
     </section>
 
-    <section class="panel form-panel hidden" id="clientWorkspacePanel">
+    <section class="panel form-panel hidden client-section" id="clientWorkspacePanel">
       <div class="client-workspace-head">
         <div>
           <p class="status-label" data-i18n="client.authByCnpj">Cliente autenticado por CNPJ/CUIT</p>
@@ -102,13 +142,66 @@
       </form>
     </section>
 
-    <section class="panel hidden" id="clientProgressPanel">
+    <section class="panel hidden client-section" id="clientProgressPanel">
       <div class="status-row">
         <div>
           <p class="status-label" data-i18n="client.progress">Progresso do cliente</p>
           <h2 id="clientProgressTitle">-</h2>
         </div>
         <div class="status-chip" id="clientProgressChip">0%</div>
+      </div>
+
+      <!-- CARD DE PROGRESSO VISUAL -->
+      <div class="progress-card" id="progressVisualizationCard">
+        <div class="progress-header">
+          <h3 data-i18n="client.statusOverview">Visão Geral de Progresso</h3>
+        </div>
+        
+        <div class="progress-metrics">
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.planned">Testes Planejados</span>
+            <span class="metric-value" id="metricPlanned">0</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.approved">Aprovados</span>
+            <span class="metric-value" id="metricApproved">0</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.inProgress">Em Andamento</span>
+            <span class="metric-value" id="metricInProgress">0</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.pending">Pendentes</span>
+            <span class="metric-value" id="metricPending">0</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar-label">
+            <span data-i18n="client.completionRate">Taxa de Conclusão</span>
+            <span class="progress-percentage" id="progressPercentage">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+        </div>
+
+        <div class="progress-stats">
+          <div class="stat-item approved">
+            <span class="stat-icon">✓</span>
+            <div class="stat-details">
+              <span class="stat-title" data-i18n="client.approvalRate">Taxa de Aprovação</span>
+              <span class="stat-value" id="statApprovalRate">0%</span>
+            </div>
+          </div>
+          <div class="stat-item pending">
+            <span class="stat-icon">⏳</span>
+            <div class="stat-details">
+              <span class="stat-title" data-i18n="client.averageAttempts">Tentativas Médias</span>
+              <span class="stat-value" id="statAverageAttempts">0</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="result-summary-grid">
@@ -141,7 +234,7 @@
       </div>
     </section>
 
-    <section class="panel result-panel hidden" id="clientResultPanel">
+    <section class="panel result-panel hidden client-section" id="clientResultPanel">
       <div class="status-row">
         <div>
           <p class="status-label" data-i18n="result.final">Resultado final</p>
@@ -163,6 +256,20 @@
 
       <div class="goal" id="clientDeniedReason" data-i18n="client.deniedReasonDefault">Quando negado, o motivo aparece aqui.</div>
     </section>
+
+      </main><!-- /workspace-main -->
+    </div><!-- /workspace-container -->
+
+    <footer class="app-footer">
+      <div class="app-footer-brand">
+        <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="app-footer-logo" />
+        <div class="app-footer-text">
+          Portal de Homologacao ISO 8583<br>
+          Tecnologia e Inovacao — Fiserv Brasil
+        </div>
+      </div>
+      <span class="app-footer-copy">&copy; 2025 Fiserv, Inc. Todos os direitos reservados.</span>
+    </footer>
   </main>
 
   <script src="/static/i18n.js"></script>

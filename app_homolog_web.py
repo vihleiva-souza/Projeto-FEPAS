@@ -3,9 +3,8 @@ from __future__ import annotations
 import importlib.util
 import os
 from pathlib import Path
-from functools import wraps
 
-from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, jsonify, render_template, request, url_for
 
 APP_DIR = Path(__file__).resolve().parent
 SERVICE_PATH = APP_DIR / "homolog_service.py"
@@ -19,6 +18,7 @@ SERVICE_SPEC.loader.exec_module(homolog_service)
 BASE_DIR = homolog_service.BASE_DIR
 get_api_config_payload = homolog_service.get_api_config_payload
 admin_reset_client_onboarding = homolog_service.admin_reset_client_onboarding
+admin_reset_client_tests = homolog_service.admin_reset_client_tests
 admin_set_client_tests = homolog_service.admin_set_client_tests
 enroll_client_tests = homolog_service.enroll_client_tests
 get_health_payload = homolog_service.get_health_payload
@@ -37,50 +37,13 @@ app = Flask(
 )
 app.config["SECRET_KEY"] = os.environ.get("HOMOLOG_SECRET_KEY", "homolog-stage2-local-secret")
 
-ADMIN_USER = os.environ.get("HOMOLOG_ADMIN_USER", "HomologLatam")
-ADMIN_PASSWORD = os.environ.get("HOMOLOG_ADMIN_PASSWORD", "Fiserv123")
-
-
-def admin_required(view_func):
-    @wraps(view_func)
-    def wrapper(*args, **kwargs):
-        if not session.get("is_admin"):
-            return redirect(url_for("admin_login"))
-        return view_func(*args, **kwargs)
-
-    return wrapper
-
 
 @app.get("/")
 def home():
     return render_template("portal_entry.html")
 
 
-@app.route("/admin/login", methods=["GET", "POST"])
-def admin_login():
-    error = ""
-    if request.method == "POST":
-        username = str(request.form.get("username") or "").strip()
-        password = str(request.form.get("password") or "")
-
-        if username == ADMIN_USER and password == ADMIN_PASSWORD:
-            session["is_admin"] = True
-            session["admin_user"] = username
-            return redirect(url_for("internal_home"))
-
-        error = "Usuário ou senha inválidos."
-
-    return render_template("admin_login.html", error=error)
-
-
-@app.get("/admin/logout")
-def admin_logout():
-    session.clear()
-    return redirect(url_for("home"))
-
-
 @app.get("/interno")
-@admin_required
 def internal_home():
     return render_template("index.html")
 
@@ -96,25 +59,21 @@ def get_tests():
 
 
 @app.get("/api/logs")
-@admin_required
 def get_logs():
     return jsonify(list_logs_payload())
 
 
 @app.get("/api/health")
-@admin_required
 def get_health():
     return jsonify(get_health_payload())
 
 
 @app.get("/api/config")
-@admin_required
 def get_config():
     return jsonify(get_api_config_payload())
 
 
 @app.get("/api/logs/<path:log_name>/summary")
-@admin_required
 def get_log_summary(log_name: str):
     try:
         return jsonify(get_log_summary_payload(log_name))
@@ -126,7 +85,6 @@ def get_log_summary(log_name: str):
 
 
 @app.post("/api/validate")
-@admin_required
 def validate_log():
     try:
         result = validate_log_payload(
@@ -204,7 +162,6 @@ def get_client_progress():
 
 
 @app.get("/api/admin/clients")
-@admin_required
 def admin_list_clients():
     try:
         return jsonify(list_clients_payload())
@@ -213,7 +170,6 @@ def admin_list_clients():
 
 
 @app.post("/api/admin/clients/<path:cnpj>/tests")
-@admin_required
 def admin_set_tests(cnpj: str):
     try:
         raw = request.get_json(silent=True) or {}
@@ -227,7 +183,6 @@ def admin_set_tests(cnpj: str):
 
 
 @app.post("/api/admin/clients/<path:cnpj>/reset-onboarding")
-@admin_required
 def admin_reset_onboarding(cnpj: str):
     try:
         result = admin_reset_client_onboarding(cnpj=cnpj)
@@ -235,6 +190,17 @@ def admin_reset_onboarding(cnpj: str):
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:  # pragma: no cover
         return jsonify({"error": f"Falha ao resetar onboarding: {exc}"}), 500
+    return jsonify(result)
+
+
+@app.post("/api/admin/clients/<path:cnpj>/reset-tests")
+def admin_reset_tests(cnpj: str):
+    try:
+        result = admin_reset_client_tests(cnpj=cnpj)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao resetar testes: {exc}"}), 500
     return jsonify(result)
 
 

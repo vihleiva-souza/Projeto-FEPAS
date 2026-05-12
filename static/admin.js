@@ -2,24 +2,26 @@
 // admin.js – lógica das abas e das telas de clientes/gestão (Stage 2)
 // =====================================================================
 
-// ---- Abas ----
-const adminTabs = document.querySelectorAll(".admin-tab");
+// ---- Abas (novo layout com sidebar) ----
+const navItems = document.querySelectorAll(".workspace-nav-item");
 const adminPanels = document.querySelectorAll(".admin-tab-panel");
-const i18n = window.I18N || { t: (key) => key };
-const t = (key, vars) => i18n.t(key, vars);
+// i18n e t são declarados em app.js (carregado antes) e compartilhados no escopo global
 
-adminTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    adminTabs.forEach((t) => t.classList.remove("active"));
+navItems.forEach((item) => {
+  item.addEventListener("click", () => {
+    navItems.forEach((i) => i.classList.remove("active"));
     adminPanels.forEach((p) => p.classList.add("hidden"));
-    tab.classList.add("active");
-    const target = document.getElementById(tab.dataset.tab);
+    item.classList.add("active");
+    const target = document.getElementById(item.dataset.tab);
     if (target) {
       target.classList.remove("hidden");
     }
 
-    if (tab.dataset.tab === "tab-clientes") {
+    if (item.dataset.tab === "tab-clientes") {
       loadClients();
+    }
+    if (item.dataset.tab === "tab-gestao") {
+      loadGestaoClientsList();
     }
   });
 });
@@ -207,14 +209,56 @@ if (refreshClientsBtn) {
 // =====================================================================
 const gestaoClienteInput = document.getElementById("gestaoClienteInput");
 const gestaoCarregarBtn = document.getElementById("gestaoCarregarBtn");
+const gestaoClientsList = document.getElementById("gestaoClientsList");
 const gestaoClientePanel = document.getElementById("gestaoClientePanel");
 const gestaoClienteLabel = document.getElementById("gestaoClienteLabel");
 const gestaoTestesChecklist = document.getElementById("gestaoTestesChecklist");
 const gestaoSalvarTestesBtn = document.getElementById("gestaoSalvarTestesBtn");
+const gestaoResetTestsBtn = document.getElementById("gestaoResetTestsBtn");
 const gestaoResetOnboardingBtn = document.getElementById("gestaoResetOnboardingBtn");
 
 let gestaoCnpjAtual = "";
 let gestaoTestesCache = [];
+
+function renderGestaoClientsList(clients) {
+  if (!gestaoClientsList) return;
+
+  if (!clients || clients.length === 0) {
+    gestaoClientsList.innerHTML = `<div class="gestao-clients-empty">${escapeAdm(t("admin.noneClients"))}</div>`;
+    return;
+  }
+
+  gestaoClientsList.innerHTML = clients
+    .map((item) => {
+      const cnpj = String(item.cnpj || "");
+      const pct = Number(item.percentual_aprovacao_geral || 0).toFixed(2);
+      const activeClass = cnpj === gestaoCnpjAtual ? "active" : "";
+      return `
+        <button type="button" class="gestao-client-item ${activeClass}" data-cnpj="${escapeAdm(cnpj)}">
+          <span>${escapeAdm(cnpj)}</span>
+          <span class="gestao-client-pct">${escapeAdm(pct)}%</span>
+        </button>
+      `;
+    })
+    .join("");
+}
+
+async function loadGestaoClientsList() {
+  if (gestaoClientsList) {
+    gestaoClientsList.innerHTML = `<div class="gestao-clients-empty">${escapeAdm(t("common.loading"))}</div>`;
+  }
+  try {
+    const resp = await fetch("/api/admin/clients");
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || t("admin.errorListClients"));
+    clientsCache = data.clients || [];
+    renderGestaoClientsList(clientsCache);
+  } catch (err) {
+    if (gestaoClientsList) {
+      gestaoClientsList.innerHTML = `<div class="gestao-clients-empty">${escapeAdm(t("admin.fail", { message: err.message }))}</div>`;
+    }
+  }
+}
 
 async function loadAllTestsForGestao() {
   try {
@@ -246,35 +290,70 @@ function renderGestaoChecklist(assignedIds) {
     .join("");
 }
 
-if (gestaoCarregarBtn) {
-  gestaoCarregarBtn.addEventListener("click", async () => {
-    const cnpj = (gestaoClienteInput ? gestaoClienteInput.value.trim() : "");
-    if (!cnpj) {
-      showAdminToast(t("admin.enterCnpj"));
-      return;
-    }
+async function carregarGestaoCliente(cnpj) {
+  const clientId = String(cnpj || "").trim();
+  if (!clientId) {
+    showAdminToast(t("admin.enterCnpj"));
+    return;
+  }
 
+  if (gestaoClienteInput) {
+    gestaoClienteInput.value = clientId;
+  }
+
+  if (gestaoCarregarBtn) {
     gestaoCarregarBtn.disabled = true;
     gestaoCarregarBtn.textContent = t("common.loading");
+  }
 
-    try {
-      await loadAllTestsForGestao();
-      const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(cnpj)}`);
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.error || t("admin.errorLoadClient"));
+  try {
+    await loadAllTestsForGestao();
+    const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(clientId)}`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || t("admin.errorLoadClient"));
 
-      gestaoCnpjAtual = cnpj;
-      if (gestaoClienteLabel) gestaoClienteLabel.textContent = cnpj;
-      if (gestaoClientePanel) gestaoClientePanel.classList.remove("hidden");
+    gestaoCnpjAtual = clientId;
+    if (gestaoClienteLabel) gestaoClienteLabel.textContent = clientId;
+    if (gestaoClientePanel) gestaoClientePanel.classList.remove("hidden");
 
-      const assignedIds = (data.assigned_tests || []).map((item) => String(item.id || "")).filter(Boolean);
-      renderGestaoChecklist(assignedIds);
-    } catch (err) {
-      showAdminToast(t("admin.failLoad", { message: err.message }));
-    } finally {
+    const assignedIds = (data.assigned_tests || []).map((item) => String(item.id || "")).filter(Boolean);
+    renderGestaoChecklist(assignedIds);
+    renderGestaoClientsList(clientsCache);
+  } catch (err) {
+    showAdminToast(t("admin.failLoad", { message: err.message }));
+  } finally {
+    if (gestaoCarregarBtn) {
       gestaoCarregarBtn.disabled = false;
       gestaoCarregarBtn.textContent = t("admin.loadClient");
     }
+  }
+}
+
+if (gestaoCarregarBtn) {
+  gestaoCarregarBtn.addEventListener("click", async () => {
+    const cnpj = (gestaoClienteInput ? gestaoClienteInput.value.trim() : "");
+    await carregarGestaoCliente(cnpj);
+  });
+}
+
+if (gestaoClienteInput) {
+  gestaoClienteInput.addEventListener("input", () => {
+    const q = gestaoClienteInput.value.trim().toLowerCase();
+    if (!q) {
+      renderGestaoClientsList(clientsCache);
+      return;
+    }
+    const filtered = clientsCache.filter((item) => String(item.cnpj || "").toLowerCase().includes(q));
+    renderGestaoClientsList(filtered);
+  });
+}
+
+if (gestaoClientsList) {
+  gestaoClientsList.addEventListener("click", async (event) => {
+    const btn = event.target.closest(".gestao-client-item");
+    if (!btn) return;
+    const cnpj = btn.dataset.cnpj || "";
+    await carregarGestaoCliente(cnpj);
   });
 }
 
@@ -338,6 +417,34 @@ if (gestaoResetOnboardingBtn) {
   });
 }
 
+if (gestaoResetTestsBtn) {
+  gestaoResetTestsBtn.addEventListener("click", async () => {
+    if (!gestaoCnpjAtual) return;
+
+    if (!confirm(t("admin.confirmResetTests", { cnpj: gestaoCnpjAtual }))) {
+      return;
+    }
+
+    gestaoResetTestsBtn.disabled = true;
+
+    try {
+      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/reset-tests`, {
+        method: "POST",
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || t("admin.errorResetTests"));
+      showAdminToast(t("admin.testsReset", { cnpj: gestaoCnpjAtual }));
+      await carregarGestaoCliente(gestaoCnpjAtual);
+      loadGestaoClientsList();
+      loadClients();
+    } catch (err) {
+      showAdminToast(t("admin.fail", { message: err.message }));
+    } finally {
+      gestaoResetTestsBtn.disabled = false;
+    }
+  });
+}
+
 window.addEventListener("app-language-changed", () => {
   renderClientsTable(clientsCache);
   if (gestaoSalvarTestesBtn && !gestaoSalvarTestesBtn.disabled) {
@@ -346,4 +453,5 @@ window.addEventListener("app-language-changed", () => {
   if (gestaoCarregarBtn && !gestaoCarregarBtn.disabled) {
     gestaoCarregarBtn.textContent = t("admin.loadClient");
   }
+  renderGestaoClientsList(clientsCache);
 });

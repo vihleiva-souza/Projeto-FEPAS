@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="/static/Fiserv_Logo.svg.png" type="image/png">
 </head>
 <body>
   <div class="bg-orb orb-a"></div>
@@ -17,18 +18,49 @@
     <div class="brand-bar">
       <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
       <span class="brand-product">Homologador ISO 8583</span>
+      <span class="brand-bar-sep"></span>
+      <span class="brand-version">v2.0</span>
       <div style="margin-left: auto;">
-        <button type="button" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px; margin-right: 8px;" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='/'; }" data-i18n="common.back">Voltar</button>
-        <a href="/admin/logout" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px; text-decoration:none;" data-i18n="common.logout">Sair</a>
+        <a href="/" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px; text-decoration:none;" data-i18n="common.logout">Voltar</a>
       </div>
     </div>
 
-    <nav class="admin-tabs">
-      <button class="admin-tab active" data-tab="tab-validador" data-i18n="tabs.validator">Ferramenta de Validacao</button>
-      <button class="admin-tab" data-tab="tab-clientes" data-i18n="tabs.clients">Clientes em Homologacao</button>
-      <button class="admin-tab" data-tab="tab-gestao" data-i18n="tabs.management">Gestao de Testes por Cliente</button>
-    </nav>
+    <!-- ============================================================ -->
+    <!-- LAYOUT SIDEBAR + CONTENT                                    -->
+    <!-- ============================================================ -->
+    <div class="workspace-container">
+      <!-- SIDEBAR ESQUERDO -->
+      <aside class="workspace-sidebar">
+        <nav class="workspace-nav">
+          <button class="workspace-nav-item active" data-tab="tab-validador" title="Validador de Homologacao">
+            <span class="nav-icon">✓</span>
+            <div class="nav-content">
+              <h3 data-i18n="tabs.validator">Ferramenta de Validacao</h3>
+              <p data-i18n="tabs.validatorDesc">Importe logs</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-tab="tab-clientes" title="Clientes em Homologacao">
+            <span class="nav-icon">👥</span>
+            <div class="nav-content">
+              <h3 data-i18n="tabs.clients">Clientes em Homologacao</h3>
+              <p data-i18n="tabs.clientsDesc">Acompanhe o progresso</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-tab="tab-gestao" title="Gestao de Testes">
+            <span class="nav-icon">⚙</span>
+            <div class="nav-content">
+              <h3 data-i18n="tabs.management">Gestao de Testes</h3>
+              <p data-i18n="tabs.managementDesc">Configure por cliente</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+        </nav>
+      </aside>
 
+      <!-- CONTEÚDO PRINCIPAL -->
+      <main class="workspace-main">
     <!-- ============================================================ -->
     <!-- ABA 1: VALIDADOR                                             -->
     <!-- ============================================================ -->
@@ -265,13 +297,22 @@
       </header>
 
       <section class="panel">
-        <label class="field" style="max-width: 560px;">
-          <span data-i18n="admin.clientId">CNPJ / Identificador do cliente</span>
-          <div class="field-inline-row">
-            <input id="gestaoClienteInput" type="text" placeholder="Informe o CNPJ do cliente" class="field-grow" data-i18n-placeholder="admin.clientIdPlaceholder" />
-            <button class="btn secondary-btn" id="gestaoCarregarBtn" type="button" style="margin-top:0; white-space:nowrap;" data-i18n="admin.loadClient">Carregar cliente</button>
+        <div class="gestao-layout">
+          <div>
+            <p class="status-label">Clientes registrados</p>
+            <div id="gestaoClientsList" class="gestao-clients-scroll">
+              <div class="gestao-clients-empty">Carregando...</div>
+            </div>
           </div>
-        </label>
+
+          <label class="field" style="max-width: 560px; margin: 0;">
+            <span data-i18n="admin.clientId">CNPJ / Identificador do cliente</span>
+            <div class="field-inline-row">
+              <input id="gestaoClienteInput" type="text" placeholder="Informe o CNPJ do cliente" class="field-grow" data-i18n-placeholder="admin.clientIdPlaceholder" />
+              <button class="btn secondary-btn" id="gestaoCarregarBtn" type="button" style="margin-top:0; white-space:nowrap;" data-i18n="admin.loadClient">Carregar cliente</button>
+            </div>
+          </label>
+        </div>
       </section>
 
       <section class="panel hidden" id="gestaoClientePanel">
@@ -280,7 +321,10 @@
             <p class="status-label" data-i18n="admin.clientSelected">Cliente selecionado</p>
             <h2 id="gestaoClienteLabel">-</h2>
           </div>
-          <button class="btn" id="gestaoResetOnboardingBtn" type="button" style="background: linear-gradient(130deg,#c13232 0%,#8e1e1e 100%); box-shadow: 0 8px 20px rgba(150,30,30,.3);" data-i18n="admin.resetOnboarding">Resetar Onboarding</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="gestaoResetTestsBtn" type="button" style="background: linear-gradient(130deg,#8e5d1e 0%,#6a4212 100%); box-shadow: 0 8px 20px rgba(110,70,20,.3);" data-i18n="admin.resetTests">Resetar testes realizados</button>
+            <button class="btn" id="gestaoResetOnboardingBtn" type="button" style="background: linear-gradient(130deg,#c13232 0%,#8e1e1e 100%); box-shadow: 0 8px 20px rgba(150,30,30,.3);" data-i18n="admin.resetOnboarding">Resetar Onboarding</button>
+          </div>
         </div>
 
         <p class="filter-hint" data-i18n="admin.markTests">Marque os testes habilitados para este cliente e salve. Isso substitui a selecao atual.</p>
@@ -291,6 +335,19 @@
       </section>
     </div><!-- /tab-gestao -->
 
+      </main><!-- /workspace-main -->
+    </div><!-- /workspace-container -->
+
+    <footer class="app-footer">
+      <div class="app-footer-brand">
+        <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="app-footer-logo" />
+        <div class="app-footer-text">
+          Portal de Homologacao ISO 8583<br>
+          Tecnologia e Inovacao — Fiserv Brasil
+        </div>
+      </div>
+      <span class="app-footer-copy">&copy; 2025 Fiserv, Inc. Todos os direitos reservados.</span>
+    </footer>
   </main>
 
   <script src="/static/i18n.js"></script>

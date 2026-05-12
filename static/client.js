@@ -1,3 +1,94 @@
+// =====================================================================
+// client.js – Navegacao e logica do portal do cliente
+// =====================================================================
+
+// ---- Navegacao Sidebar (Cliente) ----
+const navButtons = document.querySelectorAll(".workspace-nav-item");
+const sections = document.querySelectorAll(".client-section");
+
+navButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const sectionId = btn.dataset.section;
+    
+    // Validar CNPJ para seção "submit"
+    if (sectionId === "submit" && !cnpjHidden.value) {
+      showToast(t("client.errorEnterCnpj"));
+      return;
+    }
+    
+    // Validar CNPJ para seção "progress"
+    if (sectionId === "progress" && !cnpjHidden.value) {
+      showToast(t("client.errorEnterCnpj"));
+      return;
+    }
+    
+    // Remove active de todos os botões
+    navButtons.forEach((b) => b.classList.remove("active"));
+    // Esconde todas as seções
+    sections.forEach((s) => s.classList.add("hidden"));
+    
+    // Ativa o botão clicado
+    btn.classList.add("active");
+    
+    // Mostra a seção correspondente
+    if (sectionId === "access") {
+      document.getElementById("clientAccessPanel").classList.remove("hidden");
+    } else if (sectionId === "submit") {
+      document.getElementById("clientWorkspacePanel").classList.remove("hidden");
+    } else if (sectionId === "progress") {
+      document.getElementById("clientProgressPanel").classList.remove("hidden");
+      // Recarrega dados de progresso ao abrir
+      loadProgressData();
+    }
+  });
+});
+
+// Funcao para carregar dados de progresso (será chamada ao abrir a seção)
+function loadProgressData() {
+  const cnpj = cnpjHidden.value;
+  if (!cnpj) {
+    return;
+  }
+  // Busca os dados de progresso via API
+  fetch(`/api/client/progress?cnpj=${encodeURIComponent(cnpj)}`)
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.error) {
+        console.error(data.error);
+        return;
+      }
+      updateProgressVisualization(data);
+    })
+    .catch((err) => console.error("Erro ao carregar progresso:", err));
+}
+
+// Funcao para atualizar a visualizacao do progresso
+function updateProgressVisualization(progressData) {
+  // Mapear dados da API - tentar múltiplas chaves possíveis
+  const planned = progressData.total_testes_planejados || progressData.total_planned || progressData.planned || 0;
+  const approved = progressData.testes_aprovados || progressData.total_approved || progressData.approved || 0;
+  const initiated = progressData.testes_iniciados || progressData.total_initiated || progressData.initiated || approved;
+  const pending = Math.max(0, planned - initiated);
+  
+  const completionPercent = planned > 0 ? Math.round((approved / planned) * 100) : 0;
+  const approvalRate = initiated > 0 ? Math.round((approved / initiated) * 100) : 0;
+  const avgAttempts = progressData.tentativas_medias || progressData.avg_attempts || progressData.average_attempts || 0;
+  
+  // Atualiza os métricas
+  document.getElementById("metricPlanned").textContent = planned;
+  document.getElementById("metricApproved").textContent = approved;
+  document.getElementById("metricInProgress").textContent = initiated;
+  document.getElementById("metricPending").textContent = pending;
+  
+  // Atualiza a barra de progresso
+  document.getElementById("progressPercentage").textContent = `${completionPercent}%`;
+  document.getElementById("progressBarFill").style.width = `${completionPercent}%`;
+  
+  // Atualiza as estatísticas
+  document.getElementById("statApprovalRate").textContent = `${approvalRate}%`;
+  document.getElementById("statAverageAttempts").textContent = typeof avgAttempts === 'number' ? avgAttempts.toFixed(1) : avgAttempts;
+}
+
 const accessForm = document.getElementById("clientAccessForm");
 const accessPanel = document.getElementById("clientAccessPanel");
 const onboardingPanel = document.getElementById("clientOnboardingPanel");
@@ -98,6 +189,15 @@ function setWorkspaceCnpj(cnpj) {
   sessionStorage.setItem(CNPJ_STORAGE_KEY, normalized);
 }
 
+// Funcao auxiliar para atualizar o sidebar quando as seções mudam
+function updateSidebarActive(sectionId) {
+  navButtons.forEach((b) => b.classList.remove("active"));
+  const btn = document.querySelector(`[data-section="${sectionId}"]`);
+  if (btn) {
+    btn.classList.add("active");
+  }
+}
+
 function clearWorkspaceCnpj() {
   sessionStorage.removeItem(CNPJ_STORAGE_KEY);
   cnpjHidden.value = "";
@@ -109,6 +209,7 @@ function clearWorkspaceCnpj() {
   workspacePanel.classList.add("hidden");
   progressPanel.classList.add("hidden");
   resultPanel.classList.add("hidden");
+  updateSidebarActive("access");
 }
 
 function renderAllowedTestsSelect() {
@@ -172,16 +273,18 @@ function applyClientProgressState(data, selectedTest) {
     ? data.assigned_tests.map((item) => String(item.id || "").padStart(2, "0"))
     : [];
 
+  // Esconde todas as seções
+  sections.forEach((s) => s.classList.add("hidden"));
+
   if (data.onboarding_required) {
     onboardingPanel.classList.remove("hidden");
-    workspacePanel.classList.add("hidden");
-    progressPanel.classList.add("hidden");
-    resultPanel.classList.add("hidden");
+    updateSidebarActive("access");
     return;
   }
 
   onboardingPanel.classList.add("hidden");
   workspacePanel.classList.remove("hidden");
+  updateSidebarActive("submit");
   renderAllowedTestsSelect();
   renderProgress(data, selectedTest);
 }
@@ -251,7 +354,10 @@ function renderResult(data) {
   const resultado = String(data.resultado || "").toUpperCase();
   const isApproved = resultado === "APROVADO";
 
+  // Esconde outras seções e mostra o resultado
+  sections.forEach((s) => s.classList.add("hidden"));
   resultPanel.classList.remove("hidden");
+  navButtons.forEach((b) => b.classList.remove("active"));
 
   overallStatus.textContent = isApproved ? t("client.resultApproved") : t("client.resultDenied");
   statusChip.textContent = isApproved ? t("client.resultApproved") : t("client.resultDenied");
@@ -259,13 +365,21 @@ function renderResult(data) {
   statusChip.style.color = isApproved ? "#0f6e4f" : "#9e2424";
 
   protocol.textContent = data.protocolo || "-";
+  deniedReason.style.whiteSpace = "pre-line";
 
   if (isApproved) {
     deniedLeg.textContent = "-";
     deniedReason.textContent = t("client.approvedHint");
   } else {
-    deniedLeg.textContent = data.perna_negada || t("client.deniedLegUnknown");
-    deniedReason.textContent = data.motivo_negacao || t("client.deniedReasonUnknown");
+    const deniedLegs = Array.isArray(data.pernas_negadas) && data.pernas_negadas.length
+      ? data.pernas_negadas
+      : [data.perna_negada || t("client.deniedLegUnknown")];
+    const deniedReasons = Array.isArray(data.motivos_negacao) && data.motivos_negacao.length
+      ? data.motivos_negacao
+      : [data.motivo_negacao || t("client.deniedReasonUnknown")];
+
+    deniedLeg.textContent = deniedLegs.join(" | ");
+    deniedReason.textContent = deniedReasons.map((msg, idx) => `${idx + 1}. ${msg}`).join("\n");
   }
 
   if (data.progresso) {

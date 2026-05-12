@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
@@ -344,6 +345,32 @@ def admin_reset_client_onboarding(cnpj: str) -> Dict[str, Any]:
     }
 
 
+def admin_reset_client_tests(cnpj: str) -> Dict[str, Any]:
+    normalized_cnpj = _normalize_cnpj(cnpj)
+    stats = _load_client_stats(normalized_cnpj)
+    stats["tests"] = {}
+
+    root_dir = _client_root_dir(normalized_cnpj)
+    if root_dir.is_dir():
+        for child in root_dir.iterdir():
+            if child.name == "stats.json":
+                continue
+            if child.is_dir():
+                shutil.rmtree(child, ignore_errors=True)
+            else:
+                try:
+                    child.unlink()
+                except OSError:
+                    pass
+
+    saved = _save_client_stats(normalized_cnpj, stats)
+    return {
+        "cnpj": normalized_cnpj,
+        "tests_reset": True,
+        "summary": saved.get("resumo") or {},
+    }
+
+
 def _parse_test_date(value: str) -> Tuple[str, str]:
     raw = str(value or "").strip()
     if not raw:
@@ -390,19 +417,52 @@ def _select_log_by_test_date(test_date: str) -> Path:
     return candidates[0]
 
 
-def _first_denied_leg(pernas: List[Dict[str, Any]]) -> Dict[str, str] | None:
+def _collect_denied_legs(pernas: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    denied: List[Dict[str, Any]] = []
+
     for leg in pernas:
         status = str(leg.get("status") or "").strip().upper()
         aprovado = leg.get("aprovado")
-        if status == "REPROVADO" or aprovado is False:
-            ordem_log = str(leg.get("ordem_log") or "-")
-            mti = str(leg.get("mti") or "-")
-            motivo = str(leg.get("motivo") or "Sem motivo detalhado.").strip() or "Sem motivo detalhado."
-            return {
-                "perna": f"Perna {ordem_log} (MTI {mti})",
-                "motivo": motivo,
+        if not (status == "REPROVADO" or aprovado is False):
+            continue
+
+        ordem_log = str(leg.get("ordem_log") or "-")
+        mti = str(leg.get("mti") or "-")
+        perna_label = f"Perna {ordem_log} (MTI {mti})"
+
+        motivos: List[str] = []
+        seen = set()
+
+        estruturados = ((leg.get("erros_estruturados") or {}).get("all") or [])
+        for entry in estruturados:
+            msg = str((entry or {}).get("message") or "").strip()
+            if msg and msg not in seen:
+                seen.add(msg)
+                motivos.append(msg)
+
+        for msg in (leg.get("erros") or []):
+            text = str(msg or "").strip()
+            if text and text not in seen:
+                seen.add(text)
+                motivos.append(text)
+
+        motivo_resumo = str(leg.get("motivo") or "").strip()
+        if motivo_resumo and motivo_resumo not in seen:
+            seen.add(motivo_resumo)
+            motivos.append(motivo_resumo)
+
+        if not motivos:
+            motivos.append("Sem motivo detalhado.")
+
+        denied.append(
+            {
+                "perna": perna_label,
+                "motivo": motivos[0],
+                "motivos": motivos,
             }
-    return None
+        )
+
+    return denied
 
 
 def _persist_client_test_record(
@@ -1051,7 +1111,7 @@ def validate_client_payload(
         debug=False,
     )
 
-    denied_leg = _first_denied_leg(result.get("pernas") or [])
+    denied_legs = _collect_denied_legs(result.get("pernas") or [])
     teste = result.get("teste") or {"id": normalized_test_id, "nome": ""}
     status = str(result.get("status") or "NEGADO").upper()
     is_approved = status == "APROVADO"
@@ -1077,7 +1137,20 @@ def validate_client_payload(
     }
 
     if not is_approved:
-        response["perna_negada"] = (denied_leg or {}).get("perna") or "Perna não identificada"
-        response["motivo_negacao"] = (denied_leg or {}).get("motivo") or "Motivo não identificado"
+        first_denied = denied_legs[0] if denied_legs else {}
+
+        motivos_unicos: List[str] = []
+        seen_motivos = set()
+        for denied in denied_legs:
+            for msg in denied.get("motivos") or []:
+                text = str(msg or "").strip()
+                if text and text not in seen_motivos:
+                    seen_motivos.add(text)
+                    motivos_unicos.append(text)
+
+        response["perna_negada"] = str(first_denied.get("perna") or "Perna não identificada")
+        response["motivo_negacao"] = str(first_denied.get("motivo") or "Motivo não identificado")
+        response["pernas_negadas"] = [str(item.get("perna") or "Perna não identificada") for item in denied_legs]
+        response["motivos_negacao"] = motivos_unicos if motivos_unicos else ["Motivo não identificado"]
 
     return response

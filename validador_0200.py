@@ -2389,19 +2389,40 @@ def _tipo_por_prefixo(prefix_map: Dict[str, str], valor_id: str) -> Optional[str
 
 def _tipo_por_tag01_compacto(prefix_map: Dict[str, str], valor_id: str) -> Optional[str]:
     """
-    Alguns IDs (ex.: 253/283) podem vir em formato compacto TAG/VALOR de 2 dígitos,
-    como "01020103...", em que TAG 01 tem valor "02" (débito).
-    Neste caso, o tipo deve ser lido pelo valor da TAG 01, não pelo prefixo bruto.
+    Alguns IDs (ex.: 253/283) podem vir em formato TLV compacto:
+    TAG(2) + LEN(2) + VALOR(LEN), por exemplo "0102010312..."
+    (TAG 01, LEN 02, VALOR 01).
+    Neste caso, o tipo deve ser lido pelo VALOR da TAG 01, não pelo prefixo bruto.
     """
     raw = str(valor_id or "").strip()
-    if not raw or len(raw) < 4:
+    if not raw or len(raw) < 6:
         return None
     if not raw.isdigit() or (len(raw) % 2) != 0:
         return None
 
-    for i in range(0, len(raw) - 1, 2):
+    # Interpreta como TLV compacto: TAG(2) LEN(2) VALOR(n).
+    i = 0
+    n = len(raw)
+    while i + 4 <= n:
         tag = raw[i:i + 2]
-        val = raw[i + 2:i + 4]
+        len_txt = raw[i + 2:i + 4]
+        if not len_txt.isdigit():
+            break
+        value_len = int(len_txt)
+        start_val = i + 4
+        end_val = start_val + value_len
+        if end_val > n:
+            break
+        val = raw[start_val:end_val]
+        if tag == "01":
+            mapped = prefix_map.get(val)
+            return str(mapped) if mapped else None
+        i = end_val
+
+    # Fallback defensivo para payloads legados sem LEN explícito (TAG/VALOR de 2 dígitos).
+    for j in range(0, len(raw) - 1, 2):
+        tag = raw[j:j + 2]
+        val = raw[j + 2:j + 4]
         if tag == "01":
             mapped = prefix_map.get(val)
             return str(mapped) if mapped else None
