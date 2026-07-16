@@ -1,0 +1,42 @@
+{
+  "status": "FALHA",
+  "timestamp": "2026-07-16T15:56:49.678841",
+  "submissao_id": "000123456789_20260716_155649",
+  "log_name": "aud_20260712.txt",
+  "produto_id": "01_QRCARDSE",
+  "testes_selecionados": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "resumo": {
+    "total_selecionados": 6,
+    "validados": 1,
+    "nao_validados": 2,
+    "aprovados": 0,
+    "reprovados": 1,
+    "percentual_sucesso": 0.0
+  },
+  "resultados": [
+    {
+      "teste_id": 3,
+      "status": "ERRO",
+      "bit11": "040002",
+      "bit42": "077698017000199",
+      "motivo": "Log não encontrado: aud_20260712.txt"
+    }
+  ],
+  "testes_ignorados": [
+    {
+      "teste_id": 14,
+      "motivo": "Não estava na seleção de testes a homologar"
+    },
+    {
+      "teste_id": 15,
+      "motivo": "Não estava na seleção de testes a homologar"
+    }
+  ]
+}

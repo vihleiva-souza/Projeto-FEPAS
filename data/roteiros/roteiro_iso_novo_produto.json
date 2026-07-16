@@ -1,0 +1,5932 @@
+{
+  "teste": "Autorizador CARDSE",
+  "versao": "2.0.0",
+  "allowed_mtis": [
+    "0800",
+    "0810",
+    "0100",
+    "0110",
+    "0200",
+    "0210",
+    "0202",
+    "0212",
+    "0400",
+    "0410",
+    "0402",
+    "0412",
+    "0420",
+    "0430"
+  ],
+  "required_bits": [
+    "01",
+    "03",
+    "04",
+    "07",
+    "11",
+    "12",
+    "13",
+    "41",
+    "42"
+  ],
+  "required_bit47_ids": [],
+  "bit47_allowed_ids": [],
+  "bit22_entry_mode_rules": {
+    "enabled": true,
+    "description": "Regras condicionais por meio de entrada (bit 22): 2 primeiros digitos = entry mode, 3o digito = capacidade de PIN.",
+    "field": "22",
+    "format": "n3",
+    "valid_prefixes": [
+      "00",
+      "01",
+      "02",
+      "05",
+      "07",
+      "50",
+      "79",
+      "80",
+      "91"
+    ],
+    "valid_pin_capability": [
+      "0",
+      "1",
+      "2"
+    ],
+    "rules": [
+      {
+        "name": "manual_or_chip_fallback_manual",
+        "bit22_prefix_in": [
+          "01",
+          "79"
+        ],
+        "required_bits": [
+          "02",
+          "14"
+        ],
+        "absent_bits": [
+          "35",
+          "45"
+        ],
+        "notes": "Entrada digitada e fallback digitado de chip exigem PAN (02) e validade (14)."
+      },
+      {
+        "name": "magstripe_or_chip_fallback_magstripe_or_contactless_magstripe",
+        "bit22_prefix_in": [
+          "02",
+          "80",
+          "91"
+        ],
+        "required_bits": [
+          "35"
+        ],
+        "optional_bits": [
+          "45"
+        ],
+        "notes": "Leitura de trilha: 35 obrigatorio; 45 quando ambas as trilhas forem lidas com sucesso."
+      },
+      {
+        "name": "emv_contact_or_contactless_chip",
+        "bit22_prefix_in": [
+          "05",
+          "07"
+        ],
+        "required_bits_by_mti": {
+          "0200": [
+            "55"
+          ],
+          "0201": [
+            "55"
+          ],
+          "0210_when_chip_continuation": [
+            "55"
+          ],
+          "0202_when_chip_continuation": [
+            "55"
+          ]
+        },
+        "required_bit47_ids_by_mti": {
+          "0210_when_chip_continuation": [
+            "221"
+          ],
+          "0202_when_chip_continuation": [
+            "220"
+          ]
+        },
+        "optional_bits": [
+          "23"
+        ],
+        "bit23_condition": "Somente quando tag 5F34 estiver presente no cartao.",
+        "bit55_tag_source": "Tabela de Tags EMV Obrigatorias por AID (ID 442).",
+        "notes": "Regra unificada para chip contato e contactless chip."
+      },
+      {
+        "name": "digital_wallet",
+        "bit22_prefix_in": [
+          "50"
+        ],
+        "required_bit47_ids": [
+          "251"
+        ],
+        "notes": "ID 251 obrigatorio para transacao de carteira digital."
+      },
+      {
+        "name": "pin_dependent",
+        "pin_capability_equals": "1",
+        "required_if_transaction_with_pin": {
+          "required_bits": [
+            "52"
+          ],
+          "required_bit47_ids_when_dukpt_3des": [
+            "204"
+          ]
+        },
+        "notes": "Se houver senha: exigir 52; com criptografia DUKPT 3DES, exigir ID 204."
+      }
+    ]
+  },
+  "mti_bit_rules": {
+    "0100": {
+      "description": "Logon Request",
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "39",
+        "41",
+        "42",
+        "47",
+        "49",
+        "52",
+        "61"
+      ],
+      "optional_bits": [
+        "04",
+        "35",
+        "45",
+        "58"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "023",
+          "050",
+          "080",
+          "101",
+          "102",
+          "200",
+          "204",
+          "238",
+          "251",
+          "258"
+        ]
+      }
+    },
+    "0110": {
+      "description": "Logon Response",
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "39",
+        "41",
+        "42",
+        "47"
+      ],
+      "optional_bits": [
+        "04",
+        "38",
+        "127"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      },
+      "replica_from_0100_bits": [
+        "03",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit62_optional_ids": [
+        "501",
+        "502",
+        "505"
+      ],
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      }
+    },
+    "0200_credito": {
+      "product_type": "credito",
+      "description": "Purchase Request - Credit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "49",
+        "52",
+        "61"
+      ],
+      "optional_bits": [
+        "14",
+        "23",
+        "33",
+        "35",
+        "45",
+        "52",
+        "55"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "023",
+          "024",
+          "027",
+          "037",
+          "050",
+          "080",
+          "180",
+          "181",
+          "200",
+          "204",
+          "238",
+          "251",
+          "254",
+          "320"
+        ]
+      }
+    },
+    "0210_credito": {
+      "product_type": "credito",
+      "description": "Purchase Response - Credit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "38",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "023",
+          "040",
+          "070",
+          "221",
+          "361"
+        ]
+      },
+      "bit62_optional_ids": [
+        "501",
+        "502",
+        "505",
+        "506"
+      ],
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      }
+    },
+    "0202_credito": {
+      "product_type": "credito",
+      "description": "Purchase Confirmation - Credit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61"
+      ],
+      "optional_bits": [
+        "55"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      },
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "050",
+          "220"
+        ]
+      }
+    },
+    "0212_credito": {
+      "product_type": "credito",
+      "description": "Purchase Confirmation Response - Credit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "39",
+        "55"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      }
+    },
+    "0200_debito": {
+      "product_type": "debito",
+      "description": "Purchase Request - Debit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "49",
+        "52",
+        "61"
+      ],
+      "optional_bits": [
+        "14",
+        "23",
+        "33",
+        "35",
+        "45",
+        "52",
+        "55"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "023",
+          "024",
+          "027",
+          "037",
+          "050",
+          "080",
+          "180",
+          "181",
+          "200",
+          "204",
+          "238",
+          "251",
+          "254",
+          "320"
+        ]
+      },
+      "voucher_required_ids": [
+        "254"
+      ]
+    },
+    "0210_debito": {
+      "product_type": "debito",
+      "description": "Purchase Response - Debit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "38",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "023",
+          "040",
+          "070",
+          "221",
+          "254",
+          "361"
+        ]
+      },
+      "voucher_required_ids": [
+        "254"
+      ],
+      "bit62_optional_ids": [
+        "501",
+        "502",
+        "505",
+        "506"
+      ],
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      }
+    },
+    "0202_debito": {
+      "product_type": "debito",
+      "description": "Purchase Confirmation - Debit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61"
+      ],
+      "optional_bits": [
+        "55"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      },
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "050",
+          "220",
+          "254"
+        ]
+      },
+      "voucher_required_ids": [
+        "254"
+      ]
+    },
+    "0212_debito": {
+      "product_type": "debito",
+      "description": "Purchase Confirmation Response - Debit",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "39",
+        "55"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      },
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "254"
+        ]
+      },
+      "voucher_required_ids": [
+        "254"
+      ]
+    },
+    "0200_pagamento_fatura": {
+      "product_type": "pagamento_fatura",
+      "description": "Purchase Request - Payment of Invoice",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "49",
+        "61"
+      ],
+      "optional_bits": [
+        "14",
+        "23",
+        "33",
+        "35",
+        "45",
+        "52",
+        "55"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "023",
+          "024",
+          "027",
+          "037",
+          "050",
+          "080",
+          "180",
+          "181",
+          "200",
+          "204",
+          "238",
+          "251",
+          "254",
+          "320"
+        ]
+      }
+    },
+    "0210_pagamento_fatura": {
+      "product_type": "pagamento_fatura",
+      "description": "Purchase Response - Payment of Invoice",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "38",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit62_optional_ids": [
+        "501",
+        "202",
+        "505",
+        "506"
+      ],
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      }
+    },
+    "0202_pagamento_fatura": {
+      "product_type": "pagamento_fatura",
+      "description": "Purchase Confirmation - Payment of Invoice",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61"
+      ],
+      "optional_bits": [
+        "38",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      }
+    },
+    "0212_pagamento_fatura": {
+      "product_type": "pagamento_fatura",
+      "description": "Purchase Confirmation Response - Payment of Invoice",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "38",
+        "39",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0202",
+        "127": "replica_if_present_in_0202"
+      }
+    },
+    "0400": {
+      "description": "Reversal Request",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "09",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61",
+        "90"
+      ],
+      "optional_bits": [
+        "04",
+        "14",
+        "22",
+        "35"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "050",
+          "180",
+          "238"
+        ]
+      }
+    },
+    "0410": {
+      "description": "Reversal Response",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42"
+      ],
+      "optional_bits": [
+        "38",
+        "47",
+        "62",
+        "63",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "040"
+        ]
+      },
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "optional_ids": [
+          "501",
+          "502",
+          "505",
+          "506"
+        ]
+      },
+      "bit63": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "optional_ids": [
+          "501",
+          "502",
+          "505",
+          "506"
+        ]
+      }
+    },
+    "0402": {
+      "description": "Reversal Confirmation",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61"
+      ],
+      "optional_bits": [],
+      "replica_from_0410_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "37": "replica_if_present_in_0410",
+        "38": "replica_if_present_in_0410",
+        "127": "replica_if_present_in_0410"
+      },
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "required_ids": [
+          "050",
+          "220"
+        ]
+      }
+    },
+    "0412": {
+      "description": "Reversal Confirmation Response",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "optional_bits": [],
+      "replica_from_0402_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0402",
+        "127": "replica_if_present_in_0402"
+      }
+    },
+    "0420": {
+      "description": "Chargeback Request",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61",
+        "90"
+      ],
+      "optional_bits": [],
+      "replica_from_0400_bits": [
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "050",
+          "180",
+          "238"
+        ]
+      }
+    },
+    "0430": {
+      "description": "Chargeback Response",
+      "required_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42",
+        "61",
+        "90"
+      ],
+      "optional_bits": [
+        "90"
+      ]
+    },
+    "0800": {
+      "description": "Logon Repeat Request",
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "39"
+      ],
+      "optional_bits": [
+        "42",
+        "61",
+        "70"
+      ]
+    },
+    "0810": {
+      "description": "Logon Repeat Response",
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "39",
+        "41",
+        "42",
+        "90"
+      ],
+      "optional_bits": [
+        "70"
+      ]
+    }
+  },
+  "pcode_rules": {
+    "enabled": true,
+    "description": "Validação de Pcode (Bit 03) por product_type conforme FEPAS v04.46 páginas 18-19",
+    "mapping": {
+      "debito": [
+        "002000",
+        "002100",
+        "002200",
+        "002300",
+        "002400",
+        "002900"
+      ],
+      "credito": [
+        "001000",
+        "003000",
+        "003001",
+        "003100",
+        "003101",
+        "003200",
+        "003500",
+        "003502",
+        "003503",
+        "003504",
+        "003800",
+        "003801",
+        "003900"
+      ],
+      "pagamento_fatura": [
+        "493030"
+      ],
+      "servico": [
+        "004000"
+      ],
+      "prepago": [
+        "190251",
+        "190255",
+        "190280"
+      ],
+      "frota": [
+        "005020",
+        "005030"
+      ],
+      "carteira_digital": [
+        "006000",
+        "006100",
+        "006200"
+      ],
+      "logon": [
+        "001001",
+        "301001"
+      ]
+    }
+  },
+  "bit47_first_id_001_mtis": [
+    "0200",
+    "0400"
+  ],
+  "entry_mode_bit22_map": {
+    "description": "Regra do motor: mapeamento de entry_mode para prefixos validos do Bit 22. Usado na REGRA 1 da validacao de homologacao para todos os testes que definem entry_mode.",
+    "enabled": true,
+    "modos": {
+      "digitado": {
+        "prefixes": [
+          "01"
+        ],
+        "descricao": "Entrada Manual (Digitado)"
+      },
+      "fallback_digitado": {
+        "prefixes": [
+          "79"
+        ],
+        "descricao": "Fallback para Digitado"
+      },
+      "magnetico": {
+        "prefixes": [
+          "02",
+          "80",
+          "91"
+        ],
+        "descricao": "Tarja Magnetica / Contactless Tarja"
+      },
+      "chip": {
+        "prefixes": [
+          "05",
+          "07"
+        ],
+        "descricao": "Chip EMV (contato ou contactless)"
+      },
+      "contactless": {
+        "prefixes": [
+          "07",
+          "91"
+        ],
+        "descricao": "Contactless (Chip ou Tarja)"
+      },
+      "carteira_digital": {
+        "prefixes": [
+          "50"
+        ],
+        "descricao": "Carteira Digital"
+      },
+      "qualquer": {
+        "prefixes": [
+          "00",
+          "01",
+          "02",
+          "05",
+          "07",
+          "50",
+          "79",
+          "80",
+          "91"
+        ],
+        "descricao": "Qualquer modo valido"
+      }
+    }
+  },
+  "homolog_tests": {
+    "1": {
+      "id": "1",
+      "nome": "Realizar o teste de Eco",
+      "descricao": "Realizar o teste de Eco.",
+      "objetivo_esperado": "0810 - 0800",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Receber resposta de echo (0810)",
+          "mti": "0810"
+        },
+        {
+          "numero": 2,
+          "descricao": "Enviar echo (0800)",
+          "mti": "0800"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 1",
+            "any_mti": [
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0810",
+            "mti": "0810"
+          },
+          {
+            "label": "0800",
+            "mti": "0800"
+          }
+        ]
+      },
+      "expected_pcode": "000000"
+    },
+    "2": {
+      "id": "2",
+      "nome": "Realizar um teste de logon/carga de tabela para o estabelecimento x Autorizador da Carteira",
+      "descricao": "Realizar um teste de logon/carga de tabela para o estabelecimento x Autorizador da Carteira.",
+      "objetivo_esperado": "0810",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Receber resposta de logon/carga de tabela (0810)",
+          "mti": "0810"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 2",
+            "any_mti": [
+              "0800",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0810",
+            "mti": "0810"
+          }
+        ]
+      },
+      "expected_pcode": "910000"
+    },
+    "3": {
+      "id": "3",
+      "nome": "Realizar o teste de Consulta da Crédito",
+      "descricao": "Realizar o teste de Consulta da Crédito.",
+      "objetivo_esperado": "0100 - 0110",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar consulta (0100)",
+          "mti": "0100"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de consulta (0110)",
+          "mti": "0110"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0100",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 3",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0100",
+            "mti": "0100"
+          },
+          {
+            "label": "0110",
+            "mti": "0110"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "004030"
+    },
+    "4": {
+      "id": "4",
+      "nome": "Realizar o teste de Compra Crédito à Vista (magnético)",
+      "descricao": "Realizar o teste de Compra Crédito à Vista (magnético)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003000",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 4",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com entrada magnética (DE22=02x)",
+            "mti": "0200",
+            "de22_prefix": "02"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "5": {
+      "id": "5",
+      "nome": "Realizar o teste de Compra Crédito à Vista (Chip)",
+      "descricao": "Realizar o teste de Compra Crédito à Vista (Chip)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "entry_mode": "chip",
+      "entry_mode_description": "Transacao deve ser CHIP (EMV) - Bit 22 deve comecar com 05 ou 07",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 5",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com chip (DE22=05x)",
+            "mti": "0200",
+            "de22_prefix": "05"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "6": {
+      "id": "6",
+      "nome": "Realizar o teste de pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "descricao": "Realizar o teste de pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003100",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 6",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "7": {
+      "id": "7",
+      "nome": "Realizar o teste de cancelamento do pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "descricao": "Realizar o teste de cancelamento do pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 7",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003100"
+    },
+    "8": {
+      "id": "8",
+      "nome": "Realizar o teste de pagamento Compra Crédito Fallback magnético do Chip",
+      "descricao": "Realizar o teste de pagamento Compra Crédito Fallback magnético do Chip",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003000",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 8",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com fallback magnético (DE22=80x)",
+            "mti": "0200",
+            "de22_prefix": "80"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "9": {
+      "id": "9",
+      "nome": "Realizar o teste de pagamento Compra Crédito Parcelado ADM (Emissor Com juros)",
+      "descricao": "Realizar o teste de pagamento Compra Crédito Parcelado ADM (Emissor Com juros)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003800",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 9",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "10": {
+      "id": "10",
+      "nome": "Realizar o cancelamento de Compra Crédito da transação realizada na sequência 4, selecionar a opção “Cancelamento de Compra”",
+      "descricao": "Realizar o cancelamento de Compra Crédito da transação realizada na sequência 4, selecionar a opção “Cancelamento de Compra”.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 10",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "11": {
+      "id": "11",
+      "nome": "Realizar o cancelamento de Compra Crédito Parcelado ADM (Emissor com Juros)",
+      "descricao": "Realizar o cancelamento de Compra Crédito Parcelado ADM (Emissor com Juros)",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 11",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003800"
+    },
+    "12": {
+      "id": "12",
+      "nome": "Realizar o teste de Compra Crédito à Vista (Digitado)",
+      "descricao": "Realizar o teste de Compra Crédito à Vista (Digitado)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "entry_mode": "digitado",
+      "entry_mode_description": "Transacao deve ser DIGITADA (entrada manual) - Bit 22 deve comecar com 01",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 12",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "13": {
+      "id": "13",
+      "nome": "Realizar uma transação de Compra Crédito a vista, com senha do cartão invalida",
+      "descricao": "Realizar uma transação de Compra Crédito a vista, com senha do cartão invalida.",
+      "objetivo_esperado": "0200 - 0210",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra negada (0210)",
+          "mti": "0210"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 13",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "14": {
+      "id": "14",
+      "nome": "Realizar um desfazimento de pagamento Crédito a Vista, optando por “Não confirmar” quando retornar a imagem do cupom",
+      "descricao": "Realizar um desfazimento de pagamento Crédito a Vista, optando por “Não confirmar” quando retornar a imagem do cupom.",
+      "objetivo_esperado": "0200 - 0210 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 14",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "15": {
+      "id": "15",
+      "nome": "Realizar o teste de Saque Crédito",
+      "descricao": "Realizar o teste de Saque Crédito",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 15",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "001000"
+    },
+    "16": {
+      "id": "16",
+      "nome": "Realizar o teste de Recarga Crédito",
+      "descricao": "Realizar o teste de Recarga Crédito",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 16",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003900"
+    },
+    "17": {
+      "id": "17",
+      "nome": "Realizar o cancelamento de Compra Crédito de uma transação de pagamento Crédito aprovada, selecionar a opção “Cancelamento de Compra” e realizar o desfazimento da transação de cancelamento",
+      "descricao": "Realizar o cancelamento de Compra Crédito de uma transação de pagamento Crédito aprovada, selecionar a opção “Cancelamento de Compra” e realizar o desfazimento da transação de cancelamento.",
+      "objetivo_esperado": "0400 - 0410 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 17",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "18": {
+      "id": "18",
+      "nome": "Realizar um teste de cancelamento de pagamento com status NEG. Cancelar a transação de Compra Crédito realizada na sequência 5 ou 10, selecionar a opção \"Cancelamento de Compra\"",
+      "descricao": "Realizar um teste de cancelamento de pagamento com status NEG. Cancelar a transação de Compra Crédito realizada na sequência 5 ou 10, selecionar a opção \"Cancelamento de Compra\".",
+      "objetivo_esperado": "0400 - 0410",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta negada de cancelamento (0410)",
+          "mti": "0410"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 18",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "19": {
+      "id": "19",
+      "nome": "Realizar o teste de Compra Débito (magnético)",
+      "descricao": "Realizar o teste de Compra Débito (magnético)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 19",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com entrada magnetica (DE22=02x)",
+            "mti": "0200",
+            "de22_prefix": "02"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002000"
+    },
+    "20": {
+      "id": "20",
+      "nome": "Realizar o teste de SaqueDébito",
+      "descricao": "Realizar o teste de SaqueDébito",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 20",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002300"
+    },
+    "21": {
+      "id": "21",
+      "nome": "Realizar o teste de RecargaDébito",
+      "descricao": "Realizar o teste de RecargaDébito",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 21",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002200"
+    },
+    "22": {
+      "id": "22",
+      "nome": "Realizar o teste de Compra Débito (Chip)",
+      "descricao": "Realizar o teste de Compra Débito (Chip)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 22",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com chip (DE22=05x)",
+            "mti": "0200",
+            "de22_prefix": "05"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002000"
+    },
+    "23": {
+      "id": "23",
+      "nome": "Realizar o teste de Compra Débito(chip ou magnético) e realizar o desfazimento. Será enviada a mensagem 0420/0430",
+      "descricao": "Realizar o teste de Compra Débito(chip ou magnético) e realizar o desfazimento. Será enviada a mensagem 0420/0430",
+      "objetivo_esperado": "0200 - 0210 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 23",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com entrada magnética (DE22=02x)",
+            "mti": "0200",
+            "de22_prefix": "02"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002000"
+    },
+    "24": {
+      "id": "24",
+      "nome": "Realizar o teste de Compra DébitoPré Datada",
+      "descricao": "Realizar o teste de Compra DébitoPré Datada",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 24",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002900"
+    },
+    "25": {
+      "id": "25",
+      "nome": "Realizar o cancelamento de Compra Débito da transação realizada na sequência 19 ou 20, selecionar a opção “Cancelamento de Compra”",
+      "descricao": "Realizar o cancelamento de Compra Débito da transação realizada na sequência 19 ou 20, selecionar a opção “Cancelamento de Compra”.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 25",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002000"
+    },
+    "26": {
+      "id": "26",
+      "nome": "Realizar o teste de Consulta da Débito",
+      "descricao": "Realizar o teste de Consulta da Débito.",
+      "objetivo_esperado": "0100 - 0110",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar consulta (0100)",
+          "mti": "0100"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de consulta (0110)",
+          "mti": "0110"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0100",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 26",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0100",
+            "mti": "0100"
+          },
+          {
+            "label": "0110",
+            "mti": "0110"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "004020"
+    },
+    "27": {
+      "id": "27",
+      "nome": "Realizar o teste de Compra Débito (Voucher)",
+      "descricao": "Realizar o teste de Compra Débito (Voucher)",
+      "product_type": "debito/voucher",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 27",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "002100"
+    },
+    "28": {
+      "id": "28",
+      "nome": "Realizar o teste de Compra Cartão Combustível (Magnético)",
+      "descricao": "Realizar o teste de Compra Cartão Combustível (Magnético)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 28",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com entrada magnética (DE22=02x)",
+            "mti": "0200",
+            "de22_prefix": "02"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "frota",
+      "expected_pcode": "005020"
+    },
+    "29": {
+      "id": "29",
+      "nome": "Realizar o teste de Compra Cartão Combustível (Chip)",
+      "descricao": "Realizar o teste de Compra Cartão Combustível (Chip)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 29",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com chip (DE22=05x)",
+            "mti": "0200",
+            "de22_prefix": "05"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "frota",
+      "expected_pcode": "005020"
+    },
+    "30": {
+      "id": "30",
+      "nome": "Realizar o cancelamento de Compracom Cartão Combustível da transação realizada na sequência 26 ou 27, selecionar a opção “Cancelamento de Compra”",
+      "descricao": "Realizar o cancelamento de Compracom Cartão Combustível da transação realizada na sequência 26 ou 27, selecionar a opção “Cancelamento de Compra”.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 30",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "frota",
+      "expected_pcode": "005030"
+    },
+    "31": {
+      "id": "31",
+      "nome": "Realizar o teste de Consulta da Cartão Combustível",
+      "descricao": "Realizar o teste de Consulta da Cartão Combustível.",
+      "objetivo_esperado": "0100 - 0110",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar consulta (0100)",
+          "mti": "0100"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de consulta (0110)",
+          "mti": "0110"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0100",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 31",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0100",
+            "mti": "0100"
+          },
+          {
+            "label": "0110",
+            "mti": "0110"
+          }
+        ]
+      },
+      "product_type": "frota",
+      "expected_pcode": "004050"
+    },
+    "32": {
+      "id": "32",
+      "nome": "Realizar um teste de Pagamento de Fatura",
+      "descricao": "Realizar um teste de Pagamento de Fatura",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 32",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "pagamento_fatura",
+      "expected_pcode": "493030"
+    },
+    "33": {
+      "id": "33",
+      "nome": "Realizar um teste de Cancelamento de Pagamento de Fatura. “Cancelando o Pagamento do teste  da sequência 30",
+      "descricao": "Realizar um teste de Cancelamento de Pagamento de Fatura. “Cancelando o Pagamento do teste  da sequência 30.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 33",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "pagamento_fatura",
+      "expected_pcode": "493030"
+    },
+    "34": {
+      "id": "34",
+      "nome": "Realizar o teste de Compra Crédito à Vista (contactless)",
+      "descricao": "Realizar o teste de Compra Crédito à Vista (contactless)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 34",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 contactless (DE22=07x)",
+            "mti": "0200",
+            "de22_prefix": "07"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "35": {
+      "id": "35",
+      "nome": "Realizar o cancelamento de Compra Crédito(contactless) da transação realizada na sequência 32, selecionar a opção “Cancelamento de Compra”",
+      "descricao": "Realizar o cancelamento de Compra Crédito(contactless) da transação realizada na sequência 32, selecionar a opção “Cancelamento de Compra”.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 35",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "36": {
+      "id": "36",
+      "nome": "Realizar o teste de Compra Débito (contactless)",
+      "descricao": "Realizar o teste de Compra Débito (contactless)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 36",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 contactless (DE22=07x)",
+            "mti": "0200",
+            "de22_prefix": "07"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002000"
+    },
+    "37": {
+      "id": "37",
+      "nome": "Realizar o cancelamento de Compra Débito (contactless)da transação realizada na sequência 34, selecionar a opção “Cancelamento de Compra”",
+      "descricao": "Realizar o cancelamento de Compra Débito (contactless)da transação realizada na sequência 34, selecionar a opção “Cancelamento de Compra”.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 37",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "debito",
+      "expected_pcode": "002000"
+    },
+    "38": {
+      "id": "38",
+      "nome": "Realizar um pagamento de Pré Autorização",
+      "descricao": "Realizar um pagamento de Pré Autorização.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 38",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "003500"
+    },
+    "39": {
+      "id": "39",
+      "nome": "Realizar uma Captura (Confirmação) de Pré Autorização",
+      "descricao": "Realizar uma Captura (Confirmação) de Pré Autorização.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 39",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "003502"
+    },
+    "40": {
+      "id": "40",
+      "nome": "Realizar o desfazimento de Pré Autorização",
+      "descricao": "Realizar o desfazimento de Pré Autorização",
+      "objetivo_esperado": "0200 - 0210 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 40",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "expected_pcode": "003500",
+      "product_type": "credito"
+    },
+    "41": {
+      "id": "41",
+      "nome": "Realizar o desfazimento de Captura (Confirmação) de Pré Autorização",
+      "descricao": "Realizar o desfazimento de Captura (Confirmação) de Pré Autorização",
+      "objetivo_esperado": "0200 - 0210 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 41",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "expected_pcode": "003502",
+      "product_type": "credito"
+    },
+    "42": {
+      "id": "42",
+      "nome": "Realizar o cancelamento de Captura de Pré Autorização",
+      "descricao": "Realizar o cancelamento de Captura de Pré Autorização",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 42",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "expected_pcode": "963502"
+    },
+    "43": {
+      "id": "43",
+      "nome": "Realizar o cancelamento de Pré Autorização",
+      "descricao": "Realizar o cancelamento de Pré Autorização.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 43",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "expected_pcode": "963500"
+    },
+    "44": {
+      "id": "44",
+      "nome": "Realizar um pagamento c/ dispositivo móvel(smartphone ou smartband) opção crédito ou débito",
+      "descricao": "Realizar um pagamento c/ dispositivo móvel(smartphone ou smartband) opção crédito ou débito.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 44",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "006000"
+    },
+    "45": {
+      "id": "45",
+      "nome": "Realizar um pagamento de Pré Autorização parcelada Lojista",
+      "descricao": "Realizar um pagamento de Pré Autorização parcelada Lojista.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 45",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "003503"
+    },
+    "46": {
+      "descricao": "Realizar uma Captura (Confirmação) de Pré Autorização parcelada Lojista.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 46",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "003503",
+      "id": "46",
+      "nome": "Realizar uma Captura (Confirmação) de Pré Autorização parcelada Lojista"
+    },
+    "47": {
+      "descricao": "Realizar um pagamento de Pré Autorização parcelada ADM.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 47",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "003504",
+      "id": "47",
+      "nome": "Realizar um pagamento de Pré Autorização parcelada ADM"
+    },
+    "48": {
+      "descricao": "Realizar uma Captura (Confirmação) de Pré Autorização parcelada ADM.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 48",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "expected_pcode": "003504",
+      "id": "48",
+      "nome": "Realizar uma Captura (Confirmação) de Pré Autorização parcelada ADM"
+    },
+    "49": {
+      "id": "49",
+      "nome": "Realizar o teste de “VendaVoucher” Sem cartão, item 6 no primeiro menu",
+      "descricao": "Realizar o teste de “VendaVoucher” Sem cartão, item 6 no primeiro menu",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 49",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "debito/voucher",
+      "expected_pcode": "002100"
+    },
+    "50": {
+      "id": "50",
+      "nome": "Realizar o “Cancelamento de Venda Voucher”, sem cartão, cancelando a transação da Sequência 43",
+      "descricao": "Realizar o “Cancelamento de Venda Voucher”, sem cartão, cancelando a transação da Sequência 43.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 50",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "debito/voucher",
+      "expected_pcode": "002100"
+    },
+    "51": {
+      "id": "51",
+      "nome": "Realizar uma transação de \"Venda Voucher\" Sem cartão, com senha do cartão invalida",
+      "descricao": "Realizar uma transação de \"Venda Voucher\" Sem cartão, com senha do cartão invalida.",
+      "objetivo_esperado": "0200 - 0210",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra negada (0210)",
+          "mti": "0210"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 51",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          }
+        ]
+      },
+      "product_type": "debito/voucher",
+      "expected_pcode": "002100"
+    },
+    "52": {
+      "id": "52",
+      "nome": "Realizar um desfazimento de \"Venda Voucher\" Sem cartão, optando por \"Não confirmar\" quando retornar a imagem do cupom",
+      "descricao": "Realizar um desfazimento de \"Venda Voucher\" Sem cartão, optando por \"Não confirmar\" quando retornar a imagem do cupom. Mensagens 0420/0430",
+      "objetivo_esperado": "0200 - 0210 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 52",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "product_type": "debito/voucher",
+      "expected_pcode": "002100"
+    },
+    "53": {
+      "id": "53",
+      "nome": "Realizar um teste de cancelamento de pagamento com status NEG. Realizar um pagamento de \"Venda Voucher\" sem cartão, depois cancelar a transação de Venda Voucher sem Cartão, porém o Autorizador deverá negar a transação na mensagem 0410",
+      "descricao": "Realizar um teste de cancelamento de pagamento com status NEG. Realizar um pagamento de \"Venda Voucher\" sem cartão, depois cancelar a transação de Venda Voucher sem Cartão, porém o Autorizador deverá negar a transação na mensagem 0410.",
+      "objetivo_esperado": "0400 - 0410",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta negada de cancelamento (0410)",
+          "mti": "0410"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 53",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          }
+        ]
+      },
+      "product_type": "debito/voucher",
+      "expected_pcode": "002100"
+    },
+    "54": {
+      "id": "54",
+      "nome": "Realizar um pagamento de “Venda Voucher” sem cartão, depois cancelar a transação de Venda Voucher sem Cartão, porém deverá realizar o desfazimento da transação de cancelamento",
+      "descricao": "Realizar um pagamento de “Venda Voucher” sem cartão, depois cancelar a transação de Venda Voucher sem Cartão, porém deverá realizar o desfazimento da transação de cancelamento.",
+      "objetivo_esperado": "0400 - 0410 - 0420 - 0430",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar desfazimento (0420)",
+          "mti": "0420"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de desfazimento (0430)",
+          "mti": "0430"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0420",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 54",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      },
+      "product_type": "debito/voucher",
+      "expected_pcode": "002100"
+    },
+    "55": {
+      "id": "55",
+      "nome": "Realizar um pagamento de Crédito aprovado no valor de R$10,00 e cancelar R5,00",
+      "descricao": "Realizar um pagamento de Crédito aprovado no valor de R$10,00 e cancelar R5,00.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 55",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "01": {
+      "id": "1",
+      "nome": "Realizar o teste de Eco",
+      "descricao": "Realizar o teste de Eco.",
+      "objetivo_esperado": "0810 - 0800",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Receber resposta de echo (0810)",
+          "mti": "0810"
+        },
+        {
+          "numero": 2,
+          "descricao": "Enviar echo (0800)",
+          "mti": "0800"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 1",
+            "any_mti": [
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0810",
+            "mti": "0810"
+          },
+          {
+            "label": "0800",
+            "mti": "0800"
+          }
+        ]
+      },
+      "expected_pcode": "000000"
+    },
+    "02": {
+      "id": "2",
+      "nome": "Realizar um teste de logon/carga de tabela para o estabelecimento x Autorizador da Carteira",
+      "descricao": "Realizar um teste de logon/carga de tabela para o estabelecimento x Autorizador da Carteira.",
+      "objetivo_esperado": "0810",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Receber resposta de logon/carga de tabela (0810)",
+          "mti": "0810"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 2",
+            "any_mti": [
+              "0800",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0810",
+            "mti": "0810"
+          }
+        ]
+      },
+      "expected_pcode": "910000"
+    },
+    "03": {
+      "id": "3",
+      "nome": "Realizar o teste de Consulta da Crédito",
+      "descricao": "Realizar o teste de Consulta da Crédito.",
+      "objetivo_esperado": "0100 - 0110",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar consulta (0100)",
+          "mti": "0100"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de consulta (0110)",
+          "mti": "0110"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0100",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 3",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0100",
+            "mti": "0100"
+          },
+          {
+            "label": "0110",
+            "mti": "0110"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "004030"
+    },
+    "04": {
+      "id": "4",
+      "nome": "Realizar o teste de Compra Crédito à Vista (magnético)",
+      "descricao": "Realizar o teste de Compra Crédito à Vista (magnético)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003000",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 4",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com entrada magnética (DE22=02x)",
+            "mti": "0200",
+            "de22_prefix": "02"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "05": {
+      "id": "5",
+      "nome": "Realizar o teste de Compra Crédito à Vista (Chip)",
+      "descricao": "Realizar o teste de Compra Crédito à Vista (Chip)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "entry_mode": "chip",
+      "entry_mode_description": "Transacao deve ser CHIP (EMV) - Bit 22 deve comecar com 05 ou 07",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 5",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com chip (DE22=05x)",
+            "mti": "0200",
+            "de22_prefix": "05"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003000"
+    },
+    "06": {
+      "id": "6",
+      "nome": "Realizar o teste de pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "descricao": "Realizar o teste de pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003100",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 6",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "07": {
+      "id": "7",
+      "nome": "Realizar o teste de cancelamento do pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "descricao": "Realizar o teste de cancelamento do pagamento Compra Crédito Parcelado Loja (Sem juros)",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar cancelamento (0400)",
+          "mti": "0400"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de cancelamento (0410)",
+          "mti": "0410"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação de cancelamento (0402)",
+          "mti": "0402"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0412)",
+          "mti": "0412"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0400",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0402",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 7",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      },
+      "product_type": "credito",
+      "expected_pcode": "003100"
+    },
+    "08": {
+      "id": "8",
+      "nome": "Realizar o teste de pagamento Compra Crédito Fallback magnético do Chip",
+      "descricao": "Realizar o teste de pagamento Compra Crédito Fallback magnético do Chip",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003000",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 8",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 com fallback magnético (DE22=80x)",
+            "mti": "0200",
+            "de22_prefix": "80"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    },
+    "09": {
+      "id": "9",
+      "nome": "Realizar o teste de pagamento Compra Crédito Parcelado ADM (Emissor Com juros)",
+      "descricao": "Realizar o teste de pagamento Compra Crédito Parcelado ADM (Emissor Com juros)",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "expected_pcode": "003800",
+      "steps": [
+        {
+          "numero": 1,
+          "descricao": "Enviar compra (0200)",
+          "mti": "0200"
+        },
+        {
+          "numero": 2,
+          "descricao": "Receber resposta de compra (0210)",
+          "mti": "0210"
+        },
+        {
+          "numero": 3,
+          "descricao": "Enviar confirmação (0202)",
+          "mti": "0202"
+        },
+        {
+          "numero": 4,
+          "descricao": "Receber resposta de confirmação (0212)",
+          "mti": "0212"
+        }
+      ],
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0200",
+            "direction": "RECEBIDA"
+          },
+          {
+            "mti": "0202",
+            "direction": "RECEBIDA"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo esperado permitido no teste 9",
+            "any_mti": [
+              "0800",
+              "0810",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      },
+      "product_type": "credito"
+    }
+  }
+}

@@ -72,8 +72,99 @@
       <p class="subtitle" data-i18n="validator.subtitle">Resultado por perna com status e motivo, comparando o fluxo real com o objetivo esperado do teste selecionado.</p>
     </header>
 
-    <section class="panel form-panel">
+    <!-- SEÇÃO DE SELEÇÃO DE MODO -->
+    <section class="panel form-panel" id="adminModeSelectionPanel">
+      <div class="mode-selection-container" style="padding: 40px 20px;">
+        <h2 style="margin-bottom: 10px; font-size: 1.2rem;">Como você deseja validar?</h2>
+        <p style="color: #666; margin-bottom: 40px;">Escolha o modo de validação mais adequado para sua necessidade</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 30px;">
+          <!-- Modo Manual -->
+          <div style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               onclick="selectValidationModeInterno('manual')" onmouseover="this.style.borderColor='#0066cc'; this.style.boxShadow='0 4px 12px rgba(0,102,204,0.1)'" onmouseout="this.style.borderColor='#ddd'; this.style.boxShadow='none'">
+            <div style="font-size: 2.5rem; margin-bottom: 15px;">🔍</div>
+            <h3 style="margin: 15px 0; font-size: 1.1rem;">Validação Manual</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5; font-size: 0.9rem;">
+              Validar teste por teste, informando os dados manualmente para cada transação
+            </p>
+            <button type="button" class="btn" style="width: 100%; margin-top: 20px;">Selecionar</button>
+          </div>
+
+          <!-- Modo Batch -->
+          <div style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               onclick="selectValidationModeInterno('batch')" onmouseover="this.style.borderColor='#00a84f'; this.style.boxShadow='0 4px 12px rgba(0,168,79,0.1)'" onmouseout="this.style.borderColor='#ddd'; this.style.boxShadow='none'">
+            <div style="font-size: 2.5rem; margin-bottom: 15px;">📋</div>
+            <h3 style="margin: 15px 0; font-size: 1.1rem;">Validação em Batch</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5; font-size: 0.9rem;">
+              Enviar arquivo Word (.docx) com múltiplos testes para validação automática
+            </p>
+            <button type="button" class="btn" style="width: 100%; margin-top: 20px; background: #00a84f;">Selecionar</button>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee;">
+          <button class="btn secondary-btn" type="button" onclick="backToValidatorTabs()" style="display: none;" id="backToTabsBtn">← Voltar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE VALIDAÇÃO EM BATCH (Painel Interno) -->
+    <section class="panel form-panel hidden" id="adminBatchValidationPanel">
+      <div class="batch-validation-container">
+        <div class="client-workspace-head">
+          <div>
+            <p class="status-label">Validação em Batch</p>
+            <h2>Upload de Roteiro Word</h2>
+          </div>
+        </div>
+
+        <form id="internoBatchValidationForm" enctype="multipart/form-data">
+          <div class="field-grid">
+            <label class="field">
+              <span>Produto</span>
+              <select id="batchProductSelectInterno" name="produto_id" required>
+                <option value="">Carregando produtos...</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Data do Log</span>
+              <input id="batchDataLogInterno" name="data_log" type="date" required />
+            </label>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>Selecione o arquivo roteiro (.docx)</span>
+              <input id="batchRoteiroFileInterno" name="roteiro_file" type="file" accept=".docx" required />
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+            <button class="btn secondary-btn" type="button" onclick="selectValidationModeInterno('back')">← Voltar</button>
+            <button class="btn" id="internoSubmitBtn" type="submit">Validar Roteiro em Batch</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SEÇÃO MANUAL (Validação Perna por Perna) -->
+    <section class="panel form-panel hidden" id="adminManualValidationPanel">
       <form id="validateForm">
+        <div class="field-grid validator-top-grid">
+          <label class="field">
+            <span>Produto</span>
+            <select id="productSelectInterno" name="produto_id" required>
+              <option value="">Carregando produtos...</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span data-i18n="validator.testDate">Data da execucao do teste</span>
+            <input id="dataTesteInterno" type="date" />
+          </label>
+        </div>
+
         <div class="field-grid">
           <label class="field">
             <span data-i18n="validator.testLabel">Teste de homologacao</span>
@@ -81,9 +172,12 @@
               <option value="">Carregando testes...</option>
             </select>
           </label>
+        </div>
 
+        <div class="field-grid">
           <label class="field">
             <span data-i18n="validator.logLabel">Arquivo de log</span>
+            <input id="logSearchInput" type="text" placeholder="Buscar log por nome ou data (ex: 20260420)..." style="margin-bottom:6px;" autocomplete="off" />
             <div class="field-inline-row">
               <select id="logSelect" name="log_name" required class="field-grow">
                 <option value="">Carregando logs...</option>
@@ -305,13 +399,23 @@
             </div>
           </div>
 
-          <label class="field" style="max-width: 560px; margin: 0;">
-            <span data-i18n="admin.clientId">CNPJ / Identificador do cliente</span>
-            <div class="field-inline-row">
-              <input id="gestaoClienteInput" type="text" placeholder="Informe o CNPJ do cliente" class="field-grow" data-i18n-placeholder="admin.clientIdPlaceholder" />
-              <button class="btn secondary-btn" id="gestaoCarregarBtn" type="button" style="margin-top:0; white-space:nowrap;" data-i18n="admin.loadClient">Carregar cliente</button>
-            </div>
-          </label>
+          <div style="display:flex; flex-direction:column; gap:10px; max-width: 560px; width:100%;">
+            <label class="field" style="margin: 0;">
+              <span>Produto</span>
+              <select id="gestaoProdutoSelect">
+                <option value="01">Homologação QR Pago</option>
+                <option value="02">Homologação Autorizador</option>
+              </select>
+            </label>
+
+            <label class="field" style="margin: 0;">
+              <span data-i18n="admin.clientId">CNPJ / Identificador do cliente</span>
+              <div class="field-inline-row">
+                <input id="gestaoClienteInput" type="text" placeholder="Informe o CNPJ do cliente" class="field-grow" data-i18n-placeholder="admin.clientIdPlaceholder" />
+                <button class="btn secondary-btn" id="gestaoCarregarBtn" type="button" style="margin-top:0; white-space:nowrap;" data-i18n="admin.loadClient">Carregar cliente</button>
+              </div>
+            </label>
+          </div>
         </div>
       </section>
 

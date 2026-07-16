@@ -32,6 +32,7 @@
 
       "client.brand": "Portal do Cliente - Auto-homologacao",
       "client.stage": "Stage 2",
+      "client.selectProduct": "Selecionar o produto a homologar",
       "client.title": "Envie seu teste de homologacao com dados minimos",
       "client.cnpj": "CNPJ/CUIT",
       "client.cnpjPlaceholder": "Informe o CNPJ/CUIT do cliente",
@@ -125,6 +126,7 @@
       "validator.eyebrow": "Validador de Homologacao",
       "validator.title": "Importe o log e valide todas as pernas por objetivo de teste",
       "validator.subtitle": "Resultado por perna com status e motivo, comparando o fluxo real com o objetivo esperado do teste selecionado.",
+      "validator.testDate": "Data da execucao do teste",
       "validator.testLabel": "Teste de homologacao",
       "validator.logLabel": "Arquivo de log",
       "validator.refreshLogs": "Recarregar lista",
@@ -278,6 +280,7 @@
 
       "client.brand": "Portal del Cliente - Auto-homologacion",
       "client.stage": "Stage 2",
+      "client.selectProduct": "Seleccionar el producto a homologar",
       "client.title": "Envie su prueba de homologacion con datos minimos",
       "client.cnpj": "CNPJ/CUIT",
       "client.cnpjPlaceholder": "Ingrese el CNPJ/CUIT del cliente",
@@ -370,6 +373,7 @@
       "validator.eyebrow": "Validador de Homologacion",
       "validator.title": "Importe el log y valide todas las etapas por objetivo de prueba",
       "validator.subtitle": "Resultado por etapa con estado y motivo, comparando el flujo real con el objetivo esperado de la prueba seleccionada.",
+      "validator.testDate": "Fecha de ejecucion de la prueba",
       "validator.testLabel": "Prueba de homologacion",
       "validator.logLabel": "Archivo de log",
       "validator.refreshLogs": "Recargar lista",

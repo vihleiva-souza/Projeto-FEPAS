@@ -1,34 +1,55 @@
 from __future__ import annotations
 
-import importlib.util
 import os
-from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, url_for
 
-APP_DIR = Path(__file__).resolve().parent
-SERVICE_PATH = APP_DIR / "homolog_service.py"
-SERVICE_SPEC = importlib.util.spec_from_file_location("homolog_service", SERVICE_PATH)
-if SERVICE_SPEC is None or SERVICE_SPEC.loader is None:
-    raise RuntimeError(f"Não foi possível carregar o serviço da API em {SERVICE_PATH}")
-
-homolog_service = importlib.util.module_from_spec(SERVICE_SPEC)
-SERVICE_SPEC.loader.exec_module(homolog_service)
+import homolog_service
+from services import homolog_service_multiproduct as homolog_service_mp
 
 BASE_DIR = homolog_service.BASE_DIR
-get_api_config_payload = homolog_service.get_api_config_payload
-admin_reset_client_onboarding = homolog_service.admin_reset_client_onboarding
-admin_reset_client_tests = homolog_service.admin_reset_client_tests
-admin_set_client_tests = homolog_service.admin_set_client_tests
-enroll_client_tests = homolog_service.enroll_client_tests
-get_health_payload = homolog_service.get_health_payload
-get_client_progress_payload = homolog_service.get_client_progress_payload
 get_log_summary_payload = homolog_service.get_log_summary_payload
 get_tests_payload = homolog_service.get_tests_payload
-list_clients_payload = homolog_service.list_clients_payload
 list_logs_payload = homolog_service.list_logs_payload
-validate_client_payload = homolog_service.validate_client_payload
 validate_log_payload = homolog_service.validate_log_payload
+get_health_payload = homolog_service.get_health_payload
+get_api_config_payload = homolog_service.get_api_config_payload
+
+# NOTE: Removed old non-product functions to avoid creating folders outside product directories
+# - list_clients_payload (deprecated, use list_clients_payload_multiproduct)
+# - get_client_progress_payload (deprecated, use get_client_progress_payload_for_product)
+# - admin_set_client_tests, admin_reset_client_onboarding, admin_reset_client_tests (deprecated, use -for_product versions)
+
+# Multiproduct functions
+get_api_config_with_products = homolog_service_mp.get_api_config_with_products
+get_tests_payload_for_product = homolog_service_mp.get_tests_payload_for_product
+validate_log_payload_with_product = homolog_service_mp.validate_log_payload_with_product
+validate_client_payload_with_product = homolog_service_mp.validate_client_payload_with_product
+enroll_client_tests_for_product = homolog_service_mp.enroll_client_tests_for_product
+get_client_progress_payload_for_product = homolog_service_mp.get_client_progress_payload_for_product
+get_client_progress_payload_all_products = homolog_service_mp.get_client_progress_payload_all_products
+list_clients_payload_multiproduct = homolog_service_mp.list_clients_payload_multiproduct
+admin_set_client_tests_for_product = homolog_service_mp.admin_set_client_tests_for_product
+admin_reset_client_onboarding_for_product = homolog_service_mp.admin_reset_client_onboarding_for_product
+admin_reset_client_tests_for_product = homolog_service_mp.admin_reset_client_tests_for_product
+fetch_logs_for_product_by_date = homolog_service_mp.fetch_logs_for_product_by_date
+
+# Importar função de listagem de produtos diretamente
+from products_config import listar_produtos
+
+def normalize_produto_id(produto_id: str) -> str:
+    """Normaliza produto_id para formato descritivo (01_QRCARDSE ou 02_AutorizadorCARDSE)."""
+    normalized = str(produto_id or "01").strip()
+    # Se for o formato completo, retorna como está
+    if normalized in ("01_QRCARDSE", "02_AutorizadorCARDSE"):
+        return normalized
+    # Se for número, converte
+    if normalized in ("01", "1"):
+        return "01_QRCARDSE"
+    if normalized in ("02", "2"):
+        return "02_AutorizadorCARDSE"
+    # Padrão
+    return "01_QRCARDSE"
 
 app = Flask(
     __name__,
@@ -63,6 +84,29 @@ def get_logs():
     return jsonify(list_logs_payload())
 
 
+@app.post("/api/produtos/<produto_id>/logs/fetch-by-date")
+def fetch_logs_by_date_for_product(produto_id: str):
+    """Dispara coleta de logs por data para o produto informado."""
+    payload = request.get_json(silent=True) or {}
+    data_teste = str(payload.get("data_teste") or request.form.get("data_teste") or "").strip()
+    force_raw = payload.get("force", request.form.get("force", False))
+    force = str(force_raw).strip().lower() in {"1", "true", "yes", "sim"}
+
+    try:
+        result = fetch_logs_for_product_by_date(
+            produto_id=normalize_produto_id(produto_id),
+            data_teste=data_teste,
+            force=force,
+        )
+        return jsonify(result)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except FileNotFoundError as exc:
+        return jsonify({"error": str(exc)}), 404
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao coletar logs por data: {exc}"}), 500
+
+
 @app.get("/api/health")
 def get_health():
     return jsonify(get_health_payload())
@@ -71,6 +115,32 @@ def get_health():
 @app.get("/api/config")
 def get_config():
     return jsonify(get_api_config_payload())
+
+
+@app.get("/api/produtos")
+def get_produtos():
+    """Lista produtos disponíveis para homologação."""
+    try:
+        return jsonify({"produtos": listar_produtos()})
+    except Exception as exc:
+        return jsonify({"error": f"Erro ao listar produtos: {exc}"}), 500
+
+
+@app.get("/api/produtos/<produto_id>/tests")
+def get_tests_for_product(produto_id: str):
+    """Obtém testes disponíveis para um produto específico.
+    
+    Query parameters:
+    - cnpj: (opcional) Se fornecido, retorna apenas testes designados para esse CNPJ
+    """
+    try:
+        cnpj = request.args.get("cnpj", "").strip() or None
+        result = get_tests_payload_for_product(produto_id, cnpj=cnpj)
+        return jsonify(result)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"error": f"Erro ao obter testes: {exc}"}), 500
 
 
 @app.get("/api/logs/<path:log_name>/summary")
@@ -106,15 +176,49 @@ def validate_log():
     return jsonify(result)
 
 
-@app.post("/api/client/validate")
-def validate_client():
+@app.post("/api/validate-produto")
+def validate_log_with_product():
+    """Valida log com seleção de produto."""
     try:
-        result = validate_client_payload(
+        produto_id = normalize_produto_id(request.form.get("produto_id") or "01")
+        _de_filtro = str(request.form.get("de42" if produto_id == "02_AutorizadorCARDSE" else "de41") or "").strip()
+        result = validate_log_payload_with_product(
+            produto_id=produto_id,
+            teste_id=str(request.form.get("teste_id") or "").strip(),
+            log_name=str(request.form.get("log_name") or "").strip(),
+            de11=str(request.form.get("de11") or "").strip(),
+            de41=_de_filtro,
+            cliente="LOCAL",
+            debug=False,
+        )
+    except ValueError as exc:
+        status = 413 if "excede o limite" in str(exc) else 400
+        return jsonify({"error": str(exc)}), status
+    except FileNotFoundError as exc:
+        return jsonify({"error": str(exc)}), 404
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao validar log: {exc}"}), 500
+
+    return jsonify(result)
+
+
+@app.post("/api/client/validate-produto")
+def validate_client_with_product():
+    """Valida cliente com seleção de produto."""
+    try:
+        produto_id = normalize_produto_id(request.form.get("produto_id") or "01")
+        product_type = str(request.form.get("product_type") or "credito_debito").strip()
+        comunicacao_tipo = str(request.form.get("comunicacao_tipo") or "ISO").strip()
+        _de_filtro = str(request.form.get("de42" if produto_id == "02_AutorizadorCARDSE" else "de41") or "").strip()
+        result = validate_client_payload_with_product(
+            produto_id=produto_id,
+            product_type=product_type,
             cnpj=str(request.form.get("cnpj") or "").strip(),
             data_teste=str(request.form.get("data_teste") or "").strip(),
             teste_id=str(request.form.get("teste_id") or "").strip(),
             de11=str(request.form.get("de11") or "").strip(),
-            de41=str(request.form.get("de41") or "").strip(),
+            de41=_de_filtro,
+            comunicacao_tipo=comunicacao_tipo,
         )
     except ValueError as exc:
         status = 413 if "excede o limite" in str(exc) else 400
@@ -127,16 +231,21 @@ def validate_client():
     return jsonify(result)
 
 
-@app.post("/api/client/enroll")
-def enroll_client():
+@app.post("/api/client/enroll-produto")
+def enroll_client_with_product():
+    """Registra testes designados para um CNPJ no produto selecionado."""
     try:
         selected_tests = request.form.getlist("selected_tests")
+        payload = request.get_json(silent=True) or {}
         if not selected_tests:
-            raw_selected = request.get_json(silent=True) or {}
-            selected_tests = list(raw_selected.get("selected_tests") or [])
+            selected_tests = list(payload.get("selected_tests") or [])
 
-        result = enroll_client_tests(
-            cnpj=str(request.form.get("cnpj") or (request.get_json(silent=True) or {}).get("cnpj") or "").strip(),
+        produto_id = normalize_produto_id(request.form.get("produto_id") or payload.get("produto_id") or "01")
+        cnpj = str(request.form.get("cnpj") or payload.get("cnpj") or "").strip()
+
+        result = enroll_client_tests_for_product(
+            cnpj=cnpj,
+            produto_id=produto_id,
             selected_test_ids=selected_tests,
         )
     except ValueError as exc:
@@ -147,11 +256,186 @@ def enroll_client():
     return jsonify(result)
 
 
-@app.get("/api/client/progress")
-def get_client_progress():
+@app.post("/api/validar-roteiro-cliente-batch")
+def validate_roteiro_cliente_batch():
+    """
+    Validação em batch: cliente faz upload do roteiro Word e log.
+    O sistema extrai testes, valida APENAS os selecionados contra o log.
+    
+    Parâmetros de entrada (multipart/form-data):
+    - roteiro_file: Arquivo Word (.docx) com roteiro do cliente
+    - log_name: Nome do arquivo de log (já disponível no sistema)
+    - produto_id: ID do produto (default "02" para CARDSE)
+    - cnpj: CNPJ do cliente
+    - testes_selecionados: JSON com IDs dos testes a validar (ex: [1, 2, 4])
+                          Se vazio/ausente, valida todos
+    
+    Comportamento:
+    - Se cliente selecionou [1, 2, 4] mas roteiro tem [1, 2, 3, 4]:
+      ✓ Valida: 1, 2, 4
+      ⏭️  Ignora: 3 (com motivo no resumo)
+    
+    Resposta (JSON):
+    {
+        "status": "SUCESSO" | "PARCIAL" | "FALHA",
+        "timestamp": "2026-07-15T14:30:00",
+        "submissao_id": "12345678000190_20260715_143000",
+        "testes_selecionados": [1, 2, 4],
+        "resumo": {
+            "total_selecionados": 3,
+            "validados": 3,
+            "nao_validados": 1,
+            "aprovados": 3,
+            "reprovados": 0,
+            "percentual_sucesso": 100.0
+        },
+        "resultados": [...],
+        "testes_ignorados": [
+            {
+                "teste_id": 3,
+                "motivo": "Não estava na seleção de testes a homologar"
+            }
+        ]
+    }
+    """
+    from roteiro_batch_validator import (
+        parsear_roteiro_docx,
+        validar_roteiro_batch,
+    )
+    from pathlib import Path
+    import tempfile
+    import json
+    
     try:
-        result = get_client_progress_payload(
+        # Validar parâmetros
+        roteiro_file = request.files.get("roteiro_file")
+        log_name = str(request.form.get("log_name") or "").strip()
+        produto_id = normalize_produto_id(request.form.get("produto_id") or "02")
+        cnpj = str(request.form.get("cnpj") or "LOCAL").strip()
+        testes_selecionados_str = str(request.form.get("testes_selecionados") or "").strip()
+        
+        if not roteiro_file:
+            return jsonify({"error": "Campo 'roteiro_file' é obrigatório"}), 400
+        if not log_name:
+            return jsonify({"error": "Campo 'log_name' é obrigatório"}), 400
+        if cnpj == "LOCAL":
+            return jsonify({"error": "Campo 'cnpj' é obrigatório"}), 400
+        
+        # Parsear testes selecionados
+        testes_selecionados = None
+        if testes_selecionados_str:
+            try:
+                # Aceita formato: [1,2,3] ou 1,2,3
+                testes_selecionados_str = testes_selecionados_str.strip("[]")
+                testes_selecionados = [int(x.strip()) for x in testes_selecionados_str.split(",")]
+            except (ValueError, AttributeError):
+                return jsonify({"error": "Formato inválido para 'testes_selecionados'. Use: [1,2,3]"}), 400
+        
+        # Salvar arquivo temporário na pasta temp/
+        temp_dir = BASE_DIR / "temp"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(suffix=".docx", delete=False, dir=str(temp_dir)) as tmp:
+            roteiro_file.save(tmp.name)
+            temp_roteiro_path = tmp.name
+        
+        # Etapa 1: Extrair testes do roteiro
+        testes = parsear_roteiro_docx(temp_roteiro_path)
+        
+        if not testes:
+            Path(temp_roteiro_path).unlink(missing_ok=True)
+            return jsonify({
+                "error": "Nenhum teste com dados completos encontrado no roteiro",
+                "detalhes": "O roteiro deve ter testes com BIT 11 e BIT 42 preenchidos"
+            }), 400
+        
+        # Etapa 2: Validar em batch (apenas testes selecionados)
+        resultado_batch = validar_roteiro_batch(
+            log_name=log_name,
+            testes=testes,
+            cnpj=cnpj,
+            testes_selecionados=testes_selecionados,
+            produto_id=produto_id,
+            cliente=cnpj,
+            roteiro_path=temp_roteiro_path,
+            debug=False,
+        )
+        
+        # Limpeza (APÓS validação, que já salvou o roteiro)
+        Path(temp_roteiro_path).unlink(missing_ok=True)
+        
+        # Retornar JSON (sem expor caminhos de pasta)
+        return jsonify(resultado_batch)
+    
+    except FileNotFoundError as exc:
+        return jsonify({"error": f"Log não encontrado: {exc}"}), 404
+    except ValueError as exc:
+        return jsonify({"error": f"Erro de validação: {exc}"}), 400
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao validar roteiro em batch: {exc}"}), 500
+
+
+@app.get("/api/testes-disponiveis/<produto_id>")
+def get_testes_disponiveis(produto_id: str):
+    """
+    Retorna a lista de testes disponíveis para um produto.
+    Usado pelo portal para popular o seletor de checkboxes.
+    
+    Exemplo de resposta:
+    {
+        "produto_id": "02",
+        "produto_nome": "Homologação Autorizador",
+        "testes": [
+            {"id": 1, "label": "Teste 1"},
+            {"id": 2, "label": "Teste 2"},
+            ...
+            {"id": 55, "label": "Teste 55"}
+        ]
+    }
+    """
+    try:
+        produto_id = str(produto_id or "").strip().zfill(2)
+
+        produto_config = {
+            "01": {"nome": "Homologação QR Pago"},
+            "02": {"nome": "Homologação Autorizador"},
+        }
+
+        if produto_id not in produto_config:
+            return jsonify({"error": f"Produto '{produto_id}' não encontrado"}), 404
+        
+        # Obter info do produto
+        produto_config = {
+            "01": {"nome": "Homologação QR Pago"},
+            "02": {"nome": "Homologação Autorizador"},
+        }
+
+        tests_data = get_tests_payload_for_product(produto_id)
+        testes = [
+            {
+                "id": int(t["id"]),
+                "label": f"{t['id']} - {t['nome']}" if t.get("nome") else f"Teste {t['id']}",
+            }
+            for t in (tests_data.get("tests") or [])
+        ]
+
+        return jsonify({
+            "produto_id": produto_id,
+            "produto_nome": produto_config[produto_id]["nome"],
+            "testes": testes,
+            "total": len(testes)
+        })
+    
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao obter testes disponíveis: {exc}"}), 500
+
+
+@app.get("/api/client/progress-produto")
+def get_client_progress_with_product():
+    """Consulta progresso do CNPJ considerando o produto selecionado."""
+    try:
+        result = get_client_progress_payload_for_product(
             cnpj=str(request.args.get("cnpj") or "").strip(),
+            produto_id=str(request.args.get("produto_id") or "01").strip().zfill(2),
         )
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
@@ -161,46 +445,66 @@ def get_client_progress():
     return jsonify(result)
 
 
-@app.get("/api/admin/clients")
-def admin_list_clients():
+@app.get("/api/client/progress-all-products")
+def get_client_progress_all_products_route():
+    """Consulta progresso do CNPJ em todos os produtos (QR + Autorizador)."""
     try:
-        return jsonify(list_clients_payload())
+        result = get_client_progress_payload_all_products(
+            cnpj=str(request.args.get("cnpj") or "").strip(),
+        )
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
     except Exception as exc:  # pragma: no cover
-        return jsonify({"error": f"Falha ao listar clientes: {exc}"}), 500
+        return jsonify({"error": f"Falha ao consultar progresso do cliente por produto: {exc}"}), 500
+
+    return jsonify(result)
 
 
-@app.post("/api/admin/clients/<path:cnpj>/tests")
-def admin_set_tests(cnpj: str):
+@app.get("/api/admin/clients-produtos")
+def admin_list_clients_products():
+    try:
+        return jsonify(list_clients_payload_multiproduct())
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao listar clientes por produto: {exc}"}), 500
+
+
+@app.post("/api/admin/clients/<path:cnpj>/tests-produto")
+def admin_set_tests_product(cnpj: str):
     try:
         raw = request.get_json(silent=True) or {}
         selected_tests = list(raw.get("selected_tests") or request.form.getlist("selected_tests") or [])
-        result = admin_set_client_tests(cnpj=cnpj, selected_test_ids=selected_tests)
+        produto_id = str(raw.get("produto_id") or request.form.get("produto_id") or "01").strip().zfill(2)
+        result = admin_set_client_tests_for_product(cnpj=cnpj, produto_id=produto_id, selected_test_ids=selected_tests)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:  # pragma: no cover
-        return jsonify({"error": f"Falha ao atualizar testes do cliente: {exc}"}), 500
+        return jsonify({"error": f"Falha ao atualizar testes do cliente por produto: {exc}"}), 500
     return jsonify(result)
 
 
-@app.post("/api/admin/clients/<path:cnpj>/reset-onboarding")
-def admin_reset_onboarding(cnpj: str):
+@app.post("/api/admin/clients/<path:cnpj>/reset-onboarding-produto")
+def admin_reset_onboarding_product(cnpj: str):
     try:
-        result = admin_reset_client_onboarding(cnpj=cnpj)
+        raw = request.get_json(silent=True) or {}
+        produto_id = str(raw.get("produto_id") or request.form.get("produto_id") or "01").strip().zfill(2)
+        result = admin_reset_client_onboarding_for_product(cnpj=cnpj, produto_id=produto_id)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:  # pragma: no cover
-        return jsonify({"error": f"Falha ao resetar onboarding: {exc}"}), 500
+        return jsonify({"error": f"Falha ao resetar onboarding por produto: {exc}"}), 500
     return jsonify(result)
 
 
-@app.post("/api/admin/clients/<path:cnpj>/reset-tests")
-def admin_reset_tests(cnpj: str):
+@app.post("/api/admin/clients/<path:cnpj>/reset-tests-produto")
+def admin_reset_tests_product(cnpj: str):
     try:
-        result = admin_reset_client_tests(cnpj=cnpj)
+        raw = request.get_json(silent=True) or {}
+        produto_id = str(raw.get("produto_id") or request.form.get("produto_id") or "01").strip().zfill(2)
+        result = admin_reset_client_tests_for_product(cnpj=cnpj, produto_id=produto_id)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:  # pragma: no cover
-        return jsonify({"error": f"Falha ao resetar testes: {exc}"}), 500
+        return jsonify({"error": f"Falha ao resetar testes por produto: {exc}"}), 500
     return jsonify(result)
 
 

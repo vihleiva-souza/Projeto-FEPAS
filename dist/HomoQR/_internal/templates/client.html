@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Cliente | Auto-homologacao ISO 8583</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="/static/Fiserv_Logo.svg.png" type="image/png">
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="page">
+    <div class="brand-bar">
+      <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
+      <span class="brand-product" data-i18n="client.brand">Portal do Cliente - Auto-homologacao</span>
+      <span class="brand-bar-sep"></span>
+      <span class="brand-version">v2.0</span>
+      <div style="margin-left: auto;">
+        <button type="button" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px;" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='/'; }" data-i18n="common.back">Voltar</button>
+      </div>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow" data-i18n="client.stage">Stage 1</p>
+      <h1 data-i18n="client.selectProduct">Selecionar o produto a homologar</h1>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- LAYOUT SIDEBAR + CONTENT (CLIENTE)                           -->
+    <!-- ============================================================ -->
+    <div class="workspace-container">
+      <!-- SIDEBAR ESQUERDO -->
+      <aside class="workspace-sidebar">
+        <nav class="workspace-nav">
+          <button class="workspace-nav-item active" data-section="access" title="Acesso ao Portal">
+            <span class="nav-icon">🔐</span>
+            <div class="nav-content">
+              <h3 data-i18n="client.accessTab">Acesso ao Portal</h3>
+              <p data-i18n="client.accessDesc">Informe seu CNPJ</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-section="submit" title="Enviar Testes">
+            <span class="nav-icon">📤</span>
+            <div class="nav-content">
+              <h3 data-i18n="client.submitTab">Enviar Testes</h3>
+              <p data-i18n="client.submitDesc">Execute homologações</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-section="progress" title="Estado de Homologacao">
+            <span class="nav-icon">📊</span>
+            <div class="nav-content">
+              <h3 data-i18n="client.progressTab">Ver Estado</h3>
+              <p data-i18n="client.progressDesc">Acompanhe o progresso</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <main class="workspace-main">
+
+    <!-- SEÇÃO 1: SELEÇÃO DE PRODUTO -->
+    <section class="panel form-panel client-section" id="clientProductSelectionPanel">
+      <div class="product-selection-container" style="text-align: center; padding: 40px 20px;">
+        <h2 style="margin-bottom: 30px; font-size: 1.4rem;">Qual tipo de homologação você deseja realizar?</h2>
+        
+        <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+          <!-- QR Pago Card -->
+          <div class="product-card" style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               data-product-id="01" onclick="selectProduct('01', event)">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🟢</div>
+            <h3 style="margin: 15px 0; font-size: 1.2rem;">QR Pago</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
+              Homologação de Transação QR com validação de TEF (TEF → FEPAS)
+            </p>
+            <button class="btn" style="width: 100%; margin-top: 15px;">Selecionar</button>
+          </div>
+
+          <!-- Autorizador Card -->
+          <div class="product-card" style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               data-product-id="02" onclick="selectProduct('02', event)">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🔵</div>
+            <h3 style="margin: 15px 0; font-size: 1.2rem;">Autorizador CARDSE</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
+              Homologação de autorizador com validação de processadora (PROCESSADORA → FEPAS)
+            </p>
+            <button class="btn" style="width: 100%; margin-top: 15px;">Selecionar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel login-panel client-section hidden" id="clientAccessPanel">
+      <form id="clientAccessForm" class="login-form">
+        <div id="qrPagoFields">
+          <label class="field">
+            <span data-i18n="client.cnpj">CNPJ/CUIT</span>
+            <input id="cnpjInput" type="text" placeholder="Informe o CNPJ/CUIT do cliente" data-i18n-placeholder="client.cnpjPlaceholder" />
+          </label>
+        </div>
+
+        <div id="autorizadorFields" style="display: none;">
+          <label class="field">
+            <span>CNPJ</span>
+            <input id="cnpjInputAutorizador" type="text" placeholder="Informe o CNPJ do cliente" />
+          </label>
+        </div>
+
+        <button class="btn" id="accessSubmitBtn" type="submit" data-i18n="client.access">Acessar homologacoes</button>
+        <button class="btn secondary-btn" type="button" onclick="backToProductSelection()">← Voltar para seleção</button>
+      </form>
+    </section>
+
+    <section class="panel hidden client-section" id="clientOnboardingPanel">
+      <div class="client-workspace-head">
+        <div>
+          <p class="status-label" data-i18n="client.firstAccess">Primeiro acesso do cliente</p>
+          <h2 id="clientOnboardingTitle" data-i18n="client.onboardingTitle">Selecione os testes que este CNPJ/CUIT vai homologar</h2>
+        </div>
+      </div>
+
+      <form id="clientOnboardingForm">
+        <div class="goal" data-i18n="client.onboardingHint">Essa seleção será salva para este CNPJ/CUIT e não será solicitada novamente nos próximos acessos.</div>
+        <div id="clientOnboardingChecklist" class="steps-list" style="margin-top: 16px;"></div>
+        <button class="btn" id="onboardingSubmitBtn" type="submit" data-i18n="client.saveTests">Salvar testes do cliente</button>
+      </form>
+    </section>
+
+    <section class="panel form-panel hidden client-section" id="clientWorkspacePanel">
+      <div class="client-workspace-head">
+        <div>
+          <p class="status-label" data-i18n="client.authByCnpj">Cliente autenticado por CNPJ/CUIT</p>
+          <h2 id="clientCnpjLabel">-</h2>
+        </div>
+        <button class="btn secondary-btn" id="changeCnpjBtn" type="button" data-i18n="client.changeCnpj">Trocar CNPJ/CUIT</button>
+      </div>
+
+      <form id="clientValidateForm">
+        <input id="cnpjHidden" name="cnpj" type="hidden" />
+
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="client.testDate">Data do teste</span>
+            <input id="dataTeste" name="data_teste" type="date" required />
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="client.testInHomolog">Teste em homologacao</span>
+            <select id="testSelect" name="teste_id" required>
+              <option value="">Carregando testes...</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span data-i18n="client.de11">Bit 11 (Stan)</span>
+            <input id="de11" name="de11" type="text" placeholder="6 digitos" maxlength="6" required data-i18n-placeholder="validator.de11Placeholder" />
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="client.de41">Bit 41 (Identificação de Terminal)</span>
+            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" required data-i18n-placeholder="validator.de41Placeholder" />
+          </label>
+
+          <div class="field">
+            <span data-i18n="client.expectedResult">Resultado esperado</span>
+            <div class="goal" id="clientGoalBox" data-i18n="client.goalDefault">Selecione um teste para visualizar o objetivo esperado.</div>
+          </div>
+        </div>
+
+        <button class="btn" id="submitBtn" type="submit" data-i18n="client.sendValidation">Enviar para validacao</button>
+      </form>
+    </section>
+
+    <section class="panel hidden client-section" id="clientProgressPanel">
+      <div class="status-row">
+        <div>
+          <p class="status-label" data-i18n="client.progress">Progresso do cliente</p>
+          <h2 id="clientProgressTitle">-</h2>
+        </div>
+        <div class="status-chip" id="clientProgressChip">0%</div>
+      </div>
+
+      <!-- CARD DE PROGRESSO VISUAL -->
+      <div class="progress-card" id="progressVisualizationCard">
+        <div class="progress-header">
+          <h3 data-i18n="client.statusOverview">Visão Geral de Progresso</h3>
+        </div>
+        
+        <div class="progress-metrics">
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.planned">Testes Planejados</span>
+            <span class="metric-value" id="metricPlanned">0</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.approved">Aprovados</span>
+            <span class="metric-value" id="metricApproved">0</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.inProgress">Em Andamento</span>
+            <span class="metric-value" id="metricInProgress">0</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-label" data-i18n="client.pending">Pendentes</span>
+            <span class="metric-value" id="metricPending">0</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar-label">
+            <span data-i18n="client.completionRate">Taxa de Conclusão</span>
+            <span class="progress-percentage" id="progressPercentage">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+        </div>
+
+        <div class="progress-stats">
+          <div class="stat-item approved">
+            <span class="stat-icon">✓</span>
+            <div class="stat-details">
+              <span class="stat-title" data-i18n="client.approvalRate">Taxa de Aprovação</span>
+              <span class="stat-value" id="statApprovalRate">0%</span>
+            </div>
+          </div>
+          <div class="stat-item pending">
+            <span class="stat-icon">⏳</span>
+            <div class="stat-details">
+              <span class="stat-title" data-i18n="client.averageAttempts">Tentativas Médias</span>
+              <span class="stat-value" id="statAverageAttempts">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-summary-grid">
+        <div class="result-summary-card goal-card">
+          <div class="result-summary-label" data-i18n="client.summary">Resumo geral</div>
+          <div class="result-summary-value" id="clientProgressSummary">-</div>
+        </div>
+        <div class="result-summary-card legs-card">
+          <div class="result-summary-label" data-i18n="client.selectedTest">Teste selecionado</div>
+          <div class="result-summary-value" id="clientSelectedTestSummary" data-i18n="client.selectCnpjAndRun">Selecione um CNPJ/CUIT e execute um teste.</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="client.tableTest">Teste</th>
+              <th data-i18n="client.tableStatus">Status</th>
+              <th data-i18n="client.tableAttempts">Tentativas</th>
+              <th data-i18n="client.tableApprovedAttempt">Aprovado na tentativa</th>
+              <th data-i18n="client.tableSuccess">% sucesso</th>
+              <th data-i18n="client.tableUntilApproval">% ate aprovacao</th>
+            </tr>
+          </thead>
+          <tbody id="clientProgressTableBody">
+            <tr><td colspan="6" data-i18n="client.noTestsForCnpj">Nenhum teste realizado para este CNPJ/CUIT.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel result-panel hidden client-section" id="clientResultPanel">
+      <div class="status-row">
+        <div>
+          <p class="status-label" data-i18n="result.final">Resultado final</p>
+          <h2 id="clientOverallStatus">-</h2>
+        </div>
+        <div class="status-chip" id="clientStatusChip">-</div>
+      </div>
+
+      <div class="result-summary-grid">
+        <div class="result-summary-card goal-card">
+          <div class="result-summary-label" data-i18n="client.protocol">Protocolo</div>
+          <div class="result-summary-value" id="clientProtocol">-</div>
+        </div>
+        <div class="result-summary-card legs-card">
+          <div class="result-summary-label" data-i18n="client.deniedDetail">Detalhe da negacao</div>
+          <div class="result-summary-value" id="clientDeniedLeg">-</div>
+        </div>
+      </div>
+
+      <div class="goal" id="clientDeniedReason" data-i18n="client.deniedReasonDefault">Quando negado, o motivo aparece aqui.</div>
+    </section>
+
+      </main><!-- /workspace-main -->
+    </div><!-- /workspace-container -->
+
+    <footer class="app-footer">
+      <div class="app-footer-brand">
+        <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="app-footer-logo" />
+        <div class="app-footer-text">
+          Portal de Homologacao ISO 8583<br>
+          Tecnologia e Inovacao — Fiserv Brasil
+        </div>
+      </div>
+      <span class="app-footer-copy">&copy; 2025 Fiserv, Inc. Todos os direitos reservados.</span>
+    </footer>
+  </main>
+
+  <script src="/static/i18n.js"></script>
+  <script src="/static/product-selection.js"></script>
+  <script src="/static/client.js"></script>
+</body>
+</html>

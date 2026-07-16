@@ -1,0 +1,51 @@
+══════════════════════════════════════════════════════════════════════
+               RELATÓRIO DE VALIDAÇÃO EM BATCH
+══════════════════════════════════════════════════════════════════════
+
+Data/Hora:              2026-07-15T13:33:02.280404
+Submissão ID:           00047118230855_20260715_133302
+Produto:                02 (CARDSE)
+Log Validado:           aud_20260701110036.fps.txt
+Testes Selecionados:    1, 2, 3
+
+──────────────────────────────────────────────────────────────────────
+RESUMO EXECUTIVO
+──────────────────────────────────────────────────────────────────────
+
+Total Selecionados:                3
+Total Validados:                   1
+✅ Aprovados:                      0
+❌ Reprovados:                     1
+📈 Taxa de Sucesso:                0.00%
+
+──────────────────────────────────────────────────────────────────────
+DETALHES POR TESTE
+──────────────────────────────────────────────────────────────────────
+
+❌ TESTES REPROVADOS (1):
+
+  Teste 03: REPROVADO ✗
+    BIT 11 (Stan): 040002
+    BIT 42 (Estab): 077698017000199
+    ⚠️  Motivo: Nenhuma mensagem encontrada com DE11=040002 e DE42=077698017000199. Verifique os valores informados. Bit 11 (STAN) encontrados no log: 010003, 010005.
+    Pernas: 0/0 aprovadas
+
+
+⏭️  TESTES NÃO VALIDADOS (2):
+
+  Teste 14: NÃO VALIDADO
+    Motivo: Não estava na seleção de testes a homologar
+
+  Teste 15: NÃO VALIDADO
+    Motivo: Não estava na seleção de testes a homologar
+
+
+──────────────────────────────────────────────────────────────────────
+AÇÕES RECOMENDADAS
+──────────────────────────────────────────────────────────────────────
+
+1. 1 teste(s) falharam - Revise os detalhes acima
+2. Corrija os dados dos testes falhados
+3. Resubmeta o roteiro com as correções
+
+══════════════════════════════════════════════════════════════════════

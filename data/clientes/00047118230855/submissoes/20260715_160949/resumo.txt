@@ -1,0 +1,53 @@
+══════════════════════════════════════════════════════════════════════
+               RELATÓRIO DE VALIDAÇÃO EM BATCH
+══════════════════════════════════════════════════════════════════════
+
+Data/Hora:              2026-07-15T16:09:49.966687
+Submissão ID:           00047118230855_20260715_160949
+Produto:                02 (CARDSE)
+Log Validado:           aud_20260304.txt
+Testes Selecionados:    3, 14, 15
+
+──────────────────────────────────────────────────────────────────────
+RESUMO EXECUTIVO
+──────────────────────────────────────────────────────────────────────
+
+Total Selecionados:                3
+Total Validados:                   3
+✅ Aprovados:                      3
+❌ Reprovados:                     0
+📈 Taxa de Sucesso:                100.00%
+
+──────────────────────────────────────────────────────────────────────
+DETALHES POR TESTE
+──────────────────────────────────────────────────────────────────────
+
+✅ TESTES APROVADOS (3):
+
+  Teste 03: APROVADO ✓
+    BIT 11 (Stan): 040002
+    BIT 42 (Estab): 077698017000199
+    Cadeia: 0100, 0100, 0110
+    Pernas: 0/0 aprovadas
+
+  Teste 14: APROVADO ✓
+    BIT 11 (Stan): 040011
+    BIT 42 (Estab): 077698017000199
+    Cadeia: 0200, 0200, 0210, 0420, 0420, 0430
+    Pernas: 0/0 aprovadas
+
+  Teste 15: APROVADO ✓
+    BIT 11 (Stan): 040014
+    BIT 42 (Estab): 077698017000199
+    Cadeia: 0200, 0200, 0210, 0202, 0202, 0212
+    Pernas: 0/0 aprovadas
+
+
+──────────────────────────────────────────────────────────────────────
+AÇÕES RECOMENDADAS
+──────────────────────────────────────────────────────────────────────
+
+✅ Todos os testes selecionados foram aprovados!
+   Próximo passo: Submeter para aprovação final
+
+══════════════════════════════════════════════════════════════════════

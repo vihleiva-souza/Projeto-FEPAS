@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import sys
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
@@ -18,7 +19,10 @@ from validador_0200 import (
     parse_iso_formatted_blocks,
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys.executable).resolve().parent
+else:
+    BASE_DIR = Path(__file__).resolve().parent.parent
 LOGS_DIR = Path(os.environ.get("HOMOLOG_LOGS_DIR", DEFAULT_LOGS_DIR)).resolve()
 CLIENT_HOMOLOG_DIR = Path(os.environ.get("HOMOLOG_CLIENT_STORE_DIR", BASE_DIR / "HOMOLOGACAO_CLIENTES")).resolve()
 MAX_LOG_SIZE_BYTES = 20 * 1024 * 1024
@@ -49,12 +53,36 @@ def _normalize_cnpj(value: str) -> str:
     return normalized
 
 
-def _client_root_dir(cnpj: str) -> Path:
-    return CLIENT_HOMOLOG_DIR / _normalize_cnpj(cnpj)
+def _normalize_product_id(value: str) -> str:
+    """Normaliza o ID do produto para nome descritivo.
+    01 -> 01_QRCARDSE
+    02 -> 02_AutorizadorCARDSE
+    """
+    normalized = str(value or "").strip()
+    # Se já é formato descritivo completo, retorna como está
+    if normalized in ("01_QRCARDSE", "02_AutorizadorCARDSE"):
+        return normalized
+    # Se for número, converte
+    normalized = normalized.zfill(2)
+    if normalized == "02":
+        return "02_AutorizadorCARDSE"
+    return "01_QRCARDSE"  # Padrão QR
 
 
-def _client_stats_path(cnpj: str) -> Path:
-    return _client_root_dir(cnpj) / "stats.json"
+def _client_root_dir(cnpj: str, produto_id: str = None) -> Path:
+    """Retorna o diretório raiz do cliente.
+    Se produto_id for informado, separa por produto: CLIENTES/{produto_id}/{cnpj}
+    Caso contrário (compatibilidade): CLIENTES/{cnpj}
+    """
+    base = CLIENT_HOMOLOG_DIR
+    if produto_id:
+        pid_norm = _normalize_product_id(produto_id)
+        base = base / pid_norm
+    return base / _normalize_cnpj(cnpj)
+
+
+def _client_stats_path(cnpj: str, produto_id: str = None) -> Path:
+    return _client_root_dir(cnpj, produto_id) / "stats.json"
 
 
 def _catalog_tests() -> List[Dict[str, Any]]:
@@ -91,7 +119,7 @@ def _compute_progress_summary(stats: Dict[str, Any], total_catalog_tests: int) -
     }
 
 
-def _default_client_stats(cnpj: str) -> Dict[str, Any]:
+def _default_client_stats(cnpj: str, produto_id: str = None) -> Dict[str, Any]:
     total_catalog_tests = len(_catalog_tests())
     return {
         "cnpj": _normalize_cnpj(cnpj),
@@ -103,15 +131,15 @@ def _default_client_stats(cnpj: str) -> Dict[str, Any]:
     }
 
 
-def _load_client_stats(cnpj: str) -> Dict[str, Any]:
-    stats_path = _client_stats_path(cnpj)
+def _load_client_stats(cnpj: str, produto_id: str = None) -> Dict[str, Any]:
+    stats_path = _client_stats_path(cnpj, produto_id)
     if not stats_path.is_file():
-        return _default_client_stats(cnpj)
+        return _default_client_stats(cnpj, produto_id)
 
     try:
         loaded = json.loads(stats_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        return _default_client_stats(cnpj)
+        return _default_client_stats(cnpj, produto_id)
 
     total_catalog_tests = len(_catalog_tests())
     loaded.setdefault("cnpj", _normalize_cnpj(cnpj))
@@ -122,8 +150,8 @@ def _load_client_stats(cnpj: str) -> Dict[str, Any]:
     return loaded
 
 
-def _save_client_stats(cnpj: str, stats: Dict[str, Any]) -> Dict[str, Any]:
-    root_dir = _client_root_dir(cnpj)
+def _save_client_stats(cnpj: str, stats: Dict[str, Any], produto_id: str = None) -> Dict[str, Any]:
+    root_dir = _client_root_dir(cnpj, produto_id)
     root_dir.mkdir(parents=True, exist_ok=True)
 
     total_catalog_tests = len(_catalog_tests())
@@ -134,7 +162,7 @@ def _save_client_stats(cnpj: str, stats: Dict[str, Any]) -> Dict[str, Any]:
     stats["onboarding_completed"] = bool(stats.get("assigned_tests"))
     stats["resumo"] = _compute_progress_summary(stats, total_catalog_tests)
 
-    stats_path = _client_stats_path(cnpj)
+    stats_path = _client_stats_path(cnpj, produto_id)
     stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
     return stats
 
@@ -197,178 +225,25 @@ def _build_all_tests_progress(stats: Dict[str, Any]) -> List[Dict[str, Any]]:
     return output
 
 
-def enroll_client_tests(cnpj: str, selected_test_ids: List[str]) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
-    catalog_by_id = _catalog_tests_by_id()
-    normalized_ids = sorted({str(item or "").strip().zfill(2) for item in selected_test_ids if str(item or "").strip()})
-
-    if not normalized_ids:
-        raise ValueError("Selecione ao menos um teste para homologação.")
-
-    invalid = [item for item in normalized_ids if item not in catalog_by_id]
-    if invalid:
-        raise ValueError(f"Testes inválidos informados: {', '.join(invalid)}")
-
-    stats = _load_client_stats(normalized_cnpj)
-    if stats.get("assigned_tests"):
-        normalized_ids = [str(item).zfill(2) for item in stats.get("assigned_tests") or []]
-    else:
-        stats["assigned_tests"] = normalized_ids
-
-    saved = _save_client_stats(normalized_cnpj, stats)
-    return {
-        "cnpj": normalized_cnpj,
-        "assigned_tests": [catalog_by_id[test_id] for test_id in normalized_ids],
-        "summary": saved.get("resumo") or {},
-        "tests": _build_all_tests_progress(saved),
-        "onboarding_required": False,
-    }
+# NOTE: enroll_client_tests() removed - use multiproduct version instead
 
 
-def _update_client_stats(cnpj: str, teste: Dict[str, Any], is_approved: bool) -> Dict[str, Any]:
-    stats = _load_client_stats(cnpj)
-    tests = dict(stats.get("tests") or {})
-    test_id = str(teste.get("id") or "").zfill(2)
-    test_name = str(teste.get("nome") or "").strip()
-    now_iso = datetime.now().isoformat(timespec="seconds")
-
-    current = dict(tests.get(test_id) or {})
-    attempts_total = int(current.get("attempts_total") or 0) + 1
-    approved_attempts = int(current.get("approved_attempts") or 0) + (1 if is_approved else 0)
-    approved_once = bool(current.get("approved_once")) or is_approved
-    attempts_until_approval = current.get("attempts_until_approval")
-    if is_approved and not isinstance(attempts_until_approval, int):
-        attempts_until_approval = attempts_total
-
-    updated_entry = {
-        "teste_id": test_id,
-        "teste_nome": test_name,
-        "attempts_total": attempts_total,
-        "approved_attempts": approved_attempts,
-        "approved_once": approved_once,
-        "attempts_until_approval": attempts_until_approval,
-        "last_result": "APROVADO" if is_approved else "NEGADO",
-        "last_attempt_at": now_iso,
-    }
-    tests[test_id] = updated_entry
-
-    stats["tests"] = tests
-    saved_stats = _save_client_stats(cnpj, stats)
-    return {
-        "selected_test": _build_test_progress_payload(updated_entry),
-        "all_tests": _build_all_tests_progress(saved_stats),
-        "summary": saved_stats.get("resumo") or {},
-    }
+# NOTE: _update_client_stats() removed - use multiproduct version instead
 
 
-def get_client_progress_payload(cnpj: str) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
-    stats = _load_client_stats(normalized_cnpj)
-    catalog_by_id = _catalog_tests_by_id()
-    assigned_ids = [str(item).zfill(2) for item in (stats.get("assigned_tests") or []) if str(item).strip()]
-    return {
-        "cnpj": normalized_cnpj,
-        "onboarding_required": not bool(assigned_ids),
-        "assigned_tests": [catalog_by_id[test_id] for test_id in assigned_ids if test_id in catalog_by_id],
-        "summary": stats.get("resumo") or {},
-        "tests": _build_all_tests_progress(stats),
-    }
+# NOTE: get_client_progress_payload() removed - use multiproduct version instead
 
 
-def list_clients_payload() -> Dict[str, Any]:
-    clients: List[Dict[str, Any]] = []
-    if not CLIENT_HOMOLOG_DIR.is_dir():
-        return {"clients": clients}
-
-    for client_dir in sorted(CLIENT_HOMOLOG_DIR.iterdir()):
-        if not client_dir.is_dir():
-            continue
-        cnpj = client_dir.name
-        stats_path = client_dir / "stats.json"
-        if not stats_path.is_file():
-            stats: Dict[str, Any] = {"cnpj": cnpj, "assigned_tests": [], "onboarding_completed": False, "tests": {}}
-        else:
-            try:
-                stats = json.loads(stats_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):
-                stats = {"cnpj": cnpj, "assigned_tests": [], "onboarding_completed": False, "tests": {}}
-
-        total_catalog = len(_catalog_tests())
-        resumo = _compute_progress_summary(stats, total_catalog)
-        assigned_ids = [str(item).zfill(2) for item in (stats.get("assigned_tests") or []) if str(item).strip()]
-        clients.append({
-            "cnpj": cnpj,
-            "onboarding_completed": bool(stats.get("assigned_tests")),
-            "assigned_tests": assigned_ids,
-            "total_testes_planejados": resumo.get("total_testes_planejados", 0),
-            "testes_aprovados": resumo.get("testes_aprovados", 0),
-            "testes_iniciados": resumo.get("testes_iniciados", 0),
-            "percentual_aprovacao_geral": resumo.get("percentual_aprovacao_geral", 0.0),
-            "updated_at": str(stats.get("updated_at") or ""),
-        })
-
-    return {"clients": clients}
+# NOTE: list_clients_payload() removed - use multiproduct version instead
 
 
-def admin_set_client_tests(cnpj: str, selected_test_ids: List[str]) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
-    catalog_by_id = _catalog_tests_by_id()
-    normalized_ids = sorted({str(item or "").strip().zfill(2) for item in selected_test_ids if str(item or "").strip()})
-
-    if not normalized_ids:
-        raise ValueError("Selecione ao menos um teste.")
-
-    invalid = [item for item in normalized_ids if item not in catalog_by_id]
-    if invalid:
-        raise ValueError(f"Testes inválidos: {', '.join(invalid)}")
-
-    stats = _load_client_stats(normalized_cnpj)
-    stats["assigned_tests"] = normalized_ids
-    saved = _save_client_stats(normalized_cnpj, stats)
-    return {
-        "cnpj": normalized_cnpj,
-        "assigned_tests": normalized_ids,
-        "summary": saved.get("resumo") or {},
-    }
+# NOTE: admin_set_client_tests() removed - use multiproduct version instead
 
 
-def admin_reset_client_onboarding(cnpj: str) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
-    stats = _load_client_stats(normalized_cnpj)
-    stats["assigned_tests"] = []
-    stats["onboarding_completed"] = False
-    saved = _save_client_stats(normalized_cnpj, stats)
-    return {
-        "cnpj": normalized_cnpj,
-        "onboarding_completed": False,
-        "summary": saved.get("resumo") or {},
-    }
+# NOTE: admin_reset_client_onboarding() removed - use multiproduct version instead
 
 
-def admin_reset_client_tests(cnpj: str) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
-    stats = _load_client_stats(normalized_cnpj)
-    stats["tests"] = {}
-
-    root_dir = _client_root_dir(normalized_cnpj)
-    if root_dir.is_dir():
-        for child in root_dir.iterdir():
-            if child.name == "stats.json":
-                continue
-            if child.is_dir():
-                shutil.rmtree(child, ignore_errors=True)
-            else:
-                try:
-                    child.unlink()
-                except OSError:
-                    pass
-
-    saved = _save_client_stats(normalized_cnpj, stats)
-    return {
-        "cnpj": normalized_cnpj,
-        "tests_reset": True,
-        "summary": saved.get("resumo") or {},
-    }
+# NOTE: admin_reset_client_tests() removed - use multiproduct version instead
 
 
 def _parse_test_date(value: str) -> Tuple[str, str]:
@@ -386,17 +261,20 @@ def _parse_test_date(value: str) -> Tuple[str, str]:
     raise ValueError("Data do teste inválida. Use YYYY-MM-DD, DD/MM/YYYY ou YYYYMMDD.")
 
 
-def _select_log_by_test_date(test_date: str) -> Path:
+def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
     _, compact_date = _parse_test_date(test_date)
-
-    if not LOGS_DIR.is_dir():
-        raise FileNotFoundError("Diretório de logs não encontrado para processar o teste.")
+    pid = _normalize_product_id(produto_id or "01")
+    
+    # Buscar em LOGS_DIR/{produto_id}/
+    product_logs_dir = LOGS_DIR / pid
+    if not product_logs_dir.is_dir():
+        raise FileNotFoundError(f"Diretório de logs não encontrado para o produto {pid}: {product_logs_dir}")
 
     strict_candidates: List[Path] = []
     fallback_candidates: List[Path] = []
     prefix = f"aud_{compact_date}"
 
-    for path in LOGS_DIR.iterdir():
+    for path in product_logs_dir.iterdir():
         if not path.is_file() or path.suffix.lower() not in ALLOWED_EXTENSIONS:
             continue
         name = path.name.lower()
@@ -410,7 +288,7 @@ def _select_log_by_test_date(test_date: str) -> Path:
 
     if not candidates:
         raise FileNotFoundError(
-            f"Nenhum log encontrado para a data {compact_date}. Exemplo esperado: aud_{compact_date}.txt"
+            f"Nenhum log encontrado para a data {compact_date} no produto {pid}. Exemplo esperado: LOGS de TESTE/{pid}/aud_{compact_date}.txt"
         )
 
     candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
@@ -521,30 +399,49 @@ def _persist_client_test_record(
 
 def _collect_flow_by_header_line(result: Dict[str, Any]) -> Dict[int, Dict[str, str]]:
     flow_map: Dict[int, Dict[str, str]] = {}
-    resultado_log = result.get("resultado_log") or {}
+    
+    # Usar as pernas do resultado direto (que já têm direction e header_text)
+    pernas = result.get("pernas") or []
+    
+    for leg in pernas:
+        try:
+            header_line = int(leg.get("header_line") or -1)
+        except (TypeError, ValueError):
+            continue
 
-    candidate_transactions: List[Dict[str, Any]] = []
-    transacao_unica = resultado_log.get("transacao_selecionada")
-    if isinstance(transacao_unica, dict):
-        candidate_transactions.append(transacao_unica)
-    for tx in resultado_log.get("transacoes") or []:
-        if isinstance(tx, dict):
-            candidate_transactions.append(tx)
+        if header_line < 0 or header_line in flow_map:
+            continue
 
-    for tx in candidate_transactions:
-        for leg in tx.get("pernas") or []:
-            try:
-                header_line = int(leg.get("header_line"))
-            except (TypeError, ValueError):
-                continue
+        flow_map[header_line] = {
+            "direction": str(leg.get("direction") or "-").strip() or "-",
+            "header_text": str(leg.get("header_text") or "-").strip() or "-",
+        }
+    
+    # Fallback para resultado_log se não encontrar (compatibilidade com versões antigas)
+    if not flow_map:
+        resultado_log = result.get("resultado_log") or {}
+        candidate_transactions: List[Dict[str, Any]] = []
+        transacao_unica = resultado_log.get("transacao_selecionada")
+        if isinstance(transacao_unica, dict):
+            candidate_transactions.append(transacao_unica)
+        for tx in resultado_log.get("transacoes") or []:
+            if isinstance(tx, dict):
+                candidate_transactions.append(tx)
 
-            if header_line in flow_map:
-                continue
+        for tx in candidate_transactions:
+            for leg in tx.get("pernas") or []:
+                try:
+                    header_line = int(leg.get("header_line"))
+                except (TypeError, ValueError):
+                    continue
 
-            flow_map[header_line] = {
-                "direction": str(leg.get("direction") or "-").strip() or "-",
-                "header_text": str(leg.get("header_text") or "-").strip() or "-",
-            }
+                if header_line in flow_map:
+                    continue
+
+                flow_map[header_line] = {
+                    "direction": str(leg.get("direction") or "-").strip() or "-",
+                    "header_text": str(leg.get("header_text") or "-").strip() or "-",
+                }
 
     return flow_map
 
@@ -612,11 +509,25 @@ def _strip_bit47_tlv_section(iso_formatado: str) -> str:
 
 def _build_evidence_payload(result: Dict[str, Any], log_name: str) -> Dict[str, str]:
     teste = result.get("teste") or {}
-    resumo = result.get("resumo") or {}
+    _resumo_raw = result.get("resumo")
+    resumo = _resumo_raw if isinstance(_resumo_raw, dict) else {}
     passos = result.get("passos_objetivo") or []
     pernas = result.get("pernas") or []
     motivos = result.get("motivos_status_geral") or []
     flow_by_header_line = _collect_flow_by_header_line(result)
+
+    # Se não tem resumo, calcular a partir das pernas
+    if not resumo and pernas:
+        pernas_aprovadas = sum(1 for p in pernas if p.get("aprovado") is True)
+        pernas_reprovadas = sum(1 for p in pernas if p.get("aprovado") is False)
+        pernas_nao_aplicam = sum(1 for p in pernas if p.get("aprovado") is None)
+        
+        resumo = {
+            "total_pernas": len(pernas),
+            "pernas_aprovadas": pernas_aprovadas,
+            "pernas_negadas": pernas_reprovadas,
+            "pernas_nao_aplicam": pernas_nao_aplicam,
+        }
 
     test_id = str(teste.get("id") or "00").zfill(2)
     test_name = str(teste.get("nome") or "").strip()
@@ -710,18 +621,22 @@ def _safe_log_name(log_name: str) -> str:
     return Path(str(log_name or "").strip()).name
 
 
-def _resolve_log_path(log_name: str) -> Path:
+def _resolve_log_path(log_name: str, produto_id: str = None) -> Path:
     safe_name = _safe_log_name(log_name)
     if not safe_name:
         raise ValueError("Selecione um arquivo de log.")
 
-    path = (LOGS_DIR / safe_name).resolve()
-    if path.parent != LOGS_DIR:
+    pid = _normalize_product_id(produto_id or "01")
+    product_logs_dir = LOGS_DIR / pid
+    product_logs_dir.mkdir(parents=True, exist_ok=True)
+    
+    path = (product_logs_dir / safe_name).resolve()
+    if path.parent != product_logs_dir:
         raise ValueError("Nome de arquivo inválido.")
     if path.suffix.lower() not in ALLOWED_EXTENSIONS:
         raise ValueError("Extensão de log inválida. Use .txt ou .log.")
     if not path.is_file():
-        raise FileNotFoundError(f"Arquivo não encontrado: {safe_name}")
+        raise FileNotFoundError(f"Arquivo não encontrado: {safe_name} em LOGS de TESTE/{pid}/")
     return path
 
 
@@ -1075,82 +990,4 @@ def validate_log_payload(
     return result
 
 
-def validate_client_payload(
-    *,
-    cnpj: str,
-    data_teste: str,
-    teste_id: str,
-    de11: str,
-    de41: str,
-) -> Dict[str, Any]:
-    cnpj_norm = _normalize_cnpj(cnpj)
-    test_date_iso, _ = _parse_test_date(data_teste)
-    stats = _load_client_stats(cnpj_norm)
-    assigned_tests = {str(item).zfill(2) for item in (stats.get("assigned_tests") or []) if str(item).strip()}
-
-    if not str(teste_id or "").strip():
-        raise ValueError("Selecione o teste em homologação.")
-    if not str(de11 or "").strip():
-        raise ValueError("Informe o Bit 11 (DE11).")
-    if not str(de41 or "").strip():
-        raise ValueError("Informe o Bit 41 (DE41).")
-
-    normalized_test_id = str(teste_id or "").strip().zfill(2)
-    if not assigned_tests:
-        raise ValueError("Primeiro selecione os testes que este CNPJ irá homologar.")
-    if normalized_test_id not in assigned_tests:
-        raise ValueError("Este teste não está habilitado para este CNPJ.")
-
-    selected_log_path = _select_log_by_test_date(test_date_iso)
-    result = validate_log_payload(
-        teste_id=normalized_test_id,
-        log_name=selected_log_path.name,
-        de11=de11,
-        de41=de41,
-        cliente=cnpj_norm,
-        debug=False,
-    )
-
-    denied_legs = _collect_denied_legs(result.get("pernas") or [])
-    teste = result.get("teste") or {"id": normalized_test_id, "nome": ""}
-    status = str(result.get("status") or "NEGADO").upper()
-    is_approved = status == "APROVADO"
-
-    storage = _persist_client_test_record(
-        cliente_id=cnpj_norm,
-        test_date_iso=test_date_iso,
-        teste_id=normalized_test_id,
-        de11=de11,
-        de41=de41,
-        selected_log_name=selected_log_path.name,
-        result=result,
-    )
-    progress = _update_client_stats(cnpj_norm, teste, is_approved)
-
-    response: Dict[str, Any] = {
-        "resultado": "APROVADO" if is_approved else "NEGADO",
-        "protocolo": storage["record_id"],
-        "cnpj": cnpj_norm,
-        "teste_id": normalized_test_id,
-        "data_teste": test_date_iso,
-        "progresso": progress,
-    }
-
-    if not is_approved:
-        first_denied = denied_legs[0] if denied_legs else {}
-
-        motivos_unicos: List[str] = []
-        seen_motivos = set()
-        for denied in denied_legs:
-            for msg in denied.get("motivos") or []:
-                text = str(msg or "").strip()
-                if text and text not in seen_motivos:
-                    seen_motivos.add(text)
-                    motivos_unicos.append(text)
-
-        response["perna_negada"] = str(first_denied.get("perna") or "Perna não identificada")
-        response["motivo_negacao"] = str(first_denied.get("motivo") or "Motivo não identificado")
-        response["pernas_negadas"] = [str(item.get("perna") or "Perna não identificada") for item in denied_legs]
-        response["motivos_negacao"] = motivos_unicos if motivos_unicos else ["Motivo não identificado"]
-
-    return response
+# NOTE: validate_client_payload() removed - use multiproduct version instead

@@ -1,0 +1,65 @@
+{
+  "status": "FALHA",
+  "timestamp": "2026-07-15T13:34:31.064159",
+  "submissao_id": "00047118230855_20260715_133431",
+  "log_name": "aud_20260701110036.fps.txt",
+  "produto_id": "02",
+  "testes_selecionados": [
+    1,
+    2,
+    3
+  ],
+  "resumo": {
+    "total_selecionados": 3,
+    "validados": 1,
+    "nao_validados": 2,
+    "aprovados": 0,
+    "reprovados": 1,
+    "percentual_sucesso": 0.0
+  },
+  "resultados": [
+    {
+      "teste_id": 3,
+      "status": "REPROVADO",
+      "bit11": "040002",
+      "bit42": "077698017000199",
+      "resultado_esperado": "OK",
+      "data_hora": "13:47",
+      "motivo": "Nenhuma mensagem encontrada com DE11=040002 e DE42=077698017000199. Verifique os valores informados. Bit 11 (STAN) encontrados no log: 010003, 010005.",
+      "cadeia": "Nenhuma",
+      "pernas_totais": 0,
+      "pernas_aprovadas": 0,
+      "validacao_resposta": {
+        "status": "FALHA",
+        "resumo": "Nenhuma mensagem encontrada com DE11=040002 e DE42=077698017000199. Verifique os valores informados. Bit 11 (STAN) encontrados no log: 010003, 010005.",
+        "teste_id": "03",
+        "total_pernas": 0,
+        "total_mensagens": 10,
+        "blocos_processados": 0,
+        "blocos_reprovados": [],
+        "campos_faltantes": {},
+        "erros": [
+          "Transação com DE11=040002 e DE42=077698017000199 não encontrada no log (10 mensagens no total). Bit 11 (STAN) encontrados no log: 010003, 010005."
+        ],
+        "api_metadata": {
+          "log_name": "aud_20260701110036.fps.txt",
+          "log_size_bytes": 260482,
+          "produto_id": "02",
+          "produto_nome": "Homologação Autorizador",
+          "tipo_validacao": "bidirecionais",
+          "cached": false
+        }
+      }
+    }
+  ],
+  "testes_ignorados": [
+    {
+      "teste_id": 14,
+      "motivo": "Não estava na seleção de testes a homologar"
+    },
+    {
+      "teste_id": 15,
+      "motivo": "Não estava na seleção de testes a homologar"
+    }
+  ]
+}

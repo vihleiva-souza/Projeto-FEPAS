@@ -1,0 +1,49 @@
+════════════════════════════════════════════════════════════
+       RELATÓRIO DE VALIDAÇÃO EM BATCH
+════════════════════════════════════════════════════════════
+
+Data/Hora:         2026-07-15T13:28:09.489563
+Submissão ID:      00047118230855_20260715_132809
+Produto:           02 (CARDSE)
+Log Validado:      aud_20260304.txt
+
+────────────────────────────────────────────────────────────
+RESUMO EXECUTIVO
+────────────────────────────────────────────────────────────
+
+Total de Testes:           0
+✅ Aprovados:              2  (66.67%)
+❌ Reprovados:             1  (33.33%)
+
+────────────────────────────────────────────────────────────
+DETALHES POR TESTE
+────────────────────────────────────────────────────────────
+
+[❌] Teste 3 - 
+     Status: REPROVADO
+     BIT 11: 040002 | BIT 42: 077698017000199
+     Cadeia: Nenhuma
+     Pernas: 0/0 aprovadas
+     Motivo: Teste '03' não encontrado no roteiro.
+
+[✅] Teste 14 - 
+     Status: APROVADO
+     BIT 11: 040011 | BIT 42: 077698017000199
+     Cadeia: 0200, 0200, 0210, 0420, 0420, 0430
+     Pernas: 0/0 aprovadas
+
+[✅] Teste 15 - 
+     Status: APROVADO
+     BIT 11: 040014 | BIT 42: 077698017000199
+     Cadeia: 0200, 0200, 0210, 0202, 0202, 0212
+     Pernas: 0/0 aprovadas
+
+────────────────────────────────────────────────────────────
+AÇÕES RECOMENDADAS
+────────────────────────────────────────────────────────────
+
+1. 1 teste(s) falharam - Revise os detalhes acima
+2. Corrija os dados dos testes falhados
+3. Resubmeta o roteiro com as correções
+
+════════════════════════════════════════════════════════════

@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homologador ISO 8583</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="/static/Fiserv_Logo.svg.png" type="image/png">
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="page">
+    <div class="brand-bar">
+      <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
+      <span class="brand-product">Homologador ISO 8583</span>
+      <span class="brand-bar-sep"></span>
+      <span class="brand-version">v2.0</span>
+      <div style="margin-left: auto;">
+        <a href="/" class="btn secondary-btn" style="font-size:0.82rem; padding: 8px 14px; text-decoration:none;" data-i18n="common.logout">Voltar</a>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- LAYOUT SIDEBAR + CONTENT                                    -->
+    <!-- ============================================================ -->
+    <div class="workspace-container">
+      <!-- SIDEBAR ESQUERDO -->
+      <aside class="workspace-sidebar">
+        <nav class="workspace-nav">
+          <button class="workspace-nav-item active" data-tab="tab-validador" title="Validador de Homologacao">
+            <span class="nav-icon">✓</span>
+            <div class="nav-content">
+              <h3 data-i18n="tabs.validator">Ferramenta de Validacao</h3>
+              <p data-i18n="tabs.validatorDesc">Importe logs</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-tab="tab-clientes" title="Clientes em Homologacao">
+            <span class="nav-icon">👥</span>
+            <div class="nav-content">
+              <h3 data-i18n="tabs.clients">Clientes em Homologacao</h3>
+              <p data-i18n="tabs.clientsDesc">Acompanhe o progresso</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+          <button class="workspace-nav-item" data-tab="tab-gestao" title="Gestao de Testes">
+            <span class="nav-icon">⚙</span>
+            <div class="nav-content">
+              <h3 data-i18n="tabs.management">Gestao de Testes</h3>
+              <p data-i18n="tabs.managementDesc">Configure por cliente</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <main class="workspace-main">
+    <!-- ============================================================ -->
+    <!-- ABA 1: VALIDADOR                                             -->
+    <!-- ============================================================ -->
+    <div id="tab-validador" class="admin-tab-panel">
+
+    <header class="hero">
+      <p class="eyebrow" data-i18n="validator.eyebrow">Validador de Homologacao</p>
+      <h1 data-i18n="validator.title">Importe o log e valide todas as pernas por objetivo de teste</h1>
+      <p class="subtitle" data-i18n="validator.subtitle">Resultado por perna com status e motivo, comparando o fluxo real com o objetivo esperado do teste selecionado.</p>
+    </header>
+
+    <section class="panel form-panel">
+      <form id="validateForm">
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="validator.testDate">Data do teste</span>
+            <input id="dataTesteInterno" type="date" />
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="validator.testLabel">Teste de homologacao</span>
+            <select id="testSelect" name="teste_id" required>
+              <option value="">Carregando testes...</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="validator.logLabel">Arquivo de log</span>
+            <input id="logSearchInput" type="text" placeholder="Buscar log por nome ou data (ex: 20260420)..." style="margin-bottom:6px;" autocomplete="off" />
+            <div class="field-inline-row">
+              <select id="logSelect" name="log_name" required class="field-grow">
+                <option value="">Carregando logs...</option>
+              </select>
+              <button type="button" id="refreshLogsBtn" class="icon-btn" title="Recarregar lista" aria-label="Recarregar lista de logs" data-i18n-title="validator.refreshLogs">&#8635;</button>
+            </div>
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span data-i18n="validator.de11">DE11 / Bit 11 - Stan</span>
+            <input id="de11" name="de11" type="text" placeholder="6 dígitos" maxlength="6" data-i18n-placeholder="validator.de11Placeholder" />
+          </label>
+
+          <label class="field">
+            <span data-i18n="validator.de41">DE41 / Bit 41 - Identificação de Terminal</span>
+            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" data-i18n-placeholder="validator.de41Placeholder" />
+          </label>
+        </div>
+
+        <p class="filter-hint" id="filterHint" data-i18n="validator.filterHint">Dica: Use DE11 e DE41 para filtrar uma TRN específica no log.</p>
+
+        <div class="goal" id="goalBox" data-i18n="validator.goalDefault">Selecione um teste para ver o objetivo esperado.</div>
+
+        <button class="btn" id="submitBtn" type="submit" data-i18n="validator.validate">Validar Log</button>
+      </form>
+    </section>
+
+    <section class="panel result-panel hidden" id="resultPanel">
+      <div class="status-row">
+        <div>
+          <p class="status-label" data-i18n="result.overall">Status geral</p>
+          <h2 id="overallStatus">-</h2>
+        </div>
+        <div class="status-chip" id="statusChip">-</div>
+      </div>
+
+      <div class="result-summary-grid">
+        <div class="result-summary-card goal-card">
+          <div class="result-summary-label" data-i18n="result.goal">Objetivo esperado</div>
+          <div class="result-summary-value" id="resultGoalText">-</div>
+        </div>
+        <div class="result-summary-card legs-card">
+          <div class="result-summary-label" data-i18n="result.legsFound">Pernas encontradas</div>
+          <div id="legsSummaryChips" class="legs-count-list"></div>
+        </div>
+      </div>
+
+      <h3 data-i18n="result.objectiveSteps">Passos do objetivo</h3>
+      <div id="stepsList" class="steps-list"></div>
+
+      <h3 data-i18n="result.foundLegs">Pernas encontradas</h3>
+      <div class="legs-toolbar">
+        <label class="field field-inline">
+          <span data-i18n="result.filterMti">Filtrar MTI</span>
+          <select id="legsMtiFilter">
+            <option value="" data-i18n="common.all">Todos</option>
+          </select>
+        </label>
+        <label class="field field-inline">
+          <span data-i18n="result.filterStatus">Filtrar status</span>
+          <select id="legsStatusFilter">
+            <option value="" data-i18n="common.all">Todos</option>
+            <option value="APROVADO" data-i18n="status.approved">Aprovado</option>
+            <option value="REPROVADO" data-i18n="status.reproved">Reprovado</option>
+            <option value="Não Aplica" data-i18n="status.na">Não aplica</option>
+          </select>
+        </label>
+        <label class="field field-inline field-search">
+          <span data-i18n="result.search">Buscar</span>
+          <input id="legsSearchFilter" type="text" placeholder="MTI, DE03, DE11, DE41, motivo..." data-i18n-placeholder="result.searchPlaceholder" />
+        </label>
+        <label class="toggle">
+          <input id="legsObjectiveOnly" type="checkbox" />
+          <span data-i18n="result.onlyObjective">Somente objetivo</span>
+        </label>
+        <label class="toggle">
+          <input id="legsWithErrorsOnly" type="checkbox" />
+          <span data-i18n="result.onlyErrors">Somente com erro</span>
+        </label>
+        <div class="legs-counter" id="legsCounter">0 exibidas</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>MTI</th>
+              <th>DE03</th>
+              <th>DE11</th>
+              <th>DE41</th>
+              <th>Status</th>
+              <th>Motivo</th>
+              <th>Ref. objetivo</th>
+            </tr>
+          </thead>
+          <tbody id="legsTableBody"></tbody>
+        </table>
+      </div>
+
+      <section id="legDetailPanel" class="iso-viewer hidden">
+        <div class="iso-viewer-head">
+          <h3 id="legDetailTitle" data-i18n="result.details">Detalhes da perna</h3>
+          <p id="legDetailMeta" data-i18n="result.clickLeg">Clique em uma perna da tabela para visualizar.</p>
+        </div>
+        <pre id="isoViewerContent">Clique em uma perna para ver a mensagem ISO formatada com Bits/IDs/TAGS.</pre>
+
+        <div class="error-inspector">
+          <div class="error-grid">
+            <article class="error-card">
+              <h4 data-i18n="result.errors">Erros</h4>
+              <div id="legErrors" class="structured-message">Sem erros para exibir.</div>
+            </article>
+            <article class="error-card">
+              <h4 data-i18n="result.warnings">Avisos</h4>
+              <div id="legWarnings" class="structured-message">Sem avisos para exibir.</div>
+            </article>
+          </div>
+          <article class="error-card" style="margin-top: 12px;">
+            <h4 data-i18n="result.rawIso">ISO bruto</h4>
+            <pre id="isoRawContent" style="white-space: pre-wrap; word-break: break-all; margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; max-height: 220px; overflow: auto;">Sem ISO bruto disponível para esta perna.</pre>
+          </article>
+        </div>
+      </section>
+
+
+    </section>
+
+    <section class="panel approve-panel hidden" id="approvedPanel">
+      <p class="status-label" data-i18n="result.final">Resultado final</p>
+      <h2 id="approvedTitle" data-i18n="result.approvedTitle">Teste Aprovado</h2>
+      <p id="approvedMessage" data-i18n="result.approvedMessage">O teste foi aprovado por completo.</p>
+      <button class="btn" id="downloadEvidenceBtn" type="button" data-i18n="result.download">Baixar evidencia .txt</button>
+    </section>
+
+    </div><!-- /tab-validador -->
+
+    <!-- ============================================================ -->
+    <!-- ABA 2: CLIENTES EM HOMOLOGAÇÃO                               -->
+    <!-- ============================================================ -->
+    <div id="tab-clientes" class="admin-tab-panel hidden">
+      <header class="hero">
+        <p class="eyebrow" data-i18n="admin.panel">Painel Admin</p>
+        <h1 data-i18n="admin.clientsTitle">Clientes em homologacao</h1>
+        <p class="subtitle" data-i18n="admin.clientsSubtitle">Visao geral do status de cada cliente: testes selecionados, progresso e % de aprovacao.</p>
+      </header>
+
+      <section class="panel">
+        <div class="legs-toolbar" style="margin-bottom:14px;">
+          <label class="field field-search">
+            <span data-i18n="admin.searchClient">Buscar cliente</span>
+            <input id="clientsSearchInput" type="text" placeholder="CNPJ ou identificador..." data-i18n-placeholder="admin.searchClientPlaceholder" />
+          </label>
+          <button class="btn secondary-btn" id="refreshClientsBtn" style="margin-top:20px;" data-i18n="admin.refreshList">Atualizar lista</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>CNPJ/CUIT / Identificador</th>
+                <th>Onboarding</th>
+                <th>Testes planejados</th>
+                <th>Iniciados</th>
+                <th>Aprovados</th>
+                <th>% Aprovacao</th>
+                <th>Atualizado em</th>
+              </tr>
+            </thead>
+            <tbody id="clientsTableBody">
+              <tr><td colspan="7">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="clientDetailPanel">
+        <div class="client-workspace-head">
+          <div>
+            <p class="status-label" data-i18n="admin.progressDetail">Progresso detalhado</p>
+            <h2 id="clientDetailTitle">-</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Teste</th>
+                <th>Status</th>
+                <th>Tentativas</th>
+                <th>Aprovado na tentativa</th>
+                <th>% sucesso</th>
+                <th>Ultimo resultado</th>
+              </tr>
+            </thead>
+            <tbody id="clientDetailTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div><!-- /tab-clientes -->
+
+    <!-- ============================================================ -->
+    <!-- ABA 3: GESTÃO DE TESTES POR CLIENTE                         -->
+    <!-- ============================================================ -->
+    <div id="tab-gestao" class="admin-tab-panel hidden">
+      <header class="hero">
+        <p class="eyebrow" data-i18n="admin.panel">Painel Admin</p>
+        <h1 data-i18n="admin.testsByClient">Gestao de testes por cliente</h1>
+        <p class="subtitle" data-i18n="admin.testsByClientSubtitle">Selecione um cliente para alterar os testes habilitados para homologacao ou resetar o onboarding.</p>
+      </header>
+
+      <section class="panel">
+        <div class="gestao-layout">
+          <div>
+            <p class="status-label">Clientes registrados</p>
+            <div id="gestaoClientsList" class="gestao-clients-scroll">
+              <div class="gestao-clients-empty">Carregando...</div>
+            </div>
+          </div>
+
+          <label class="field" style="max-width: 560px; margin: 0;">
+            <span data-i18n="admin.clientId">CNPJ / Identificador do cliente</span>
+            <div class="field-inline-row">
+              <input id="gestaoClienteInput" type="text" placeholder="Informe o CNPJ do cliente" class="field-grow" data-i18n-placeholder="admin.clientIdPlaceholder" />
+              <button class="btn secondary-btn" id="gestaoCarregarBtn" type="button" style="margin-top:0; white-space:nowrap;" data-i18n="admin.loadClient">Carregar cliente</button>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="gestaoClientePanel">
+        <div class="client-workspace-head">
+          <div>
+            <p class="status-label" data-i18n="admin.clientSelected">Cliente selecionado</p>
+            <h2 id="gestaoClienteLabel">-</h2>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" id="gestaoResetTestsBtn" type="button" style="background: linear-gradient(130deg,#8e5d1e 0%,#6a4212 100%); box-shadow: 0 8px 20px rgba(110,70,20,.3);" data-i18n="admin.resetTests">Resetar testes realizados</button>
+            <button class="btn" id="gestaoResetOnboardingBtn" type="button" style="background: linear-gradient(130deg,#c13232 0%,#8e1e1e 100%); box-shadow: 0 8px 20px rgba(150,30,30,.3);" data-i18n="admin.resetOnboarding">Resetar Onboarding</button>
+          </div>
+        </div>
+
+        <p class="filter-hint" data-i18n="admin.markTests">Marque os testes habilitados para este cliente e salve. Isso substitui a selecao atual.</p>
+
+        <div id="gestaoTestesChecklist" class="steps-list" style="margin-top:14px;"></div>
+
+        <button class="btn" id="gestaoSalvarTestesBtn" type="button" style="margin-top:16px;" data-i18n="admin.saveEnabledTests">Salvar testes habilitados</button>
+      </section>
+    </div><!-- /tab-gestao -->
+
+      </main><!-- /workspace-main -->
+    </div><!-- /workspace-container -->
+
+    <footer class="app-footer">
+      <div class="app-footer-brand">
+        <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="app-footer-logo" />
+        <div class="app-footer-text">
+          Portal de Homologacao ISO 8583<br>
+          Tecnologia e Inovacao — Fiserv Brasil
+        </div>
+      </div>
+      <span class="app-footer-copy">&copy; 2025 Fiserv, Inc. Todos os direitos reservados.</span>
+    </footer>
+  </main>
+
+  <script src="/static/i18n.js"></script>
+  <script src="/static/app.js"></script>
+  <script src="/static/admin.js"></script>
+</body>
+</html>

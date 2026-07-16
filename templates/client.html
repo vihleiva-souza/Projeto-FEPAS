@@ -26,8 +26,8 @@
     </div>
 
     <header class="hero">
-      <p class="eyebrow" data-i18n="client.stage">Stage 2</p>
-      <h1 data-i18n="client.title">Envie seu teste de homologacao com dados minimos</h1>
+      <p class="eyebrow" data-i18n="client.stage">Stage 1</p>
+      <h1 data-i18n="client.selectProduct">Selecionar o produto a homologar</h1>
     </header>
 
     <!-- ============================================================ -->
@@ -67,32 +67,148 @@
       <!-- CONTEÚDO PRINCIPAL -->
       <main class="workspace-main">
 
-    <section class="panel login-panel client-section" id="clientAccessPanel">
+    <!-- ========== NOVO FLUXO: CNPJ → PRODUTO → TESTES → MODO ========== -->
+
+    <!-- SEÇÃO 1: SELEÇÃO DE PRODUTO - PRIMEIRO PASSO -->
+    <section class="panel form-panel client-section" id="clientProductSelectionPanel">
+      <div class="product-selection-container" style="text-align: center; padding: 40px 20px;">
+        <h2 style="margin-bottom: 30px; font-size: 1.4rem;">Qual tipo de homologação você deseja realizar?</h2>
+        
+        <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+          <!-- QR Pago Card -->
+          <div class="product-card" style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               data-product-id="01_QRCARDSE">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🟢</div>
+            <h3 style="margin: 15px 0; font-size: 1.2rem;">QR Pago</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
+              Homologação de Transação QR com validação de TEF (TEF → FEPAS)
+            </p>
+            <button type="button" class="btn" style="width: 100%; margin-top: 15px;" onclick="selectProduct('01_QRCARDSE', event)">Selecionar</button>
+          </div>
+
+          <!-- Autorizador Card -->
+          <div class="product-card" style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               data-product-id="02_AutorizadorCARDSE">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🔵</div>
+            <h3 style="margin: 15px 0; font-size: 1.2rem;">Autorizador CARDSE</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
+              Homologação de autorizador com validação de processadora (PROCESSADORA → FEPAS)
+            </p>
+            <button type="button" class="btn" style="width: 100%; margin-top: 15px; background: #00a84f;" onclick="selectProduct('02_AutorizadorCARDSE', event)">Selecionar</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: IDENTIFICAÇÃO -->
+    <section class="panel login-panel client-section hidden" id="clientAccessPanel">
       <form id="clientAccessForm" class="login-form">
+        <h2 id="accessPanelTitle" style="margin-bottom: 20px;">Identifique-se</h2>
+
         <label class="field">
-          <span data-i18n="client.cnpj">CNPJ/CUIT</span>
-          <input id="cnpjInput" type="text" placeholder="Informe o CNPJ/CUIT do cliente" required data-i18n-placeholder="client.cnpjPlaceholder" />
+          <span id="accessIdentifierLabel">CUIT</span>
+          <input id="cnpjInput" type="text" placeholder="Informe o identificador" inputmode="numeric" />
         </label>
 
-        <button class="btn" id="accessSubmitBtn" type="submit" data-i18n="client.access">Acessar homologacoes</button>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="btn secondary-btn" type="button" onclick="backToProductPanel()">← Voltar</button>
+          <button class="btn" id="accessSubmitBtn" type="submit" style="flex:1;">Prosseguir →</button>
+        </div>
       </form>
     </section>
 
-    <section class="panel hidden client-section" id="clientOnboardingPanel">
-      <div class="client-workspace-head">
-        <div>
-          <p class="status-label" data-i18n="client.firstAccess">Primeiro acesso do cliente</p>
-          <h2 id="clientOnboardingTitle" data-i18n="client.onboardingTitle">Selecione os testes que este CNPJ/CUIT vai homologar</h2>
+    <!-- SEÇÃO 3: SELEÇÃO DE TESTES -->
+    <section class="panel form-panel client-section hidden" id="clientTestSelectionPanel">
+      <div class="test-selection-container" style="padding: 40px 20px;">
+        <h2 style="margin-bottom: 10px; font-size: 1.2rem;">Selecione os testes a validar</h2>
+        <p style="color: #666; margin-bottom: 30px;">Escolha quais testes você deseja executar nesta homologação</p>
+        
+        <form id="testSelectionForm" onsubmit="proceedWithTestSelection(); return false;">
+          <div id="testChecklistContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
+            <!-- Será populado dinamicamente via JavaScript -->
+          </div>
+          
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn secondary-btn" type="button" onclick="backToProductSelection()">← Voltar</button>
+            <button class="btn" id="testSelectionSubmitBtn" type="submit">Prosseguir com testes selecionados →</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4: SELEÇÃO DE MODO -->
+    <section class="panel form-panel client-section hidden" id="clientModeSelectionPanel">
+      <div class="mode-selection-container" style="padding: 40px 20px;">
+        <h2 style="margin-bottom: 10px; font-size: 1.2rem;">Como você deseja validar?</h2>
+        <p style="color: #666; margin-bottom: 40px;">Escolha o modo de validação mais adequado para sua necessidade</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 30px;">
+          <!-- Modo Manual -->
+          <div style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               onclick="selectValidationMode('manual')" onmouseover="this.style.borderColor='#0066cc'; this.style.boxShadow='0 4px 12px rgba(0,102,204,0.1)'" onmouseout="this.style.borderColor='#ddd'; this.style.boxShadow='none'">
+            <div style="font-size: 2.5rem; margin-bottom: 15px;">🔍</div>
+            <h3 style="margin: 15px 0; font-size: 1.1rem;">Validação Manual</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5; font-size: 0.9rem;">
+              Validar teste por teste, informando os dados manualmente para cada transação
+            </p>
+            <button type="button" class="btn" style="width: 100%; margin-top: 20px;">Selecionar</button>
+          </div>
+
+          <!-- Modo Batch -->
+          <div style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
+               onclick="selectValidationMode('batch')" onmouseover="this.style.borderColor='#00a84f'; this.style.boxShadow='0 4px 12px rgba(0,168,79,0.1)'" onmouseout="this.style.borderColor='#ddd'; this.style.boxShadow='none'">
+            <div style="font-size: 2.5rem; margin-bottom: 15px;">📋</div>
+            <h3 style="margin: 15px 0; font-size: 1.1rem;">Validação em Batch</h3>
+            <p style="color: #666; margin-bottom: 15px; line-height: 1.5; font-size: 0.9rem;">
+              Enviar arquivo Word (.docx) com múltiplos testes para validação automática
+            </p>
+            <button type="button" class="btn" style="width: 100%; margin-top: 20px; background: #00a84f;">Selecionar</button>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee;">
+          <button class="btn secondary-btn" type="button" onclick="backToTestSelection()">← Voltar</button>
         </div>
       </div>
-
-      <form id="clientOnboardingForm">
-        <div class="goal" data-i18n="client.onboardingHint">Essa seleção será salva para este CNPJ/CUIT e não será solicitada novamente nos próximos acessos.</div>
-        <div id="clientOnboardingChecklist" class="steps-list" style="margin-top: 16px;"></div>
-        <button class="btn" id="onboardingSubmitBtn" type="submit" data-i18n="client.saveTests">Salvar testes do cliente</button>
-      </form>
     </section>
 
+    <!-- SEÇÃO 5: VALIDAÇÃO EM BATCH -->
+    <section class="panel form-panel client-section hidden" id="clientBatchValidationPanel">
+      <div class="batch-validation-container">
+        <div class="client-workspace-head">
+          <div>
+            <p class="status-label">Validação em Batch</p>
+            <h2>Upload de Roteiro Word</h2>
+          </div>
+        </div>
+
+        <form id="batchValidationForm" enctype="multipart/form-data">
+          <div class="field-grid">
+            <label class="field">
+              <span>Selecione o arquivo roteiro (.docx)</span>
+              <input id="batchRoteiroFile" name="roteiro_file" type="file" accept=".docx" required />
+            </label>
+
+            <label class="field">
+              <span>Data do Log</span>
+              <input id="batchDataLog" name="data_log" type="date" required />
+            </label>
+          </div>
+
+          <div class="goal" style="margin: 20px 0;">
+            Você selecionou os testes: <strong id="selectedTestsLabel">-</strong>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+            <button class="btn secondary-btn" type="button" onclick="selectValidationMode('back')">← Voltar</button>
+            <button class="btn" id="batchSubmitBtn" type="submit">Validar Roteiro em Batch</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 6: WORKSPACE (Validação Manual) -->
     <section class="panel form-panel hidden client-section" id="clientWorkspacePanel">
       <div class="client-workspace-head">
         <div>
@@ -127,9 +243,24 @@
         </div>
 
         <div class="field-grid">
-          <label class="field">
+          <!-- DE41: visível para QR Pago (produto 01) -->
+          <label class="field" id="de41Field">
             <span data-i18n="client.de41">Bit 41 (Identificação de Terminal)</span>
-            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" required data-i18n-placeholder="validator.de41Placeholder" />
+            <input id="de41" name="de41" type="text" placeholder="8 caracteres" maxlength="8" data-i18n-placeholder="validator.de41Placeholder" />
+          </label>
+          <!-- DE42: visível para Autorizador (produto 02) -->
+          <label class="field" id="de42Field" style="display:none">
+            <span>Bit 42 (Identificação do Estabelecimento)</span>
+            <input id="de42" name="de42" type="text" placeholder="15 caracteres" maxlength="15" />
+          </label>
+
+          <!-- Tipo de Comunicação: visível para Autorizador (produto 02) -->
+          <label class="field" id="comunicacaoTipoField" style="display:none">
+            <span>Tipo de Comunicação</span>
+            <select id="comunicacaoTipo" name="comunicacao_tipo">
+              <option value="ISO">ISO (FEPAS)</option>
+              <option value="WEBSERVICE">Webservice (WEB-TX/WEB-RX)</option>
+            </select>
           </label>
 
           <div class="field">
@@ -255,6 +386,15 @@
       </div>
 
       <div class="goal" id="clientDeniedReason" data-i18n="client.deniedReasonDefault">Quando negado, o motivo aparece aqui.</div>
+
+      <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn" type="button" id="newValidationBtn" onclick="voltarParaValidacao()" style="flex: 1; min-width: 200px;">
+          ✅ Validar Novo Teste
+        </button>
+        <button class="btn secondary-btn" type="button" onclick="mostrarProgresso()" style="flex: 1; min-width: 200px;">
+          📊 Ver Progresso
+        </button>
+      </div>
     </section>
 
       </main><!-- /workspace-main -->
@@ -273,6 +413,7 @@
   </main>
 
   <script src="/static/i18n.js"></script>
+  <script src="/static/product-selection.js"></script>
   <script src="/static/client.js"></script>
 </body>
 </html>

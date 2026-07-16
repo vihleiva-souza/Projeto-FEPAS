@@ -1,0 +1,540 @@
+{
+  "teste": "Autorizador CARDSE",
+  "versao": "2.0.0",
+  "allowed_mtis": [
+    "0800",
+    "0810",
+    "0100",
+    "0110",
+    "0200",
+    "0210",
+    "0202",
+    "0212",
+    "0400",
+    "0410",
+    "0402",
+    "0412",
+    "0420",
+    "0430"
+  ],
+  "required_bits": [
+    "01",
+    "03",
+    "04",
+    "07",
+    "11",
+    "12",
+    "13",
+    "41",
+    "42"
+  ],
+  "required_bit47_ids": [],
+  "bit47_allowed_ids": [],
+  "mti_bit_rules": {
+    "0100": {
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "47",
+        "49",
+        "52",
+        "61"
+      ],
+      "optional_bits": [
+        "04",
+        "35",
+        "45",
+        "58"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "023",
+          "050",
+          "080",
+          "101",
+          "102",
+          "200",
+          "204",
+          "238",
+          "251",
+          "258"
+        ]
+      }
+    },
+    "0110": {
+      "required_bits": [
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42",
+        "47"
+      ],
+      "optional_bits": [
+        "04",
+        "38",
+        "127"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      },
+      "replica_from_0100_bits": [
+        "03",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit62_optional_ids": [
+        "501",
+        "502",
+        "505"
+      ],
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      }
+    },
+    "0200": {
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "22",
+        "32",
+        "37",
+        "41",
+        "42",
+        "47",
+        "49",
+        "61"
+      ],
+      "optional_bits": [
+        "14",
+        "23",
+        "33",
+        "35",
+        "45",
+        "52",
+        "55"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "required_ids": [
+          "009"
+        ],
+        "optional_ids": [
+          "023",
+          "024",
+          "027",
+          "037",
+          "050",
+          "080",
+          "180",
+          "181",
+          "200",
+          "204",
+          "238",
+          "251",
+          "254",
+          "320"
+        ]
+      }
+    },
+    "0210": {
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42",
+        "47"
+      ],
+      "optional_bits": [
+        "38",
+        "127"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "023",
+          "040",
+          "070",
+          "221",
+          "361"
+        ]
+      },
+      "bit62_optional_ids": [
+        "501",
+        "502",
+        "505",
+        "506"
+      ],
+      "bit62": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true
+      }
+    },
+    "0202": {
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "47",
+        "61"
+      ],
+      "optional_bits": [
+        "55"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      },
+      "bit47": {
+        "encoding": "TLV",
+        "read_mode": "parsed_by_id",
+        "read_broken": true,
+        "optional_ids": [
+          "050",
+          "220"
+        ]
+      }
+    },
+    "0212": {
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61"
+      ],
+      "optional_bits": [
+        "39",
+        "55"
+      ],
+      "replica_from_0200_bits": [
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42"
+      ],
+      "conditional_replica": {
+        "38": "replica_if_present_in_0210",
+        "127": "replica_if_present_in_0210"
+      }
+    }
+  },
+  "bit47_first_id_001_mtis": [
+    "0200",
+    "0400"
+  ],
+  "homolog_tests": {
+    "01": {
+      "id": "01",
+      "nome": "Logon",
+      "descricao": "Fluxo de logon e resposta de logon.",
+      "objetivo_esperado": "0800 - 0810",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "forbidden_steps": [
+          {
+            "label": "Apenas MTIs 0800 e 0810 permitidos no teste 01",
+            "any_mti": [
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0810 (resposta de logon)",
+            "mti": "0810"
+          }
+        ]
+      }
+    },
+    "02": {
+      "id": "02",
+      "nome": "Consulta",
+      "descricao": "Fluxo de consulta e resposta da consulta.",
+      "objetivo_esperado": "0100 - 0110",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0110"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas 0100 e 0110 permitidos no teste 02",
+            "any_mti": [
+              "0800",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0100",
+            "mti": "0100"
+          },
+          {
+            "label": "0110",
+            "mti": "0110"
+          }
+        ]
+      }
+    },
+    "03": {
+      "id": "03",
+      "nome": "Compra",
+      "descricao": "Fluxo de compra, resposta e confirmações.",
+      "objetivo_esperado": "0200 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo de compra permitido no teste 03",
+            "any_mti": [
+              "0800",
+              "0100",
+              "0110",
+              "0400",
+              "0410",
+              "0402",
+              "0412",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      }
+    },
+    "04": {
+      "id": "04",
+      "nome": "Estorno",
+      "descricao": "Fluxo de estorno, resposta e confirmações.",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo de estorno permitido no teste 04",
+            "any_mti": [
+              "0800",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ]
+      }
+    },
+    "05": {
+      "id": "05",
+      "nome": "Desfazimento",
+      "descricao": "Fluxo de desfazimento e resposta do desfazimento.",
+      "objetivo_esperado": "0420 - 0430",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0430"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Apenas fluxo de desfazimento permitido no teste 05",
+            "any_mti": [
+              "0800",
+              "0100",
+              "0110",
+              "0200",
+              "0210",
+              "0202",
+              "0212",
+              "0400",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ]
+      }
+    }
+  }
+}

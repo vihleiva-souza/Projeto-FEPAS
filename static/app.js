@@ -1,6 +1,9 @@
 const testSelect = document.getElementById("testSelect");
 const logSelect = document.getElementById("logSelect");
 const refreshLogsBtn = document.getElementById("refreshLogsBtn");
+const logSearchInput = document.getElementById("logSearchInput");
+const dataTesteInterno = document.getElementById("dataTesteInterno");
+const productSelectInterno = document.getElementById("productSelectInterno");
 const goalBox = document.getElementById("goalBox");
 const form = document.getElementById("validateForm");
 const submitBtn = document.getElementById("submitBtn");
@@ -37,6 +40,28 @@ let legsCache = [];
 let filteredLegsCache = [];
 let selectedLegKey = "";
 let evidenceCache = null;
+let selectedProductId = "01";
+let productsCache = [];
+
+function syncFilterFieldLabel() {
+  const de41Input = document.getElementById("de41");
+  if (!de41Input) return;
+  const labelEl = de41Input.closest("label")?.querySelector("span");
+  if (!labelEl) return;
+
+  if (String(selectedProductId || "01") === "02") {
+    labelEl.textContent = "DE42 / Bit 42 - Identificação do Estabelecimento";
+    de41Input.placeholder = "15 caracteres";
+    de41Input.maxLength = 15;
+  } else {
+    labelEl.textContent = t("validator.de41");
+    de41Input.placeholder = t("validator.de41Placeholder");
+    de41Input.maxLength = 8;
+    if (de41Input.value && de41Input.value.length > 8) {
+      de41Input.value = de41Input.value.slice(0, 8);
+    }
+  }
+}
 
 function normalizeTestLabel(test) {
   const normalized = { ...(test || {}) };
@@ -49,6 +74,17 @@ function normalizeTestLabel(test) {
 }
 
 function localizedTestName(testId, fallbackName) {
+  const currentProductId = String(
+    (typeof selectedProductId !== "undefined" && selectedProductId)
+      || localStorage.getItem("homolog_selected_product")
+      || "01"
+  ).trim().padStart(2, "0");
+
+  // Para Autorizador (produto 02), sempre usar o nome vindo do roteiro.
+  if (currentProductId === "02") {
+    return String(fallbackName || "");
+  }
+
   if (i18n.translateTestName) {
     return i18n.translateTestName(testId, fallbackName);
   }
@@ -77,6 +113,12 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function truncateLabel(text, maxLen = 72) {
+  const value = String(text || "").trim();
+  if (value.length <= maxLen) return value;
+  return `${value.slice(0, Math.max(0, maxLen - 3)).trimEnd()}...`;
 }
 
 function formatBytes(bytes) {
@@ -451,17 +493,87 @@ legsTableBody.addEventListener("click", (event) => {
   showLegDetail(filteredLegsCache[idx]);
 });
 
-async function loadTests() {
-  const resp = await fetch("/api/tests");
+async function loadProducts() {
+  if (!productSelectInterno) {
+    productsCache = [];
+    return;
+  }
+
+  const resp = await fetch("/api/produtos");
   const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || "Falha ao carregar produtos");
+  }
+
+  productsCache = Array.isArray(data.produtos) ? data.produtos : [];
+  const options = productsCache.map((p) => {
+    const id = String(p.id || "").padStart(2, "0");
+    const selected = id === selectedProductId ? " selected" : "";
+    return `<option value="${escapeHtml(id)}"${selected}>${escapeHtml(p.nome || id)}</option>`;
+  });
+
+  productSelectInterno.innerHTML = options.join("") || `<option value="01">Produto 01</option>`;
+  selectedProductId = String(productSelectInterno.value || selectedProductId || "01").padStart(2, "0");
+  syncFilterFieldLabel();
+}
+
+async function loadTests() {
+  const pid = String(selectedProductId || "01").padStart(2, "0");
+  const resp = await fetch(`/api/produtos/${encodeURIComponent(pid)}/tests`);
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || t("validator.failTests"));
+  }
   testsCache = (data.tests || []).map(normalizeTestLabel);
 
   const options = [`<option value="">${escapeHtml(t("common.select"))}</option>`];
   for (const testItem of testsCache) {
     const testName = localizedTestName(testItem.id, testItem.nome);
-    options.push(`<option value="${escapeHtml(testItem.id)}">${escapeHtml(testItem.id)} - ${escapeHtml(testName)}</option>`);
+    const optionLabel = `${testItem.id} - ${testName}`;
+    options.push(
+      `<option value="${escapeHtml(testItem.id)}" title="${escapeHtml(optionLabel)}">${escapeHtml(truncateLabel(optionLabel))}</option>`
+    );
   }
   testSelect.innerHTML = options.join("");
+}
+
+function dateToCompact(isoDate) {
+  // Converte "2026-04-20" → "20260420"
+  return String(isoDate || "").replace(/-/g, "").slice(0, 8);
+}
+
+function renderFilteredLogs(filterText) {
+  const prev = logSelect.value;
+  const query = String(filterText || "").trim().toLowerCase();
+
+  if (!Array.isArray(logsCache) || logsCache.length === 0) {
+    logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.noneLogs"))}</option>`;
+    return;
+  }
+
+  const filtered = query
+    ? logsCache.filter((item) => {
+        const name = typeof item === "string" ? item : item.name;
+        return String(name || "").toLowerCase().includes(query);
+      })
+    : logsCache;
+
+  if (filtered.length === 0) {
+    logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.noneLogs"))}</option>`;
+    return;
+  }
+
+  const options = [`<option value="">${escapeHtml(t("validator.selectLog"))}</option>`];
+  for (const item of filtered) {
+    const name = typeof item === "string" ? item : item.name;
+    options.push(`<option value="${escapeHtml(name)}"${name === prev ? ' selected' : ''}>${escapeHtml(name)}</option>`);
+  }
+  logSelect.innerHTML = options.join("");
+
+  // Auto-selecionar se houver apenas um resultado
+  if (filtered.length === 1) {
+    logSelect.value = typeof filtered[0] === "string" ? filtered[0] : filtered[0].name;
+  }
 }
 
 async function loadLogs() {
@@ -477,18 +589,64 @@ async function loadLogs() {
       return;
     }
 
-    const options = [`<option value="">${escapeHtml(t("validator.selectLog"))}</option>`];
-    for (const item of logsCache) {
-      const name = typeof item === "string" ? item : item.name;
-      options.push(`<option value="${escapeHtml(name)}"${name === prev ? ' selected' : ''}>${escapeHtml(name)}</option>`);
+    const query = logSearchInput ? String(logSearchInput.value || "").trim().toLowerCase() : "";
+    renderFilteredLogs(query);
+
+    // Restaurar seleção anterior se ainda disponível
+    if (prev && logSelect.querySelector(`option[value="${CSS.escape(prev)}"]`)) {
+      logSelect.value = prev;
     }
-    logSelect.innerHTML = options.join("");
   } catch (err) {
     logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failLogs"))}</option>`;
   }
 }
 
+async function fetchLogsByDateIfNeeded(testDateCompact) {
+  const compact = String(testDateCompact || "").trim();
+  if (!compact || compact.length !== 8) {
+    return;
+  }
+
+  const pid = String(selectedProductId || "01").padStart(2, "0");
+  if (pid !== "01") {
+    return;
+  }
+
+  try {
+    const resp = await fetch(`/api/produtos/${encodeURIComponent(pid)}/logs/fetch-by-date`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data_teste: compact }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || "Falha ao buscar logs por data");
+    }
+  } catch (err) {
+    const msg = err instanceof Error && err.message ? err.message : "Falha ao buscar logs por data";
+    showToast(msg);
+  }
+}
+
 refreshLogsBtn.addEventListener("click", () => loadLogs());
+
+if (logSearchInput) {
+  logSearchInput.addEventListener("input", () => {
+    renderFilteredLogs(logSearchInput.value);
+  });
+}
+
+if (dataTesteInterno) {
+  dataTesteInterno.addEventListener("change", async () => {
+    const compact = dateToCompact(dataTesteInterno.value);
+    if (compact && logSearchInput) {
+      logSearchInput.value = compact;
+    }
+    await fetchLogsByDateIfNeeded(compact);
+    await loadLogs();
+    renderFilteredLogs(compact || logSearchInput?.value || "");
+  });
+}
 
 testSelect.addEventListener("change", () => {
   const testId = testSelect.value;
@@ -513,7 +671,17 @@ form.addEventListener("submit", async (ev) => {
 
   try {
     const formData = new FormData(form);
-    const resp = await fetch("/api/validate", {
+    const pid = String((productSelectInterno && productSelectInterno.value) || selectedProductId || "01").padStart(2, "0");
+    selectedProductId = pid;
+    formData.set("produto_id", pid);
+
+    // Para produto 02 (Autorizador), o backend espera de42 para o filtro.
+    if (pid === "02") {
+      const de41Value = String(formData.get("de41") || "");
+      formData.set("de42", de41Value);
+    }
+
+    const resp = await fetch("/api/validate-produto", {
       method: "POST",
       body: formData,
     });
@@ -549,17 +717,34 @@ form.addEventListener("submit", async (ev) => {
   }
 });
 
-loadTests().catch((err) => {
-  testSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failTests"))}</option>`;
-  goalBox.textContent = t("validator.testsLoadError", { message: err.message });
-});
+if (productSelectInterno) {
+  productSelectInterno.addEventListener("change", () => {
+    selectedProductId = String(productSelectInterno.value || "01").padStart(2, "0");
+    syncFilterFieldLabel();
+    loadTests().catch((err) => {
+      testSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failTests"))}</option>`;
+      goalBox.textContent = t("validator.testsLoadError", { message: err.message });
+    });
+  });
+}
+
+loadProducts()
+  .then(() => loadTests())
+  .catch((err) => {
+    if (productSelectInterno) {
+      productSelectInterno.innerHTML = `<option value="">${escapeHtml(t("validator.failTests"))}</option>`;
+    }
+    testSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failTests"))}</option>`;
+    goalBox.textContent = t("validator.testsLoadError", { message: err.message });
+  });
 loadLogs().catch(() => {
   logSelect.innerHTML = `<option value="">${escapeHtml(t("validator.failLogs"))}</option>`;
 });
 
 window.addEventListener("app-language-changed", () => {
-  loadTests().catch(() => {});
+  loadProducts().then(() => loadTests()).catch(() => {});
   loadLogs().catch(() => {});
+  syncFilterFieldLabel();
   renderLegFilterOptions(legsCache);
   applyLegFilters();
   if (!testSelect.value) {

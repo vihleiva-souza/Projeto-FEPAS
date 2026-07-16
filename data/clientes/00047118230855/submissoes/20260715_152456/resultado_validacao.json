@@ -1,0 +1,65 @@
+{
+  "status": "FALHA",
+  "timestamp": "2026-07-15T15:24:56.607669",
+  "submissao_id": "00047118230855_20260715_152456",
+  "log_name": "aud_20260304.txt",
+  "produto_id": "02",
+  "testes_selecionados": [
+    1,
+    2,
+    3
+  ],
+  "resumo": {
+    "total_selecionados": 3,
+    "validados": 1,
+    "nao_validados": 2,
+    "aprovados": 0,
+    "reprovados": 1,
+    "percentual_sucesso": 0.0
+  },
+  "resultados": [
+    {
+      "teste_id": 3,
+      "status": "REPROVADO",
+      "bit11": "040002",
+      "bit42": "077698017000199",
+      "resultado_esperado": "OK",
+      "data_hora": "13:47",
+      "motivo": "Teste '03' não encontrado no roteiro.",
+      "cadeia": "Nenhuma",
+      "pernas_totais": 0,
+      "pernas_aprovadas": 0,
+      "validacao_resposta": {
+        "status": "FALHA",
+        "resumo": "Teste '03' não encontrado no roteiro.",
+        "teste_id": "03",
+        "total_pernas": 0,
+        "total_mensagens": 100,
+        "blocos_processados": 0,
+        "blocos_reprovados": [],
+        "campos_faltantes": {},
+        "erros": [
+          "Teste 03 inválido"
+        ],
+        "api_metadata": {
+          "log_name": "aud_20260304.txt",
+          "log_size_bytes": 3753293,
+          "produto_id": "02",
+          "produto_nome": "Homologação Autorizador",
+          "tipo_validacao": "bidirecionais",
+          "cached": false
+        }
+      }
+    }
+  ],
+  "testes_ignorados": [
+    {
+      "teste_id": 14,
+      "motivo": "Não estava na seleção de testes a homologar"
+    },
+    {
+      "teste_id": 15,
+      "motivo": "Não estava na seleção de testes a homologar"
+    }
+  ]
+}

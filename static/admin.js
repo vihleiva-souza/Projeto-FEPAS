@@ -17,6 +17,11 @@ navItems.forEach((item) => {
       target.classList.remove("hidden");
     }
 
+    if (item.dataset.tab === "tab-validador") {
+      // Inicializa o seletor de modo
+      initializeValidatorMode();
+    }
+
     if (item.dataset.tab === "tab-clientes") {
       loadClients();
     }
@@ -60,6 +65,17 @@ function formatInternalStatus(status) {
 }
 
 function localizedTestName(testId, fallbackName) {
+  const currentProductId = String(
+    (typeof selectedProductId !== "undefined" && selectedProductId)
+      || localStorage.getItem("homolog_selected_product")
+      || "01"
+  ).trim().padStart(2, "0");
+
+  // Em gestão multiproduto e no Autorizador, manter o nome do roteiro para não cruzar títulos de QR.
+  if (currentProductId === "02" || String(fallbackName || "").trim()) {
+    return String(fallbackName || "");
+  }
+
   if (i18n.translateTestName) {
     return i18n.translateTestName(testId, fallbackName);
   }
@@ -96,13 +112,34 @@ const clientDetailTitle = document.getElementById("clientDetailTitle");
 const clientDetailTableBody = document.getElementById("clientDetailTableBody");
 
 let clientsCache = [];
+// productsCache é declarado em app.js e compartilhado no escopo global
+
+function getProductName(produtoId) {
+  const pid = String(produtoId || "").padStart(2, "0");
+  const found = (productsCache || []).find((p) => String(p.id || "").padStart(2, "0") === pid);
+  return found ? String(found.nome || pid) : pid;
+}
+
+async function loadProductsCache() {
+  if (productsCache.length > 0) return;
+  try {
+    const resp = await fetch("/api/produtos");
+    const data = await resp.json();
+    if (resp.ok) {
+      productsCache = Array.isArray(data.produtos) ? data.produtos : [];
+    }
+  } catch (_) {
+    productsCache = [];
+  }
+}
 
 async function loadClients() {
   if (clientsTableBody) {
     clientsTableBody.innerHTML = `<tr><td colspan="7">${escapeAdm(t("admin.loadingClients"))}</td></tr>`;
   }
   try {
-    const resp = await fetch("/api/admin/clients");
+    await loadProductsCache();
+    const resp = await fetch("/api/admin/clients-produtos");
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || t("admin.errorListClients"));
     clientsCache = data.clients || [];
@@ -159,11 +196,19 @@ async function loadClientDetail(cnpj) {
   clientDetailPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 
   try {
-    const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(cnpj)}`);
+    await loadProductsCache();
+    const resp = await fetch(`/api/client/progress-all-products?cnpj=${encodeURIComponent(cnpj)}`);
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || t("admin.errorLoadDetail"));
 
-    const tests = Array.isArray(data.tests) ? data.tests : [];
+    const tests = [];
+    for (const p of (data.products || [])) {
+      const produtoNome = String((p.produto || {}).nome || "Produto");
+      for (const testItem of (p.tests || [])) {
+        tests.push({ ...testItem, _produto_nome: produtoNome });
+      }
+    }
+
     if (tests.length === 0) {
       clientDetailTableBody.innerHTML = `<tr><td colspan="6">${escapeAdm(t("admin.noneTestsYet"))}</td></tr>`;
       return;
@@ -175,7 +220,7 @@ async function loadClientDetail(cnpj) {
         const lastResult = localizedResultLabel(item.last_result);
         return `
         <tr>
-          <td>${escapeAdm(item.teste_id)} - ${escapeAdm(testName)}</td>
+          <td><strong>${escapeAdm(item._produto_nome || "-")}</strong><br>${escapeAdm(item.teste_id)} - ${escapeAdm(testName)}</td>
           <td>${formatInternalStatusWithIcon(item.status)}</td>
           <td>${escapeAdm(item.attempts_total)}</td>
           <td>${escapeAdm(item.attempts_until_approval ?? "-")}</td>
@@ -216,9 +261,24 @@ const gestaoTestesChecklist = document.getElementById("gestaoTestesChecklist");
 const gestaoSalvarTestesBtn = document.getElementById("gestaoSalvarTestesBtn");
 const gestaoResetTestsBtn = document.getElementById("gestaoResetTestsBtn");
 const gestaoResetOnboardingBtn = document.getElementById("gestaoResetOnboardingBtn");
+const gestaoProdutoSelect = document.getElementById("gestaoProdutoSelect");
 
 let gestaoCnpjAtual = "";
 let gestaoTestesCache = [];
+let gestaoProdutoAtual = "01";
+
+function renderGestaoProdutos() {
+  if (!gestaoProdutoSelect) return;
+  const options = (productsCache || []).map((p) => {
+    const id = String(p.id || "").padStart(2, "0");
+    const selected = id === gestaoProdutoAtual ? "selected" : "";
+    return `<option value="${escapeAdm(id)}" ${selected}>${escapeAdm(p.nome || id)}</option>`;
+  });
+  if (options.length === 0) {
+    options.push(`<option value="01">Produto 01</option>`);
+  }
+  gestaoProdutoSelect.innerHTML = options.join("");
+}
 
 function renderGestaoClientsList(clients) {
   if (!gestaoClientsList) return;
@@ -248,7 +308,9 @@ async function loadGestaoClientsList() {
     gestaoClientsList.innerHTML = `<div class="gestao-clients-empty">${escapeAdm(t("common.loading"))}</div>`;
   }
   try {
-    const resp = await fetch("/api/admin/clients");
+    await loadProductsCache();
+    renderGestaoProdutos();
+    const resp = await fetch("/api/admin/clients-produtos");
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || t("admin.errorListClients"));
     clientsCache = data.clients || [];
@@ -260,9 +322,10 @@ async function loadGestaoClientsList() {
   }
 }
 
-async function loadAllTestsForGestao() {
+async function loadAllTestsForGestao(produtoId) {
   try {
-    const resp = await fetch("/api/tests");
+    const pid = String(produtoId || gestaoProdutoAtual || "01").padStart(2, "0");
+    const resp = await fetch(`/api/produtos/${encodeURIComponent(pid)}/tests`);
     const data = await resp.json();
     gestaoTestesCache = data.tests || [];
   } catch (_) {
@@ -307,13 +370,15 @@ async function carregarGestaoCliente(cnpj) {
   }
 
   try {
-    await loadAllTestsForGestao();
-    const resp = await fetch(`/api/client/progress?cnpj=${encodeURIComponent(clientId)}`);
+    const pid = String((gestaoProdutoSelect && gestaoProdutoSelect.value) || gestaoProdutoAtual || "01").padStart(2, "0");
+    gestaoProdutoAtual = pid;
+    await loadAllTestsForGestao(pid);
+    const resp = await fetch(`/api/client/progress-produto?cnpj=${encodeURIComponent(clientId)}&produto_id=${encodeURIComponent(pid)}`);
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || t("admin.errorLoadClient"));
 
     gestaoCnpjAtual = clientId;
-    if (gestaoClienteLabel) gestaoClienteLabel.textContent = clientId;
+    if (gestaoClienteLabel) gestaoClienteLabel.textContent = `${clientId} • ${getProductName(pid)}`;
     if (gestaoClientePanel) gestaoClientePanel.classList.remove("hidden");
 
     const assignedIds = (data.assigned_tests || []).map((item) => String(item.id || "")).filter(Boolean);
@@ -374,10 +439,10 @@ if (gestaoSalvarTestesBtn) {
     gestaoSalvarTestesBtn.textContent = t("common.loading");
 
     try {
-      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/tests`, {
+      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/tests-produto`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selected_tests: checked }),
+        body: JSON.stringify({ selected_tests: checked, produto_id: gestaoProdutoAtual }),
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || t("admin.errorSave"));
@@ -402,8 +467,10 @@ if (gestaoResetOnboardingBtn) {
     gestaoResetOnboardingBtn.disabled = true;
 
     try {
-      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/reset-onboarding`, {
+      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/reset-onboarding-produto`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ produto_id: gestaoProdutoAtual }),
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || t("admin.errorReset"));
@@ -428,8 +495,10 @@ if (gestaoResetTestsBtn) {
     gestaoResetTestsBtn.disabled = true;
 
     try {
-      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/reset-tests`, {
+      const resp = await fetch(`/api/admin/clients/${encodeURIComponent(gestaoCnpjAtual)}/reset-tests-produto`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ produto_id: gestaoProdutoAtual }),
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || t("admin.errorResetTests"));
@@ -445,6 +514,15 @@ if (gestaoResetTestsBtn) {
   });
 }
 
+if (gestaoProdutoSelect) {
+  gestaoProdutoSelect.addEventListener("change", async () => {
+    gestaoProdutoAtual = String(gestaoProdutoSelect.value || "01").padStart(2, "0");
+    if (gestaoCnpjAtual) {
+      await carregarGestaoCliente(gestaoCnpjAtual);
+    }
+  });
+}
+
 window.addEventListener("app-language-changed", () => {
   renderClientsTable(clientsCache);
   if (gestaoSalvarTestesBtn && !gestaoSalvarTestesBtn.disabled) {
@@ -454,4 +532,150 @@ window.addEventListener("app-language-changed", () => {
     gestaoCarregarBtn.textContent = t("admin.loadClient");
   }
   renderGestaoClientsList(clientsCache);
+});
+
+// =====================================================================
+// Funções para gerenciar seleção de modo (Manual vs Batch) - Painel Interno
+// =====================================================================
+
+/**
+ * Seleciona o modo de validação para o painel interno: 'manual', 'batch', ou 'back'
+ */
+function selectValidationModeInterno(mode) {
+  const modePanel = document.getElementById("adminModeSelectionPanel");
+  const batchPanel = document.getElementById("adminBatchValidationPanel");
+  const manualPanel = document.getElementById("adminManualValidationPanel");
+  
+  if (mode === "back") {
+    // Volta para o painel de seleção de modo
+    if (batchPanel) batchPanel.classList.add("hidden");
+    if (manualPanel) manualPanel.classList.add("hidden");
+    if (modePanel) modePanel.classList.remove("hidden");
+    return;
+  }
+  
+  // Esconde o painel de seleção de modo
+  if (modePanel) modePanel.classList.add("hidden");
+  
+  if (mode === "manual") {
+    // Mostra painel de validação manual
+    if (manualPanel) manualPanel.classList.remove("hidden");
+  } else if (mode === "batch") {
+    // Mostra painel de validação em batch
+    if (batchPanel) batchPanel.classList.remove("hidden");
+    
+    // Carrega lista de produtos para batch
+    loadProductsForBatch();
+  }
+}
+
+/**
+ * Volta para a aba de validador inicial
+ */
+function backToValidatorTabs() {
+  const modePanel = document.getElementById("adminModeSelectionPanel");
+  if (modePanel) modePanel.classList.remove("hidden");
+}
+
+/**
+ * Carrega lista de produtos para o seletor de batch do painel interno
+ */
+function loadProductsForBatch() {
+  const productSelect = document.getElementById("batchProductSelectInterno");
+  if (!productSelect) return;
+  
+  fetch("/api/produtos")
+    .then(res => res.json())
+    .then(data => {
+      productSelect.innerHTML = '<option value="">Selecione um produto</option>';
+      if (Array.isArray(data)) {
+        data.forEach(prod => {
+          const opt = document.createElement("option");
+          opt.value = prod.id;
+          opt.textContent = prod.nome;
+          productSelect.appendChild(opt);
+        });
+      }
+    })
+    .catch(err => console.error("Erro ao carregar produtos:", err));
+}
+
+/**
+ * Inicializa o seletor de modo do validador
+ */
+function initializeValidatorMode() {
+  const modePanel = document.getElementById("adminModeSelectionPanel");
+  const manualPanel = document.getElementById("adminManualValidationPanel");
+  const batchPanel = document.getElementById("adminBatchValidationPanel");
+  
+  if (modePanel && manualPanel && batchPanel) {
+    modePanel.classList.remove("hidden");
+    manualPanel.classList.add("hidden");
+    batchPanel.classList.add("hidden");
+  }
+}
+
+/**
+ * Valida roteiro em batch no painel interno
+ */
+document.addEventListener("DOMContentLoaded", () => {
+  const internoBatchForm = document.getElementById("internoBatchValidationForm");
+  if (internoBatchForm) {
+    internoBatchForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById("batchRoteiroFileInterno");
+      const productSelect = document.getElementById("batchProductSelectInterno");
+      const dateInput = document.getElementById("batchDataLogInterno");
+      
+      if (!fileInput.files.length) {
+        showAdminToast("Selecione um arquivo roteiro");
+        return;
+      }
+      
+      if (!productSelect.value) {
+        showAdminToast("Selecione um produto");
+        return;
+      }
+      
+      if (!dateInput.value) {
+        showAdminToast("Selecione uma data");
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append("roteiro_file", fileInput.files[0]);
+      formData.append("produto_id", productSelect.value);
+      formData.append("data_log", dateInput.value);
+      
+      const submitBtn = document.getElementById("internoSubmitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processando...";
+      
+      try {
+        const response = await fetch("/api/validar-roteiro-cliente-batch", {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Erro ao validar roteiro");
+        }
+        
+        const result = await response.json();
+        showAdminToast("Roteiro validado com sucesso!");
+        
+        // Volta para modo de seleção após sucesso
+        setTimeout(() => {
+          selectValidationModeInterno("back");
+        }, 2000);
+      } catch (err) {
+        showAdminToast("Erro: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Validar Roteiro em Batch";
+      }
+    });
+  }
 });

@@ -18,5 +18,8 @@ BACKUP_*/
 # Optional local debug artifacts
 *.tmp
 
+# Arquivos temporários de upload
+temp/
+
 # Runtime data
 HOMOLOGACAO_CLIENTES/

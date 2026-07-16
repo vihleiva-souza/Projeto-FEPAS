@@ -1,0 +1,2641 @@
+{
+  "teste": "ISO 8583 - Validador Multi-MTI com Cenários",
+  "versao": "1.9.9",
+  "allowed_mtis": [
+    "0200",
+    "0201",
+    "0400",
+    "0401",
+    "0410",
+    "0420",
+    "0430",
+    "0402",
+    "9600",
+    "9610",
+    "0202",
+    "0210",
+    "0212",
+    "0412"
+  ],
+  "required_bits": [
+    "01",
+    "03",
+    "04",
+    "07",
+    "11",
+    "12",
+    "13",
+    "19",
+    "22",
+    "32",
+    "41",
+    "42",
+    "47",
+    "49",
+    "61"
+  ],
+  "required_bit47_ids": [
+    "001",
+    "006",
+    "007",
+    "041",
+    "042",
+    "201",
+    "238",
+    "252",
+    "264",
+    "265",
+    "292"
+  ],
+  "bit47_allowed_ids": [
+    "001",
+    "006",
+    "007",
+    "008",
+    "023",
+    "041",
+    "042",
+    "200",
+    "201",
+    "208",
+    "238",
+    "252",
+    "258",
+    "264",
+    "265",
+    "270",
+    "292",
+    "460"
+  ],
+  "bit47_first_id_001_mtis": [
+    "0200",
+    "0400"
+  ],
+  "homolog_tests": {
+    "01": {
+      "id": "01",
+      "nome": "Transação sem leitura de QR",
+      "descricao": "Realizar uma transação e não fazer a leitura do QR.",
+      "objetivo_esperado": "0200 - 9600 pcode 940400 - 0420 - 0430",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "forbidden_steps": [
+          {
+            "label": "9600 no teste 01 deve ser apenas pcode 940400",
+            "mti": "9600",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 01 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0402",
+              "0202",
+              "0210",
+              "0212",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0430"
+          }
+        ]
+      }
+    },
+    "02": {
+      "id": "02",
+      "nome": "Transação financeira carteira digital",
+      "descricao": "Realizar uma transação financeira com dinheiro em conta (Carteira Digital).",
+      "objetivo_esperado": "0200 - 9600 com pcode 940400 - 9610 com pcode 940400 - 0210 com pcode 006000 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210",
+            "de03": "006000"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "9600/9610 pcode 940600 não permitido no teste 02",
+            "any_mti": [
+              "9600",
+              "9610"
+            ],
+            "de03": "940600"
+          },
+          {
+            "label": "9600 no teste 02 deve ser apenas pcode 940400",
+            "mti": "9600",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "9610 no teste 02 deve ser apenas pcode 940400",
+            "mti": "9610",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "0210 no teste 02 deve ser apenas pcode 006000",
+            "mti": "0210",
+            "de03_ne": "006000"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 02 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "0210 pcode 006000",
+            "mti": "0210",
+            "de03": "006000"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      }
+    },
+    "03": {
+      "id": "03",
+      "nome": "Transação financeira cartão de débito",
+      "descricao": "Realizar uma transação financeira com Cartão de Débito (Carteira Digital).",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "tipo_por_id283": {
+          "target": {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          "reprove_mode": "mismatch_only",
+          "regra_id_por_versao_bit61": {
+            "source_bit": "61",
+            "source_prefix_len": 5,
+            "lte_10_44_use_id": "253",
+            "gte_10_45_use_id": "283"
+          },
+          "prefix_map": {
+            "01": "credito",
+            "02": "debito"
+          },
+          "expected": "debito"
+        },
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 03 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "04": {
+      "id": "04",
+      "nome": "Transação financeira cartão de crédito (VISA)",
+      "descricao": "Realizar uma transação financeira com cartão de crédito (VISA).",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "tipo_por_id283": {
+          "target": {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          "reprove_mode": "mismatch_only",
+          "regra_id_por_versao_bit61": {
+            "source_bit": "61",
+            "source_prefix_len": 5,
+            "lte_10_44_use_id": "253",
+            "gte_10_45_use_id": "283"
+          },
+          "prefix_map": {
+            "01": "credito",
+            "02": "debito"
+          },
+          "expected": "credito"
+        },
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 04 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "05": {
+      "id": "05",
+      "nome": "Transação financeira cartão de débito (MasterCard)",
+      "descricao": "Realizar uma transação financeira com Cartão de Débito (MasterCard).",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "tipo_por_id283": {
+          "target": {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          "reprove_mode": "mismatch_only",
+          "regra_id_por_versao_bit61": {
+            "source_bit": "61",
+            "source_prefix_len": 5,
+            "lte_10_44_use_id": "253",
+            "gte_10_45_use_id": "283"
+          },
+          "prefix_map": {
+            "01": "credito",
+            "02": "debito"
+          },
+          "expected": "debito"
+        },
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 05 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "06": {
+      "id": "06",
+      "nome": "Transação financeira cartão de crédito (MasterCard)",
+      "descricao": "Realizar uma transação financeira com Cartão de Crédito (MasterCard).",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "tipo_por_id283": {
+          "target": {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          "reprove_mode": "mismatch_only",
+          "regra_id_por_versao_bit61": {
+            "source_bit": "61",
+            "source_prefix_len": 5,
+            "lte_10_44_use_id": "253",
+            "gte_10_45_use_id": "283"
+          },
+          "prefix_map": {
+            "01": "credito",
+            "02": "debito"
+          },
+          "expected": "credito"
+        },
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 06 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "07": {
+      "id": "07",
+      "nome": "Transação financeira com alteração de valor no fluxo de planos",
+      "descricao": "Realizar uma transação financeira com alteração de valor no fluxo de planos.",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "presence_only_required_chain": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "Bit04_0200_vs_9610_940600",
+            "left": {
+              "mti": "0200",
+              "bit": "04"
+            },
+            "right": {
+              "mti": "9610",
+              "de03": "940600",
+              "bit": "04"
+            },
+            "operator": "!="
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 07 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "08": {
+      "id": "08",
+      "nome": "Transação de crédito com 02 parcelas",
+      "descricao": "Realizar uma transação de crédito com 02 parcelas.",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "0200: PCODE deve ser 006031",
+            "mti": "0200",
+            "de03": "006000"
+          },
+          {
+            "label": "0200 no teste 08 deve ser apenas pcode 006031",
+            "mti": "0200",
+            "de03_ne": "006031"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 08 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 bit03 006031",
+            "mti": "0200",
+            "de03": "006031"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "any_of_conditions": [
+          {
+            "label": "ID023=02 em 0200 ou em 9610/940600",
+            "one_of": [
+              {
+                "label": "0200 bit03 006031 tag023=02",
+                "mti": "0200",
+                "de03": "006031",
+                "bit47": {
+                  "023": "02"
+                }
+              },
+              {
+                "label": "9610 pcode 940600 tag023=02",
+                "mti": "9610",
+                "de03": "940600",
+                "bit47": {
+                  "023": "02"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "09": {
+      "id": "09",
+      "nome": "Transação financeira crédito 02 parcelas com alteração para 03 nos planos",
+      "descricao": "Realizar uma transação financeira com crédito em 02 parcelas, e nos planos alterar as parcelas para 03.",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "0200: PCODE deve ser 006031",
+            "mti": "0200",
+            "de03_ne": "006031"
+          },
+          {
+            "label": "0200: ID023 deve ser 02",
+            "mti": "0200",
+            "de03": "006031",
+            "bit47_ne": {
+              "023": "02"
+            }
+          },
+          {
+            "label": "9610 pcode 940600: ID023 deve ser 03",
+            "mti": "9610",
+            "de03": "940600",
+            "bit47_ne": {
+              "023": "03"
+            }
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 09 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 bit03 006031 tag023=02",
+            "mti": "0200",
+            "de03": "006031",
+            "bit47": {
+              "023": "02"
+            }
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600 tag023=03",
+            "mti": "9610",
+            "de03": "940600",
+            "bit47": {
+              "023": "03"
+            }
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ]
+      }
+    },
+    "10": {
+      "id": "10",
+      "nome": "Transação de crédito com mudança de MID no meio do fluxo",
+      "descricao": "Realizar uma transação de crédito e fazer mudança de MID (número de comércio) no meio do fluxo.",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "presence_only_required_chain": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200 bit03 006000|006031 id042=00222295",
+            "mti": "0200",
+            "any_de03": [
+              "006000",
+              "006031"
+            ],
+            "bit47": {
+              "042": "00222295       "
+            }
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "ID046 da 9610/940600 deve ser diferente do ID042 da 0200",
+            "left": {
+              "mti": "0200",
+              "bit47_id": "042"
+            },
+            "right": {
+              "mti": "9610",
+              "de03": "940600",
+              "bit47_id": "046"
+            },
+            "operator": "!="
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 10 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "11": {
+      "id": "11",
+      "nome": "Cancelamento parcial de transação de compra de débito",
+      "descricao": "Realizar um cancelamento parcial de transação de compra de débito, com valor do cancelamento inferior ao valor da compra original referenciada no DE90 da 0400.",
+      "objetivo_esperado": "0400 - 9600 940400 - 9610 940400 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "validate_only_when_has_mti": "0400",
+        "restrict_campos_to_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0210 - compra original (referencia via DE90)",
+            "mti": "0210",
+            "optional": true
+          },
+          {
+            "label": "9600 pcode 940600 (opcional, somente em Legacy)",
+            "mti": "9600",
+            "de03": "940600",
+            "optional": true
+          },
+          {
+            "label": "9610 pcode 940400 (opcional, somente em Legacy)",
+            "mti": "9610",
+            "de03": "940400",
+            "optional": true
+          },
+          {
+            "label": "9610 pcode 940600 (opcional, somente em Legacy)",
+            "mti": "9610",
+            "de03": "940600",
+            "optional": true
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ],
+        "tipo_por_id283": {
+          "target": {
+            "mti": "0400"
+          },
+          "source": "bit62_text_after_second_at",
+          "reprove_mode": "strict",
+          "expected": "credito"
+        },
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "DE11_0210_vs_DE90_STAN_0400",
+            "left": {
+              "mti": "0210",
+              "field": "de11"
+            },
+            "right": {
+              "mti": "0400",
+              "field": "de90_original_stan"
+            },
+            "operator": "=="
+          },
+          {
+            "label": "DE37_0210_vs_DE90_RRN_0400",
+            "left": {
+              "mti": "0210",
+              "field": "de37"
+            },
+            "right": {
+              "mti": "0400",
+              "field": "de90_original_rrn"
+            },
+            "operator": "=="
+          },
+          {
+            "label": "Bit04_0400_vs_0210_compra_original",
+            "left": {
+              "mti": "0400",
+              "bit": "04"
+            },
+            "right": {
+              "mti": "0210",
+              "bit": "04"
+            },
+            "operator": "<"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 11 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0401",
+              "0420",
+              "0430",
+              "0202",
+              "0210",
+              "0212"
+            ]
+          }
+        ]
+      }
+    },
+    "12": {
+      "id": "12",
+      "nome": "Cancelamento total da transação de compra crédito/débito",
+      "descricao": "Realizar um cancelamento total da transação de compra crédito/débito (compra do teste 04).",
+      "objetivo_esperado": "0400 - 9600 940400 - 9610 940400 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "validate_only_when_has_mti": "0400",
+        "restrict_campos_to_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0210 - compra original (para comparacao de bit 04)",
+            "mti": "0210",
+            "optional": true
+          },
+          {
+            "label": "9600 pcode 940600 (opcional, somente debito)",
+            "mti": "9600",
+            "de03": "940600",
+            "optional": true
+          },
+          {
+            "label": "9610 pcode 940400 (opcional)",
+            "mti": "9610",
+            "de03": "940400",
+            "optional": true
+          },
+          {
+            "label": "9610 pcode 940600 (opcional)",
+            "mti": "9610",
+            "de03": "940600",
+            "optional": true
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "Bit04_0400_vs_0210_compra_original",
+            "left": {
+              "mti": "0400",
+              "bit": "04"
+            },
+            "right": {
+              "mti": "0210",
+              "bit": "04"
+            },
+            "operator": "=="
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 12 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0401",
+              "0420",
+              "0430",
+              "0202",
+              "0210"
+            ]
+          }
+        ]
+      }
+    },
+    "13": {
+      "id": "13",
+      "nome": "Cancelamento com valor inferior ao da compra do teste 02 (PCT)",
+      "descricao": "Realizar o cancelamento com valor inferior ao da compra do teste 02 (PCT).",
+      "objetivo_esperado": "0400 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "Bit04_0400_vs_0202_teste02",
+            "left": {
+              "mti": "0400",
+              "bit": "04"
+            },
+            "right": {
+              "mti": "0202",
+              "bit": "04"
+            },
+            "operator": "<"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 13 nao permitidas",
+            "any_mti": [
+              "0200",
+              "0201",
+              "0401",
+              "0420",
+              "0430",
+              "9600",
+              "9610",
+              "0202",
+              "0210",
+              "0212"
+            ]
+          }
+        ]
+      }
+    },
+    "14": {
+      "id": "14",
+      "nome": "Compra PCT com cancelamento total",
+      "descricao": "Realizar uma compra PCT seguida de cancelamento total, validando que o Bit 04 da 0400 seja igual ao Bit 04 da 0210 e que o STAN original do DE90 da 0400 corresponda ao DE11 da 0200.",
+      "objetivo_esperado": "0200 - 9600 pcode 940400 - 9610 pcode 940400 - 0210 - 0202 - 0212 - 0400 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "forbidden_steps": [
+          {
+            "label": "Fluxo de cartao nao permitido no teste 14 (940600)",
+            "any_mti": [
+              "9600",
+              "9610"
+            ],
+            "de03": "940600"
+          },
+          {
+            "label": "0210 deve ser PCT (pcode 006000)",
+            "mti": "0210",
+            "de03_ne": "006000"
+          },
+          {
+            "label": "9600 no teste 14 deve ser apenas pcode 940400",
+            "mti": "9600",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "9610 no teste 14 deve ser apenas pcode 940400",
+            "mti": "9610",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 14 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0401",
+              "0420",
+              "0430"
+            ]
+          }
+        ],
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0202",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          },
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0402",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "Bit04_0210_vs_0400",
+            "left": {
+              "mti": "0210",
+              "bit": "04"
+            },
+            "right": {
+              "mti": "0400",
+              "bit": "04"
+            },
+            "operator": "=="
+          },
+          {
+            "label": "DE11_0200_vs_DE90_STAN_0400",
+            "left": {
+              "mti": "0200",
+              "field": "de11"
+            },
+            "right": {
+              "mti": "0400",
+              "field": "de90_original_stan"
+            },
+            "operator": "=="
+          },
+          {
+            "label": "DE37_0210_vs_DE90_RRN_0400",
+            "left": {
+              "mti": "0210",
+              "field": "de37"
+            },
+            "right": {
+              "mti": "0400",
+              "field": "de90_original_rrn"
+            },
+            "operator": "=="
+          }
+        ]
+      }
+    },
+    "15": {
+      "id": "15",
+      "nome": "Realizar uma compra de Cartão e na autorização enviar o desfazimento",
+      "descricao": "Validar presença das pernas esperadas no fluxo e validar campos/bits apenas nas pernas 0200, 9610 pcode 940400, 9610 pcode 940600 e 0420.",
+      "objetivo_esperado": "0200 - 9600 940400 - 9610 940400 - 9600 940600 - 9610 940600 - 0210 - 0420 - 0430",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "restrict_campos_to_required_chain": true,
+        "presence_only_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210",
+            "mti": "0210"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0430"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 15 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0400",
+              "0401",
+              "0410",
+              "0402",
+              "0202",
+              "0212",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "16": {
+      "id": "16",
+      "nome": "Desfazer cancelamento na autorização",
+      "descricao": "Validar presença das pernas esperadas do fluxo de cancelamento e desfazimento, validando campos/bits apenas nas pernas 0400 e 0420.",
+      "objetivo_esperado": "0400 - 0410 - 0420 - 0430",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "validate_only_when_has_mti": "0400",
+        "require_pernas_completas": false,
+        "restrict_campos_to_required_chain": true,
+        "presence_only_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0400",
+            "mti": "0400"
+          },
+          {
+            "label": "9600 pcode 940400 (opcional)",
+            "mti": "9600",
+            "de03": "940400",
+            "optional": true
+          },
+          {
+            "label": "9610 pcode 940400 (opcional)",
+            "mti": "9610",
+            "de03": "940400",
+            "optional": true
+          },
+          {
+            "label": "9600 pcode 940600 (opcional)",
+            "mti": "9600",
+            "de03": "940600",
+            "optional": true
+          },
+          {
+            "label": "9610 pcode 940600 (opcional)",
+            "mti": "9610",
+            "de03": "940600",
+            "optional": true
+          },
+          {
+            "label": "0410",
+            "mti": "0410"
+          },
+          {
+            "label": "0420",
+            "mti": "0420"
+          },
+          {
+            "label": "0430",
+            "mti": "0430"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0430"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 16 nao permitidas",
+            "any_mti": [
+              "0200",
+              "0201",
+              "0401",
+              "0402",
+              "0202",
+              "0210",
+              "0212",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "17": {
+      "id": "17",
+      "nome": "Pagamento PCT com consulta e confirmação posterior",
+      "descricao": "Realizar uma transação de pagamento PCT e não confirmar a autorização (0210), depois realizar uma consulta (0201) e, se a resposta for 0210 com bit 39 = 00, enviar a confirmação 0202.",
+      "objetivo_esperado": "0200 - 9600 pcode 940400 - 9610 pcode 940400 - 0210 - 0201 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "restrict_campos_to_required_chain": true,
+        "presence_only_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "0210 autorizacao inicial",
+            "mti": "0210"
+          },
+          {
+            "label": "0201 consulta",
+            "mti": "0201"
+          },
+          {
+            "label": "0210 resposta consulta",
+            "mti": "0210"
+          },
+          {
+            "label": "0202 confirmacao",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "0201"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "9600 no teste 17 deve ser apenas pcode 940400",
+            "mti": "9600",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "9610 no teste 17 deve ser apenas pcode 940400",
+            "mti": "9610",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 17 nao permitidas",
+            "any_mti": [
+              "0400",
+              "0401",
+              "0410",
+              "0420",
+              "0430",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "18": {
+      "id": "18",
+      "nome": "PCT com desfazimento B6 e confirmação posterior",
+      "descricao": "Realizar uma transação financeira de PCT e não confirmar a autorização; posterior fazer um desfazimento 0420, receber 0430 com bit 39 = B6, realizar consulta 0201 e, conforme resposta 0210, enviar confirmação 0202.",
+      "objetivo_esperado": "0200 - 9600 pcode 940400 - 9610 pcode 940400 - 0210 - 0420 - 0430 (bit 39 = B6) - 0201 - 0210 - 0202 - 0212",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "restrict_campos_to_required_chain": true,
+        "presence_only_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "0210 autorizacao inicial",
+            "mti": "0210"
+          },
+          {
+            "label": "0420 desfazimento",
+            "mti": "0420"
+          },
+          {
+            "label": "0430 bit39 B6",
+            "mti": "0430",
+            "de39": "B6"
+          },
+          {
+            "label": "0201 consulta",
+            "mti": "0201"
+          },
+          {
+            "label": "0210 resposta consulta",
+            "mti": "0210"
+          },
+          {
+            "label": "0202 confirmacao",
+            "mti": "0202"
+          },
+          {
+            "label": "0212",
+            "mti": "0212"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0430",
+            "de39": "B6"
+          },
+          {
+            "mti": "0212"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "9600 no teste 18 deve ser apenas pcode 940400",
+            "mti": "9600",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "9610 no teste 18 deve ser apenas pcode 940400",
+            "mti": "9610",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 18 nao permitidas",
+            "any_mti": [
+              "0400",
+              "0401",
+              "0410",
+              "0402",
+              "0412"
+            ]
+          }
+        ]
+      }
+    },
+    "19": {
+      "id": "19",
+      "nome": "Cancelamento PCT com consulta e confirmação posterior",
+      "descricao": "Realizar um cancelamento de transação de compra PCT (0400), não confirmar a autorização (0402), posterior realizar uma consulta (0401) e conforme a resposta enviar a confirmação (0402).",
+      "objetivo_esperado": "0400 - 0410 - 0401 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "restrict_campos_to_required_chain": true,
+        "presence_only_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0400 cancelamento",
+            "mti": "0400"
+          },
+          {
+            "label": "0410 autorizacao inicial",
+            "mti": "0410"
+          },
+          {
+            "label": "0401 consulta",
+            "mti": "0401"
+          },
+          {
+            "label": "0410 resposta consulta",
+            "mti": "0410"
+          },
+          {
+            "label": "0402 confirmacao",
+            "mti": "0402"
+          },
+          {
+            "label": "0412",
+            "mti": "0412"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "forbidden_steps": [
+          {
+            "label": "Pernas fora do objetivo do teste 19 nao permitidas",
+            "any_mti": [
+              "0200",
+              "0201",
+              "0420",
+              "0430",
+              "9600",
+              "9610",
+              "0202",
+              "0210",
+              "0212"
+            ]
+          }
+        ]
+      }
+    },
+    "20": {
+      "id": "20",
+      "nome": "Compra crédito com três estornos",
+      "descricao": "Realizar uma transação financeira com cartão de crédito até o final 0202 e, posteriormente, realizar 3 estornos 0400.",
+      "objetivo_esperado": "0200 - 9600 pcode 940400 - 9610 pcode 940400 - 9600 pcode 940600 - 9610 pcode 940600 - 0210 - 0202 - 0212 - 0400 - 0410 - 0402 - 0412 - 0400 - 0410 - 0402 - 0412 - 0400 - 0410 - 0402 - 0412",
+      "rule": {
+        "require_campos_correspondentes": true,
+        "require_pernas_completas": false,
+        "restrict_campos_to_required_chain": true,
+        "presence_only_required_chain": true,
+        "required_chain": [
+          {
+            "label": "0200",
+            "mti": "0200"
+          },
+          {
+            "label": "9600 pcode 940400",
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "label": "9610 pcode 940400",
+            "mti": "9610",
+            "de03": "940400"
+          },
+          {
+            "label": "9600 pcode 940600",
+            "mti": "9600",
+            "de03": "940600"
+          },
+          {
+            "label": "9610 pcode 940600",
+            "mti": "9610",
+            "de03": "940600"
+          },
+          {
+            "label": "0210 autorizacao inicial",
+            "mti": "0210"
+          },
+          {
+            "label": "0202 final da compra",
+            "mti": "0202"
+          },
+          {
+            "label": "0212 final da compra",
+            "mti": "0212"
+          },
+          {
+            "label": "0400 estorno 1",
+            "mti": "0400"
+          },
+          {
+            "label": "0410 resposta estorno 1",
+            "mti": "0410"
+          },
+          {
+            "label": "0402 confirmacao estorno 1",
+            "mti": "0402"
+          },
+          {
+            "label": "0412 confirmacao estorno 1",
+            "mti": "0412"
+          },
+          {
+            "label": "0400 estorno 2",
+            "mti": "0400"
+          },
+          {
+            "label": "0410 resposta estorno 2",
+            "mti": "0410"
+          },
+          {
+            "label": "0402 confirmacao estorno 2",
+            "mti": "0402"
+          },
+          {
+            "label": "0412 confirmacao estorno 2",
+            "mti": "0412"
+          },
+          {
+            "label": "0400 estorno 3",
+            "mti": "0400"
+          },
+          {
+            "label": "0410 resposta estorno 3",
+            "mti": "0410"
+          },
+          {
+            "label": "0402 confirmacao estorno 3",
+            "mti": "0402"
+          },
+          {
+            "label": "0412 confirmacao estorno 3",
+            "mti": "0412"
+          }
+        ],
+        "ignore_leg_campos_bits": [
+          {
+            "mti": "9600",
+            "de03": "940400"
+          },
+          {
+            "mti": "0210"
+          },
+          {
+            "mti": "0212"
+          },
+          {
+            "mti": "0410"
+          },
+          {
+            "mti": "0412"
+          }
+        ],
+        "comparacoes": [
+          {
+            "label": "Bit90_0400_estorno1_vs_estorno2",
+            "left": {
+              "mti": "0400",
+              "occurrence": 1,
+              "bit": "90"
+            },
+            "right": {
+              "mti": "0400",
+              "occurrence": 2,
+              "bit": "90"
+            },
+            "operator": "=="
+          },
+          {
+            "label": "Bit90_0400_estorno2_vs_estorno3",
+            "left": {
+              "mti": "0400",
+              "occurrence": 2,
+              "bit": "90"
+            },
+            "right": {
+              "mti": "0400",
+              "occurrence": 3,
+              "bit": "90"
+            },
+            "operator": "=="
+          }
+        ],
+        "tipo_por_id283": {
+          "target": {
+            "mti": "9600",
+            "de03": "940600"
+          },
+          "regra_id_por_versao_bit61": {
+            "source_bit": "61",
+            "source_prefix_len": 5,
+            "lte_10_44_use_id": "253",
+            "gte_10_45_use_id": "283"
+          },
+          "prefix_map": {
+            "01": "credito",
+            "02": "debito"
+          },
+          "expected": "credito"
+        },
+        "forbidden_steps": [
+          {
+            "label": "9600 no teste 20 deve ser apenas pcode 940400",
+            "mti": "9600",
+            "de03_ne": "940400"
+          },
+          {
+            "label": "9610 no teste 20 deve ser apenas pcode 940600",
+            "mti": "9610",
+            "de03_ne": "940600"
+          },
+          {
+            "label": "Pernas fora do objetivo do teste 20 nao permitidas",
+            "any_mti": [
+              "0201",
+              "0401",
+              "0420",
+              "0430"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "field_formats": {
+    "4": {
+      "type": "fixed",
+      "len": 12,
+      "charset": "numeric",
+      "exact_len": 12
+    },
+    "47": {
+      "type": "lllvar"
+    },
+    "58": {
+      "type": "lllvar",
+      "max": 50
+    },
+    "61": {
+      "type": "lllvar",
+      "max": 999
+    }
+  },
+  "flow_rules": {
+    "has_96x0_940400": {
+      "any_of_bit47_ids": [
+        "940400"
+      ]
+    },
+    "has_96x0_940600": {
+      "any_of_bit47_ids": [
+        "940600"
+      ]
+    },
+    "has_9610_940400": {
+      "any_of_bit47_ids": [
+        "940400"
+      ]
+    },
+    "has_9610_940600": {
+      "any_of_bit47_ids": [
+        "940600"
+      ]
+    }
+  },
+  "de47_id238": {
+    "source": "whole_de47",
+    "container_tag": "whole_de47",
+    "encoding": "ascii",
+    "format": "subtlv",
+    "subtlv": {
+      "tag_width": 2,
+      "len_format": "decimal2"
+    },
+    "tags": {
+      "00": {
+        "name": "Tag00",
+        "charset": "ans",
+        "min": 1,
+        "max": 40
+      },
+      "01": {
+        "name": "Tag01",
+        "charset": "ans",
+        "min": 1,
+        "max": 99
+      },
+      "02": {
+        "name": "Tag02",
+        "charset": "ans",
+        "min": 1,
+        "max": 30
+      },
+      "03": {
+        "name": "Tag03",
+        "charset": "ans",
+        "exact_len": 2
+      },
+      "04": {
+        "name": "Tag04",
+        "charset": "ans",
+        "exact_len": 3
+      },
+      "05": {
+        "name": "Tag05",
+        "charset": "ans",
+        "min": 1,
+        "max": 10
+      },
+      "06": {
+        "name": "Tag06",
+        "charset": "numeric",
+        "exact_len": 4
+      },
+      "07": {
+        "name": "Tag07",
+        "charset": "ans",
+        "min": 1,
+        "max": 14
+      }
+    },
+    "txn_type_map": {
+      "source_field": 3,
+      "values": {
+        "purchase": [
+          "000000",
+          "000001"
+        ],
+        "cancel": [
+          "200000",
+          "200001"
+        ]
+      }
+    },
+    "required_tags": {
+      "purchase": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07"
+      ],
+      "cancel": [
+        "00",
+        "01",
+        "02",
+        "05",
+        "07"
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "name": "0200_PCT_COMPRA",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0200"
+        },
+        {
+          "field": "flow.has_9610_940400",
+          "equals": true
+        },
+        {
+          "field": "flow.has_9610_940600",
+          "equals": false
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "22",
+        "32",
+        "41",
+        "42",
+        "47",
+        "49",
+        "61"
+      ],
+      "required_bit47_ids": [
+        "001",
+        "006",
+        "007",
+        "009",
+        "041",
+        "042",
+        "201",
+        "238",
+        "252",
+        "264",
+        "265",
+        "292"
+      ],
+      "bit47_allowed_ids": [
+        "001",
+        "006",
+        "007",
+        "009",
+        "023",
+        "041",
+        "042",
+        "200",
+        "201",
+        "208",
+        "238",
+        "252",
+        "258",
+        "264",
+        "265",
+        "270",
+        "292",
+        "460"
+      ]
+    },
+    {
+      "name": "0200_CARTAO_COMPRA",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0200"
+        },
+        {
+          "field": "flow.has_9610_940600",
+          "equals": true
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "22",
+        "32",
+        "41",
+        "42",
+        "47",
+        "49",
+        "61"
+      ],
+      "required_bit47_ids": [
+        "001",
+        "006",
+        "007",
+        "009",
+        "023",
+        "041",
+        "042",
+        "201",
+        "238",
+        "252",
+        "264",
+        "265",
+        "292"
+      ],
+      "bit47_allowed_ids": [
+        "001",
+        "006",
+        "007",
+        "008",
+        "023",
+        "041",
+        "042",
+        "200",
+        "201",
+        "208",
+        "238",
+        "252",
+        "258",
+        "264",
+        "265",
+        "270",
+        "292",
+        "460"
+      ],
+      "required_id238_tags": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07"
+      ]
+    },
+    {
+      "name": "0400_CANCELAMENTO",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0400"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "22",
+        "32",
+        "41",
+        "42",
+        "47",
+        "61",
+        "90"
+      ],
+      "required_bit47_ids": [
+        "001",
+        "006",
+        "007",
+        "009",
+        "041",
+        "042",
+        "201",
+        "238",
+        "252",
+        "264"
+      ],
+      "bit47_allowed_ids": [
+        "001",
+        "005",
+        "006",
+        "007",
+        "009",
+        "010",
+        "023",
+        "041",
+        "042",
+        "200",
+        "201",
+        "208",
+        "238",
+        "252",
+        "258",
+        "264",
+        "265",
+        "270",
+        "292",
+        "308",
+        "460"
+      ],
+      "required_id238_tags": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07"
+      ]
+    },
+    {
+      "name": "0420_DESFAZIMENTO",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0420"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "22",
+        "32",
+        "41",
+        "42",
+        "47",
+        "61",
+        "90"
+      ],
+      "required_bit47_ids": [
+        "266"
+      ],
+      "bit47_allowed_ids": [
+        "042",
+        "050",
+        "160",
+        "162",
+        "600"
+      ],
+      "bit47_id_rules": {
+        "266": {
+          "charset": "numeric",
+          "exact_len": 2
+        }
+      }
+    },
+    {
+      "name": "0430_RESPOSTA_DESFAZIMENTO",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0430"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "39",
+        "41",
+        "42",
+        "47",
+        "90"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": [
+        "160"
+      ]
+    },
+    {
+      "name": "0202_RESPOSTA",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0202"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61",
+        "127"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": []
+    },
+    {
+      "name": "0402_RESPOSTA",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "0402"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "04",
+        "07",
+        "11",
+        "12",
+        "13",
+        "19",
+        "32",
+        "37",
+        "41",
+        "42",
+        "61",
+        "127"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": []
+    },
+    {
+      "name": "9600_QR_CODE",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "9600"
+        },
+        {
+          "field": "bit.03",
+          "equals": "940400"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42",
+        "47",
+        "90"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": [
+        "259"
+      ]
+    },
+    {
+      "name": "9600_PATH_PLANS",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "9600"
+        },
+        {
+          "field": "bit.03",
+          "equals": "940600"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "39",
+        "41",
+        "42",
+        "47",
+        "90"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": [
+        "253",
+        "262",
+        "263",
+        "275"
+      ]
+    },
+    {
+      "name": "9610_PATH_PLANS",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "9610"
+        },
+        {
+          "field": "bit.03",
+          "equals": "940600"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "03",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "37",
+        "41",
+        "42",
+        "47"
+      ],
+      "optional_bits": [
+        "04"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": [
+        "023",
+        "046",
+        "208"
+      ]
+    },
+    {
+      "name": "9610_QR_CODE",
+      "when": [
+        {
+          "field": "mti",
+          "equals": "9610"
+        },
+        {
+          "field": "bit.03",
+          "equals": "940400"
+        }
+      ],
+      "required_bits": [
+        "01",
+        "07",
+        "11",
+        "12",
+        "13",
+        "32",
+        "39",
+        "41",
+        "42",
+        "90"
+      ],
+      "required_bit47_ids": [],
+      "bit47_allowed_ids": []
+    }
+  ]
+}

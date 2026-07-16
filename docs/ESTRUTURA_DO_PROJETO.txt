@@ -1,0 +1,226 @@
+================================================================================
+  ESTRUTURA DO PROJETO - SISTEMA DE HOMOLOGAÇÃO FISERV
+  Atualizado em: 15/07/2026
+================================================================================
+
+
+================================================================================
+  VISÃO GERAL
+================================================================================
+
+  Este sistema é uma ferramenta web (Flask) para homologação de clientes
+  no padrão ISO 8583. O cliente faz upload do seu roteiro Word (.docx),
+  o sistema extrai os testes, valida contra o log de transações e gera
+  um relatório com o resultado (APROVADO / REPROVADO).
+
+
+================================================================================
+  ARQUIVOS DA RAIZ (arquivos de produção)
+================================================================================
+
+  app_homolog_web.py
+  ------------------
+  Ponto de entrada da API Flask. Define todas as rotas HTTP:
+    - POST /api/validar-roteiro-cliente-batch  → valida roteiro do cliente
+    - GET  /api/testes-disponiveis/<produto_id> → lista testes por produto
+    - GET  /api/produtos                        → lista produtos disponíveis
+    - POST /api/validate-produto                → validação manual por produto
+    - GET  /api/client/progress                 → progresso do cliente
+    - GET  /api/health                          → status da API
+    (e outras rotas admin)
+
+  homolog_service.py
+  ------------------
+  Serviço principal para o produto QR Pago (produto 01).
+  Lê os logs de transação, valida mensagens e retorna resultado por teste.
+
+  products_config.py
+  ------------------
+  Mapeamento de produtos. Define qual validador usar para cada produto:
+    - Produto 01 → QR Pago       → validador_0200.py
+    - Produto 02 → CARDSE        → validador_cardse.py
+
+  roteiro_batch_validator.py
+  --------------------------
+  Orquestrador da validação em batch. Recebe os testes extraídos do Word,
+  valida cada um contra o log selecionado e salva 3 arquivos de resultado
+  na pasta do cliente:
+    - resultado_validacao.json  (dados completos)
+    - resumo.txt                (resumo legível)
+    - roteiro_original.docx     (cópia do roteiro enviado)
+
+  roteiro_cliente_parser.py
+  -------------------------
+  Parser do arquivo Word (.docx). Abre o roteiro do cliente e extrai
+  os testes com:
+    - Número do teste
+    - BIT 11 (STAN)
+    - BIT 42 (Identificação do estabelecimento)
+    - Data/Hora
+    - Resultado esperado (OK / NOK)
+
+  validador_0200.py
+  -----------------
+  Validador específico para o produto QR Pago.
+  Processa mensagens 0200 / 0210 / 9600 / 9610 do log.
+
+  validador_cardse.py
+  -------------------
+  Validador específico para o produto CARDSE Autorizador.
+  Processa mensagens 0100 / 0110 / 0200 / 0210 / 0420 / 0430 do log.
+
+  requirements.txt
+  ----------------
+  Lista de dependências Python necessárias para rodar o sistema.
+  Instalar com: pip install -r requirements.txt
+
+  iniciar_homolog_web.bat
+  -----------------------
+  Atalho Windows. Duplo clique para iniciar o servidor Flask.
+
+  preparar_ambiente.bat
+  ---------------------
+  Atalho Windows. Executa na primeira vez para instalar dependências
+  e preparar o ambiente Python.
+
+  listafps.exe
+  ------------
+  Executável auxiliar para listar os arquivos de log (.fps.txt)
+  disponíveis na pasta LOGS de TESTE.
+
+
+================================================================================
+  PASTAS
+================================================================================
+
+  services/
+  ---------
+  Módulos Python de serviço com a lógica de negócio:
+    - homolog_service.py              → lógica QR Pago
+    - homolog_service_multiproduct.py → lógica multi-produto (CARDSE)
+    - __init__.py                     → inicializador do módulo
+
+  static/
+  -------
+  Arquivos estáticos do portal web (frontend):
+    - app.js              → lógica do portal interno
+    - client.js           → lógica do portal do cliente
+    - product-selection.js → seleção de produto no portal
+    - i18n.js             → internacionalização (idiomas)
+    - style.css           → estilos visuais
+    - imagens e logos Fiserv
+
+  templates/
+  ----------
+  Páginas HTML renderizadas pelo Flask:
+    - index.html          → portal interno (equipe Fiserv)
+    - client.html         → portal do cliente (upload roteiro)
+    - admin_login.html    → login administrador
+    - portal_entry.html   → entrada/seleção de portal
+
+  data/
+  -----
+  Dados persistentes do sistema:
+
+    data/roteiros/
+      Arquivos JSON de configuração dos testes por produto:
+        - roteiro_iso_novo_produto.json  → configuração produto CARDSE (02)
+        - roteiro_iso_0200.json          → configuração produto QR Pago (01)
+      Também guarda arquivos .docx de referência e extrações anteriores.
+
+    data/clientes/
+      Resultados das validações organizados por CNPJ e timestamp:
+        data/clientes/<CNPJ>/submissoes/<YYYYMMDD_HHMMSS>/
+          - resultado_validacao.json
+          - resumo.txt
+          - roteiro_original.docx
+
+  LOGS de TESTE/
+  --------------
+  Arquivos de log das transações de homologação.
+  Usados como base para validar os testes do cliente.
+  Formatos aceitos: .fps.txt, .txt
+
+  temp/
+  -----
+  Pasta para arquivos temporários de upload.
+  Quando o cliente envia o roteiro .docx pela API, ele é salvo aqui
+  temporariamente durante o processamento e deletado logo em seguida.
+
+  backups/
+  --------
+  Backups manuais dos arquivos de produção gerados durante o desenvolvimento.
+  Não necessário em produção.
+
+  tests/
+  ------
+  Scripts para testar o funcionamento do sistema:
+    - test_batch_storage.py  → testa validação em batch via script direto
+    - test_api_upload.py     → testa upload e validação via API HTTP
+
+  docs/
+  -----
+  Documentação interna do projeto.
+    - ESTRUTURA_DO_PROJETO.txt  → este arquivo
+
+  Especificação/
+  --------------
+  Documentos de especificação técnica do produto ISO 8583.
+
+  build/ dist/ archives/ scripts/
+  --------------------------------
+  Artefatos relacionados ao executável HomoQR (gerado com PyInstaller).
+  Contém versões compiladas e builds antigos. Não necessário em produção.
+
+
+================================================================================
+  FLUXO DE FUNCIONAMENTO (resumo)
+================================================================================
+
+  1. Cliente acessa o portal → templates/client.html
+  2. Informa CNPJ, seleciona produto e testes
+  3. Faz upload do roteiro Word (.docx)
+  4. API recebe → app_homolog_web.py (POST /api/validar-roteiro-cliente-batch)
+  5. Roteiro salvo temporariamente em → temp/
+  6. Parser extrai os testes → roteiro_cliente_parser.py
+  7. Validador processa cada teste contra o log → roteiro_batch_validator.py
+       └── chama validador_cardse.py (produto 02) ou validador_0200.py (prod 01)
+  8. Resultado salvo em → data/clientes/<CNPJ>/submissoes/<timestamp>/
+  9. Arquivo temp deletado → temp/ (limpo automaticamente)
+  10. Portal exibe resultado ao cliente
+
+
+================================================================================
+  PARA SUBIR EM PRODUÇÃO
+================================================================================
+
+  Copiar apenas:
+    ✅ app_homolog_web.py
+    ✅ homolog_service.py
+    ✅ products_config.py
+    ✅ roteiro_batch_validator.py
+    ✅ roteiro_cliente_parser.py
+    ✅ validador_0200.py
+    ✅ validador_cardse.py
+    ✅ requirements.txt
+    ✅ services/
+    ✅ static/
+    ✅ templates/
+    ✅ data/roteiros/roteiro_iso_novo_produto.json
+    ✅ data/roteiros/roteiro_iso_0200.json
+
+  Criar vazias no servidor:
+    📂 temp/
+    📂 data/clientes/
+    📂 LOGS de TESTE/   (e copiar os logs necessários)
+
+  NÃO copiar:
+    ❌ data/clientes/   (dados locais)
+    ❌ backups/
+    ❌ tests/
+    ❌ docs/
+    ❌ build/ dist/ archives/ scripts/
+    ❌ __pycache__/
+    ❌ LOGS de TESTE/   (copiar apenas os logs do ambiente de produção)
+
+================================================================================

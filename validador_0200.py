@@ -19,8 +19,14 @@ import re
 import sys
 from typing import Any, Dict, List, Set, Tuple, Optional
 
-ROTEIRO_PATH = "roteiro_iso_0200.json"
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Importar módulo de validação de Pcode
+from pcode_validator import validate_pcode_for_product_type, extract_bit03_pcode
+
+if getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROTEIRO_PATH = os.path.join(BASE_DIR, "data", "roteiros", "roteiro_iso_0200.json")
 DEFAULT_LOGS_DIR = os.path.join(BASE_DIR, "LOGS de TESTE")
 
 #region Carregamento do roteiro
@@ -1166,6 +1172,160 @@ def _validate_formatted_fields_against_spec(
 
     return errors
 
+
+def _is_cardse_roteiro(roteiro: dict) -> bool:
+    nome_teste = str((roteiro or {}).get("teste") or "").upper()
+    return "AUTORIZADOR CARDSE" in nome_teste
+
+
+def _bit_present(
+    bit: str,
+    bits_presentes: Set[str],
+    amostras_bits: Dict[str, str],
+) -> bool:
+    b = str(bit).zfill(2)
+    if b in bits_presentes:
+        return True
+    val = (amostras_bits or {}).get(b)
+    return val is not None and str(val) != ""
+
+
+def _apply_bit22_entry_mode_rules(
+    roteiro: dict,
+    mti: Optional[str],
+    bits_presentes: Set[str],
+    amostras_bits: Dict[str, str],
+    bit47_map: Dict[str, str],
+) -> List[str]:
+    errors: List[str] = []
+
+    rules_cfg = (roteiro or {}).get("bit22_entry_mode_rules") or {}
+    if not rules_cfg:
+        return errors
+    if not rules_cfg.get("enabled", False):
+        return errors
+    if not _is_cardse_roteiro(roteiro):
+        return errors
+
+    field_name = str(rules_cfg.get("field") or "22").zfill(2)
+    bit22_val = str((amostras_bits or {}).get(field_name) or "")
+    if not bit22_val:
+        return errors
+
+    if not re.fullmatch(r"\d{3}", bit22_val):
+        errors.append(f"Bit 22: formato inválido '{bit22_val}' (esperado n3).")
+        return errors
+
+    prefix = bit22_val[:2]
+    pin_cap = bit22_val[2]
+
+    valid_prefixes = set(str(x) for x in (rules_cfg.get("valid_prefixes") or []))
+    valid_pin_caps = set(str(x) for x in (rules_cfg.get("valid_pin_capability") or []))
+
+    if valid_prefixes and prefix not in valid_prefixes:
+        errors.append(
+            f"Bit 22: prefixo '{prefix}' não permitido pela matriz configurada ({sorted(valid_prefixes)})."
+        )
+    if valid_pin_caps and pin_cap not in valid_pin_caps:
+        errors.append(
+            f"Bit 22: capacidade PIN '{pin_cap}' não permitida pela matriz configurada ({sorted(valid_pin_caps)})."
+        )
+
+    def applies_mti_rule(key: str) -> bool:
+        key_norm = str(key or "")
+        if not key_norm:
+            return False
+        if key_norm == str(mti or ""):
+            return True
+
+        suffix = "_when_chip_continuation"
+        if key_norm.endswith(suffix):
+            base_mti = key_norm[: -len(suffix)]
+            if base_mti != str(mti or ""):
+                return False
+            has_emv_payload = _bit_present("55", bits_presentes, amostras_bits)
+            has_emv_id = ("220" in (bit47_map or {})) or ("221" in (bit47_map or {}))
+            return has_emv_payload or has_emv_id
+
+        return False
+
+    for rule in (rules_cfg.get("rules") or []):
+        if not isinstance(rule, dict):
+            continue
+
+        prefixes = set(str(x) for x in (rule.get("bit22_prefix_in") or []))
+        pin_equals = rule.get("pin_capability_equals")
+
+        matches_prefix = (not prefixes) or (prefix in prefixes)
+        matches_pin = (pin_equals is None) or (str(pin_equals) == pin_cap)
+
+        if not (matches_prefix and matches_pin):
+            continue
+
+        for bit in (rule.get("required_bits") or []):
+            b = str(bit).zfill(2)
+            if not _bit_present(b, bits_presentes, amostras_bits):
+                errors.append(
+                    f"Bit 22={bit22_val}: bit obrigatório ausente pela regra '{rule.get('name', 'bit22_rule')}' -> {b}."
+                )
+
+        for bit in (rule.get("absent_bits") or []):
+            b = str(bit).zfill(2)
+            if _bit_present(b, bits_presentes, amostras_bits):
+                errors.append(
+                    f"Bit 22={bit22_val}: bit deve estar ausente pela regra '{rule.get('name', 'bit22_rule')}' -> {b}."
+                )
+
+        required_bits_by_mti = rule.get("required_bits_by_mti") or {}
+        if isinstance(required_bits_by_mti, dict):
+            for mti_key, bits_req in required_bits_by_mti.items():
+                if not applies_mti_rule(str(mti_key)):
+                    continue
+                for bit in (bits_req or []):
+                    b = str(bit).zfill(2)
+                    if not _bit_present(b, bits_presentes, amostras_bits):
+                        errors.append(
+                            f"Bit 22={bit22_val}: bit obrigatório ausente para {mti_key} na regra '{rule.get('name', 'bit22_rule')}' -> {b}."
+                        )
+
+        for sid in (rule.get("required_bit47_ids") or []):
+            sid_s = str(sid).zfill(3)
+            if sid_s not in (bit47_map or {}):
+                errors.append(
+                    f"Bit 22={bit22_val}: ID 47/{sid_s} obrigatório ausente pela regra '{rule.get('name', 'bit22_rule')}'."
+                )
+
+        required_ids_by_mti = rule.get("required_bit47_ids_by_mti") or {}
+        if isinstance(required_ids_by_mti, dict):
+            for mti_key, ids_req in required_ids_by_mti.items():
+                if not applies_mti_rule(str(mti_key)):
+                    continue
+                for sid in (ids_req or []):
+                    sid_s = str(sid).zfill(3)
+                    if sid_s not in (bit47_map or {}):
+                        errors.append(
+                            f"Bit 22={bit22_val}: ID 47/{sid_s} obrigatório ausente para {mti_key} na regra '{rule.get('name', 'bit22_rule')}'."
+                        )
+
+        pin_cfg = rule.get("required_if_transaction_with_pin") or {}
+        if isinstance(pin_cfg, dict) and pin_cfg:
+            has_pin_evidence = _bit_present("52", bits_presentes, amostras_bits) or ("204" in (bit47_map or {}))
+            if has_pin_evidence:
+                for bit in (pin_cfg.get("required_bits") or []):
+                    b = str(bit).zfill(2)
+                    if not _bit_present(b, bits_presentes, amostras_bits):
+                        errors.append(
+                            f"Bit 22={bit22_val}: bit obrigatório ausente em transação com PIN pela regra '{rule.get('name', 'bit22_rule')}' -> {b}."
+                        )
+                for sid in (pin_cfg.get("required_bit47_ids_when_dukpt_3des") or []):
+                    sid_s = str(sid).zfill(3)
+                    if sid_s not in (bit47_map or {}):
+                        errors.append(
+                            f"Bit 22={bit22_val}: ID 47/{sid_s} obrigatório ausente para PIN/DUKPT pela regra '{rule.get('name', 'bit22_rule')}'."
+                        )
+
+    return errors
+
 #endregion
 
 #region Validador principal
@@ -1390,6 +1550,36 @@ def validar_iso_0200_raw(
     else:
         avisos.append("Sem MTI principal plausível, validação de presença de bits foi limitada ao scanner 96x0.")
 
+    # 7.1) Validação de Pcode (Bit 03) conforme product_type e expected_pcode
+    # Apenas para mensagens 0200 de entrada (TEF -> FEPAS)
+    if mti == "0200" and not erros:  # Só valida se não há erros prévios
+        pcode_rules = roteiro.get("pcode_rules", {})
+        product_type = scenario_cfg.get("product_type", "credito")  # Default: crédito
+        expected_pcode = scenario_cfg.get("expected_pcode")  # Pcode exato esperado (opcional)
+        
+        # Extrair Pcode do Bit 03
+        bit03_value = amostras_bits.get("03", "")
+        if bit03_value:
+            pcode = extract_bit03_pcode({"03": bit03_value})
+            
+            # Se expected_pcode está definido, validação RESTRITIVA (exatamente aquele pcode)
+            if expected_pcode:
+                if pcode == expected_pcode:
+                    passed.append(f"PCODE_VALIDACAO (Pcode={pcode}, produto={product_type}, esperado={expected_pcode})")
+                else:
+                    erros.append(f"Validação de Pcode falhou: Pcode recebido '{pcode}' não corresponde ao esperado '{expected_pcode}' para o teste. Produto: {product_type}")
+            else:
+                # Se expected_pcode NÃO está definido, validação PERMISSIVA (qualquer pcode da categoria)
+                is_valid, error_msg, description = validate_pcode_for_product_type(pcode, product_type, pcode_rules)
+                
+                if is_valid:
+                    passed.append(f"PCODE_VALIDACAO (Pcode={pcode}, produto={product_type})")
+                else:
+                    if error_msg:
+                        erros.append(f"Validação de Pcode falhou: {error_msg}")
+        elif pcode_rules.get("enabled"):
+            avisos.append("Bit 03 (Pcode) não encontrado para validação de product_type")
+
     # 8) Filtrar Bit 47 (allowed ∪ required); em debug inclui todos
     allowed_post = allowed_bit47_ids | required_bit47_ids
     if debug:
@@ -1448,6 +1638,17 @@ def validar_iso_0200_raw(
         )
     except Exception as e:
         erros.append(f"DE47/ID238: erro inesperado na validação: {e}")
+
+    # 11) Regras condicionais por meio de entrada (bit 22) - somente CARDSE
+    erros.extend(
+        _apply_bit22_entry_mode_rules(
+            roteiro=roteiro,
+            mti=mti,
+            bits_presentes=bits_presentes,
+            amostras_bits=amostras_bits,
+            bit47_map=bit47_map,
+        )
+    )
 
     aprovado = len(erros) == 0
     status = "APROVADO" if aprovado else "REPROVADO"
@@ -1544,6 +1745,10 @@ def parse_iso_formatted_blocks(texto: str) -> List[dict]:
       - Linha de cabeçalho contendo "ISO . FEPAS:";
       - Linha seguinte com string ISO bruta;
       - Linhas de campos formatados (ex.: "11 (  6): [009837]").
+    
+    Direction mapping:
+      - "RECEBIDA" para mensagens recebidas (PROC->FEPAS, TEF->FEPAS, etc)
+      - "ENVIADA" para mensagens enviadas (FEPAS->PROC)
     """
     lines = texto.splitlines()
     n = len(lines)
@@ -1559,9 +1764,9 @@ def parse_iso_formatted_blocks(texto: str) -> List[dict]:
         direction = "unknown"
         up = line.upper()
         if "MENSAGEM RECEBIDA" in up:
-            direction = "in"
+            direction = "RECEBIDA"
         elif "MENSAGEM  ENVIADA" in up or "MENSAGEM ENVIADA" in up:
-            direction = "out"
+            direction = "ENVIADA"
 
         raw_iso = None
         raw_line_no = None
@@ -1661,6 +1866,36 @@ def parse_iso_formatted_blocks(texto: str) -> List[dict]:
     return blocks
 
 
+def _map_direction_to_description(direction: str, header_text: str = "") -> str:
+    """
+    Mapeia a direção genérica (RECEBIDA/ENVIADA) para uma descrição específica.
+    
+    Exemplos:
+    - RECEBIDA + "PROCESSADORA -> FEPAS" -> "PROCESSADORA > FEPAS"
+    - RECEBIDA + "MODULO TEF -> FEPAS" -> "TERMINAL > FEPAS"
+    - ENVIADA + "FEPAS -> PROCESSADORA" -> "FEPAS > PROC"
+    """
+    header_upper = str(header_text or "").upper()
+    
+    if direction == "ENVIADA":
+        # Mensagem enviada é sempre FEPAS -> PROCESSADORA
+        if "PROCESSADORA" in header_upper or "PROC" in header_upper:
+            return "FEPAS > PROC"
+        return "FEPAS > PROC"
+    elif direction == "RECEBIDA":
+        # Mensagem recebida pode ser de PROCESSADORA ou do TEF/TERMINAL
+        if "PROCESSADORA" in header_upper:
+            return "PROCESSADORA > FEPAS"
+        elif "MODULO TEF" in header_upper or "TEF" in header_upper:
+            return "TERMINAL > FEPAS"
+        elif "RECEBIDA" in header_upper and "PROCESSADORA" not in header_upper:
+            # Default para recebida é da processadora
+            return "PROCESSADORA > FEPAS"
+        return "RECEBIDA"
+    else:
+        return direction or "-"
+
+
 def _is_leg_of_interest(mti: Optional[str], de03: Optional[str]) -> bool:
     return mti in ("0200", "0202", "0400", "0402", "0420", "9610")
 
@@ -1688,9 +1923,11 @@ def validar_log_iso_formatado(
     forcar_pct: bool = False,
     filtro_de11: Optional[str] = None,
     filtro_de41: Optional[str] = None,
+    filtro_de42: Optional[str] = None,
     apenas_pernas_interesse: bool = True,
+    roteiro_path: Optional[str] = None,
 ) -> dict:
-    roteiro = load_roteiro()
+    roteiro = load_roteiro(roteiro_path) if roteiro_path else load_roteiro()
     blocks = parse_iso_formatted_blocks(texto)
 
     legs: List[dict] = []
@@ -1731,6 +1968,7 @@ def validar_log_iso_formatado(
         de03 = fields.get("03") or amostras.get("03")
         de11 = fields.get("11") or amostras.get("11")
         de41 = fields.get("41") or amostras.get("41")
+        de37 = fields.get("37") or amostras.get("37")
 
         key = f"{de11}|{de41}" if de11 and de41 else None
 
@@ -1823,6 +2061,21 @@ def validar_log_iso_formatado(
             leg_status = "REPROVADO"
             leg_aprovado = False
 
+        bit22_errors = _apply_bit22_entry_mode_rules(
+            roteiro=roteiro,
+            mti=mti,
+            bits_presentes=set(str(k).zfill(2) for k in campos_bits.keys() if str(k).isdigit()),
+            amostras_bits=campos_bits,
+            bit47_map=bit47_map_out,
+        )
+        if bit22_errors:
+            for msg in bit22_errors:
+                if msg not in leg_erros:
+                    leg_erros.append(msg)
+            leg_erros_formatados.extend([msg for msg in bit22_errors if msg not in leg_erros_formatados])
+            leg_status = "REPROVADO"
+            leg_aprovado = False
+
         # Suprime pernas de timeout (96x0 pcode 940300) da saída final.
         if _is_timeout_leg(mti, de03):
             continue
@@ -1831,12 +2084,14 @@ def validar_log_iso_formatado(
             "idx": idx,
             "header_line": block.get("header_line"),
             "header_text": block.get("header_text"),
+            "raw_direction": block.get("direction"),  # Mantém valores originais: RECEBIDA/ENVIADA
             "raw_iso_line": block.get("raw_iso_line"),
             "raw_iso": raw_iso,
             "direction": block.get("direction"),
             "mti": mti,
             "de03": de03,
             "de11": de11,
+            "de37": de37,
             "de41": de41,
             "chave_match_11_41": key,
             "status": leg_status,
@@ -1862,27 +2117,66 @@ def validar_log_iso_formatado(
     if apenas_pernas_interesse:
         legs = [l for l in legs if l.get("perna_interesse")]
 
-    grouped_all: Dict[str, List[dict]] = {}
-    for leg in legs_all:
-        key = leg.get("chave_match_11_41")
-        if not key:
-            continue
-        grouped_all.setdefault(key, []).append(leg)
+    def _group_legs_by_key_instances(source_legs: List[dict], window_lines: int = 2500) -> List[dict]:
+        buckets: List[dict] = []
+        ordered = sorted(source_legs, key=lambda x: x.get("header_line") or 0)
 
-    grouped: Dict[str, List[dict]] = {}
-    sem_chave: List[dict] = []
+        for leg in ordered:
+            key = leg.get("chave_match_11_41")
+            if not key:
+                continue
 
-    for leg in legs:
-        key = leg.get("chave_match_11_41")
-        if not key:
-            sem_chave.append(leg)
-            continue
-        grouped.setdefault(key, []).append(leg)
+            header_line = int(leg.get("header_line") or 0)
+            rrn = str(leg.get("de37") or "").strip()
+            matched_bucket = None
+
+            for bucket in reversed(buckets):
+                if bucket.get("key") != key:
+                    continue
+
+                last_line = int(bucket.get("last_line") or 0)
+                if header_line and last_line and (header_line - last_line) > window_lines:
+                    continue
+
+                bucket_rrn = str(bucket.get("rrn") or "")
+                if rrn and bucket_rrn and rrn != bucket_rrn:
+                    continue
+
+                matched_bucket = bucket
+                break
+
+            if matched_bucket is None:
+                buckets.append({
+                    "key": key,
+                    "rrn": rrn,
+                    "last_line": header_line,
+                    "legs": [leg],
+                })
+                continue
+
+            matched_bucket["legs"].append(leg)
+            matched_bucket["last_line"] = header_line or int(matched_bucket.get("last_line") or 0)
+            if not str(matched_bucket.get("rrn") or "") and rrn:
+                matched_bucket["rrn"] = rrn
+
+        return buckets
+
+    buckets_all = _group_legs_by_key_instances(legs_all)
+
+    sem_chave: List[dict] = [leg for leg in legs if not leg.get("chave_match_11_41")]
 
     transacoes: List[dict] = []
-    for key, tlegs in grouped.items():
-        tlegs_sorted = sorted(tlegs, key=lambda x: x.get("header_line") or 0)
-        tlegs_all_sorted = sorted(grouped_all.get(key, tlegs_sorted), key=lambda x: x.get("header_line") or 0)
+    for bucket in buckets_all:
+        tlegs_all_sorted = sorted(bucket.get("legs") or [], key=lambda x: x.get("header_line") or 0)
+        if apenas_pernas_interesse:
+            tlegs_sorted = [l for l in tlegs_all_sorted if l.get("perna_interesse")]
+        else:
+            tlegs_sorted = list(tlegs_all_sorted)
+
+        if not tlegs_sorted:
+            continue
+
+        key = str(bucket.get("key") or "")
         has_0200 = any((l.get("mti") == "0200") for l in tlegs_sorted)
         has_0400 = any((l.get("mti") == "0400") for l in tlegs_sorted)
         has_96x0_940400 = any((l.get("mti") in ("9600", "9610") and l.get("de03") == "940400") for l in tlegs_sorted)
@@ -1892,6 +2186,7 @@ def validar_log_iso_formatado(
         transacoes.append({
             "chave_match_11_41": key,
             "de11": tlegs_sorted[0].get("de11"),
+            "de37": tlegs_sorted[0].get("de37") or next((x.get("de37") for x in tlegs_all_sorted if x.get("de37")), None),
             "de41": tlegs_sorted[0].get("de41"),
             "quantidade_pernas": len(tlegs_sorted),
             "pernas_validadas": len(validated),
@@ -1907,16 +2202,55 @@ def validar_log_iso_formatado(
     transacoes.sort(key=lambda x: (x["pernas"][0].get("header_line") or 0))
 
     transacoes_antes_filtro = len(transacoes)
-    if filtro_de11 or filtro_de41:
+    if filtro_de11 or filtro_de41 or filtro_de42:
+        def _extract_bit90_original_stan(perna: dict) -> str:
+            """
+            Extrai o STAN original do Bit 90 de uma perna de desfazimento.
+            Bit 90 estrutura: [0:2]=tipo [2:4]=? [4:10]=STAN_ORIGINAL [10:...]
+            """
+            bits = perna.get("bits") or {}
+            bit90 = str(bits.get("90") or "").strip()
+            if len(bit90) >= 10:
+                return bit90[4:10]
+            return ""
+
+        def _transacao_tem_de42(t: dict, de42_val: str) -> bool:
+            """Verifica se alguma perna da transação tem DE42 igual ao filtro."""
+            for leg in (t.get("pernas_todas") or t.get("pernas") or []):
+                bits = leg.get("bits") or {}
+                if str(bits.get("42") or "").strip() == de42_val:
+                    return True
+            return False
+        
+        def _transacao_match_de11_com_bit90(t: dict, de11_filtro: str) -> bool:
+            """
+            Verifica se a transação tem DE11 igual ao filtro OU tem pernas com Bit 90
+            referenciando o DE11 original (para desfazimentos/reversas).
+            """
+            # Primeiro, verificar DE11 direto
+            if t.get("de11") == de11_filtro:
+                return True
+            
+            # Para MTIs de desfazimento (0420, 0402, 0430), verificar Bit 90
+            for leg in (t.get("pernas_todas") or t.get("pernas") or []):
+                mti = leg.get("mti", "")
+                if mti in ("0420", "0402", "0430"):
+                    bit90_stan = _extract_bit90_original_stan(leg)
+                    if bit90_stan == de11_filtro:
+                        return True
+            
+            return False
+
         transacoes = [
             t for t in transacoes
-            if ((not filtro_de11) or (t.get("de11") == filtro_de11))
+            if ((not filtro_de11) or _transacao_match_de11_com_bit90(t, filtro_de11))
             and ((not filtro_de41) or (t.get("de41") == filtro_de41))
+            and ((not filtro_de42) or _transacao_tem_de42(t, filtro_de42))
         ]
 
         if not transacoes:
             errors.append(
-                f"Nenhuma transação encontrada para filtro DE11={filtro_de11 or '*'} e DE41={filtro_de41 or '*'}"
+                f"Nenhuma transação encontrada para filtro DE11={filtro_de11 or '*'} DE41={filtro_de41 or '*'} DE42={filtro_de42 or '*'}"
             )
 
     if sem_chave:
@@ -2119,16 +2453,174 @@ def _coletar_mtis_da_transacao(transacao: dict) -> List[str]:
     return mtis
 
 
-def _buscar_transacao_por_chave(resultado_log: dict, de11: str, de41: str) -> Optional[dict]:
+def _buscar_transacao_por_chave(resultado_log: dict, de11: str, de41: str, de42: str = "") -> Optional[dict]:
     transacoes = []
     if resultado_log.get("transacao_selecionada"):
         transacoes.append(resultado_log["transacao_selecionada"])
     transacoes.extend(resultado_log.get("transacoes") or [])
 
+    de42_ref = str(de42 or "").strip()
+
+    def _pernas_tx(tx: dict):
+        return list(tx.get("pernas_todas") or tx.get("pernas") or [])
+
+    def _de42_ok(tx: dict) -> bool:
+        if not de42_ref:
+            return True
+        for p in _pernas_tx(tx):
+            bits = p.get("bits") or {}
+            if str(bits.get("42") or "").strip() == de42_ref:
+                return True
+        return False
+
     for t in transacoes:
-        if str(t.get("de11") or "") == de11 and str(t.get("de41") or "") == de41:
+        de11_ok = str(t.get("de11") or "") == de11
+        de41_ok = (not de41) or (str(t.get("de41") or "") == de41)
+        if de11_ok and de41_ok and _de42_ok(t):
             return t
     return None
+
+
+def _selecionar_transacao_alvo_por_regra(resultado_log: dict, de11: str, de41: str, teste_cfg: dict, de42: str = "") -> Optional[dict]:
+    """Seleciona a transação alvo considerando o gatilho de MTI do teste e fallback via DE90."""
+    transacoes: List[dict] = []
+    if resultado_log.get("transacao_selecionada"):
+        transacoes.append(resultado_log["transacao_selecionada"])
+    transacoes.extend(resultado_log.get("transacoes") or [])
+
+    rule = (teste_cfg or {}).get("rule") or {}
+    trigger_mti = str(rule.get("validate_only_when_has_mti") or "").strip()
+    de11_ref = str(de11 or "")
+    de41_ref = str(de41 or "")
+    de42_ref = str(de42 or "").strip()
+
+    def _pernas_tx(tx: dict) -> List[dict]:
+        return list(tx.get("pernas_todas") or tx.get("pernas") or [])
+
+    def _de41_ok(tx: dict) -> bool:
+        if not de41_ref:
+            return True
+        tx_de41 = str(tx.get("de41") or "")
+        if tx_de41 == de41_ref:
+            return True
+        for p in _pernas_tx(tx):
+            if str(p.get("de41") or "") == de41_ref:
+                return True
+        return False
+
+    def _tx_contem_de11(tx: dict, de11_match: str) -> bool:
+        if not de11_match:
+            return True
+        if str(tx.get("de11") or "") == de11_match:
+            return True
+        for p in _pernas_tx(tx):
+            if str(p.get("de11") or "") == de11_match:
+                return True
+        return False
+
+    def _rrns_tx(tx: dict) -> Set[str]:
+        rrns: Set[str] = set()
+        for p in _pernas_tx(tx):
+            bits = p.get("bits") or {}
+            rrn = str(bits.get("37") or bits.get(37) or "").strip()
+            if rrn:
+                rrns.add(rrn)
+        return rrns
+
+    def _de41_ok_na_referencia_original(tx: dict) -> bool:
+        if not de41_ref:
+            return True
+        if _de41_ok(tx):
+            return True
+
+        for p in _pernas_tx(tx):
+            stan_ref, rrn_ref = _extrair_refs_originais_de90(p)
+            if not stan_ref:
+                continue
+
+            for tx_ref in transacoes:
+                if not _tx_contem_de11(tx_ref, str(stan_ref)):
+                    continue
+                if rrn_ref and rrn_ref not in _rrns_tx(tx_ref):
+                    continue
+                if _de41_ok(tx_ref):
+                    return True
+
+        return False
+
+    def _de42_ok_tx(tx: dict) -> bool:
+        if not de42_ref:
+            return True
+        for p in _pernas_tx(tx):
+            bits = p.get("bits") or {}
+            if str(bits.get("42") or "").strip() == de42_ref:
+                return True
+        return False
+
+    # 1) Busca exata por chave informada (comportamento atual).
+    direct = _buscar_transacao_por_chave(resultado_log, de11=de11_ref, de41=de41_ref, de42=de42_ref)
+    if direct is not None:
+        if not trigger_mti:
+            return direct
+        if any(str(p.get("mti") or "") == trigger_mti for p in _pernas_tx(direct)):
+            return direct
+
+    # 1.1) Fallback para cancelamento/desfazimento quando o DE41 informado pertence
+    # à transação original referenciada no DE90, e não à perna 0400/0420 em si.
+    if trigger_mti in {"0400", "0420", "0200"} and de11_ref:
+        for tx in transacoes:
+            if not _tx_contem_de11(tx, de11_ref):
+                continue
+            if not _de41_ok_na_referencia_original(tx):
+                continue
+            if any(str(p.get("mti") or "") == trigger_mti for p in _pernas_tx(tx)):
+                return tx
+
+    # 1.2) Fallback para teste 14: quando o DE11 informado é de uma perna 0400,
+    # buscar via DE90 para a transação original 0200.
+    if trigger_mti is None and de11_ref:
+        for tx in transacoes:
+            for p in _pernas_tx(tx):
+                if str(p.get("mti") or "") != "0400":
+                    continue
+                if str(p.get("de11") or "") != de11_ref:
+                    continue
+                stan_ref, rrn_ref = _extrair_refs_originais_de90(p)
+                if not stan_ref:
+                    continue
+                for tx_ref in transacoes:
+                    if not _tx_contem_de11(tx_ref, str(stan_ref)):
+                        continue
+                    if rrn_ref and rrn_ref not in _rrns_tx(tx_ref):
+                        continue
+                    if not _de41_ok(tx_ref):
+                        continue
+                    return tx_ref
+
+    # 2) Fallback para cancelamento: localizar transação com 0400 cujo DE90 referencia o DE11 informado.
+    if trigger_mti == "0400" and de11_ref:
+        for tx in transacoes:
+            if not _de41_ok_na_referencia_original(tx):
+                continue
+            for p in _pernas_tx(tx):
+                if str(p.get("mti") or "") != "0400":
+                    continue
+                stan_ref, rrn_ref = _extrair_refs_originais_de90(p)
+                if str(stan_ref or "") != de11_ref:
+                    continue
+                if rrn_ref and rrn_ref not in _rrns_tx(tx):
+                    continue
+                return tx
+
+    # 3) Último fallback: qualquer transação que contenha o MTI gatilho e respeite DE41.
+    if trigger_mti:
+        for tx in transacoes:
+            if not _de41_ok_na_referencia_original(tx):
+                continue
+            if any(str(p.get("mti") or "") == trigger_mti for p in _pernas_tx(tx)):
+                return tx
+
+    return direct
 
 
 def _extrair_id283_da_perna(perna: dict) -> str:
@@ -2253,7 +2745,7 @@ def _extrair_id505_bit62(perna: dict) -> str:
 
 def _extrair_id506_bit48_apos_segundo_arroba(perna: dict) -> str:
     bits = perna.get("bits") or {}
-    raw48 = str(bits.get("48") or "")
+    raw48 = str(bits.get("48") or bits.get(48) or "")
     if not raw48:
         return ""
 
@@ -2282,21 +2774,26 @@ def _extrair_id506_bit48_apos_segundo_arroba(perna: dict) -> str:
 
     # Tentativa 3: fallback por regex (TAG 506 + LEN decimal 2/3).
     m = re.search(r"506(\d{2,3})(.*)", payload)
-    if not m:
-        return ""
-    try:
-        ln = int(m.group(1))
-    except Exception:
-        return ""
-    resto = str(m.group(2) or "")
-    if ln <= 0:
-        return ""
-    return resto[:ln] if len(resto) >= ln else resto
+    if m:
+        try:
+            ln = int(m.group(1))
+        except Exception:
+            ln = 0
+        resto = str(m.group(2) or "")
+        if ln > 0:
+            return resto[:ln] if len(resto) >= ln else resto
+
+    # Tentativa 4: payload textual livre após o segundo @.
+    # Ex.: "VISA CREDITO" ou "MC CREDITO" (sem TLV 506 formal).
+    payload_txt = str(payload or "").strip()
+    if _tipo_por_texto_bit48(payload_txt):
+        return payload_txt
+    return ""
 
 
 def _extrair_texto_bit48_apos_segundo_arroba(perna: dict) -> str:
     bits = perna.get("bits") or {}
-    raw48 = str(bits.get("48") or "")
+    raw48 = str(bits.get("48") or bits.get(48) or "")
     if not raw48:
         return ""
 
@@ -2311,7 +2808,7 @@ def _extrair_texto_id505_bit62(perna: dict) -> str:
 
 def _extrair_texto_bit62_apos_segundo_arroba(perna: dict) -> str:
     bits = perna.get("bits") or {}
-    raw62 = str(bits.get("62") or "")
+    raw62 = str(bits.get("62") or bits.get(62) or "")
     if not raw62:
         return ""
     partes = raw62.split("@", 2)
@@ -2394,10 +2891,18 @@ def _tipo_por_tag01_compacto(prefix_map: Dict[str, str], valor_id: str) -> Optio
     (TAG 01, LEN 02, VALOR 01).
     Neste caso, o tipo deve ser lido pelo VALOR da TAG 01, não pelo prefixo bruto.
     """
-    raw = str(valor_id or "").strip()
-    if not raw or len(raw) < 6:
+    raw_full = str(valor_id or "").strip()
+    if not raw_full:
         return None
-    if not raw.isdigit() or (len(raw) % 2) != 0:
+
+    # Alguns payloads chegam com mascaramento no final (ex.: "****").
+    # Para evitar falso "credito" por fallback de prefixo, mantém apenas o
+    # prefixo numérico contínuo, suficiente para ler TAG 01.
+    m_num = re.match(r"^\d+", raw_full)
+    if not m_num:
+        return None
+    raw = m_num.group(0)
+    if len(raw) < 6:
         return None
 
     # Interpreta como TLV compacto: TAG(2) LEN(2) VALOR(n).
@@ -2409,6 +2914,8 @@ def _tipo_por_tag01_compacto(prefix_map: Dict[str, str], valor_id: str) -> Optio
         if not len_txt.isdigit():
             break
         value_len = int(len_txt)
+        if value_len <= 0:
+            break
         start_val = i + 4
         end_val = start_val + value_len
         if end_val > n:
@@ -2420,7 +2927,7 @@ def _tipo_por_tag01_compacto(prefix_map: Dict[str, str], valor_id: str) -> Optio
         i = end_val
 
     # Fallback defensivo para payloads legados sem LEN explícito (TAG/VALOR de 2 dígitos).
-    for j in range(0, len(raw) - 1, 2):
+    for j in range(0, len(raw) - 3, 2):
         tag = raw[j:j + 2]
         val = raw[j + 2:j + 4]
         if tag == "01":
@@ -2431,6 +2938,8 @@ def _tipo_por_tag01_compacto(prefix_map: Dict[str, str], valor_id: str) -> Optio
 
 def _descricao_fonte_tipo(source_kind: str, id_fonte: str) -> str:
     sk = str(source_kind or "").strip().lower()
+    if sk == "id253_from_original_0210_by_de90":
+        return "ID 253 da 0210 original referenciada pelo DE90 (STAN+RRN)"
     if sk == "bit48_text_after_second_at":
         return "texto do Bit 48 após o segundo @"
     if sk == "bit62_text_after_second_at":
@@ -2481,6 +2990,7 @@ def _step_matches(perna: dict, step: dict) -> bool:
     mti = str(perna.get("mti") or "")
     de03 = str(perna.get("de03") or "")
     bits = perna.get("bits") or {}
+    de22 = str(bits.get("22") or "").strip()
 
     step_mti = step.get("mti")
     if step_mti and mti != str(step_mti):
@@ -2511,6 +3021,22 @@ def _step_matches(perna: dict, step: dict) -> bool:
         if de39 != str(step.get("de39") or ""):
             return False
 
+    # Validação opcional de DE22 (Point of Service Entry Mode).
+    if "de22" in step:
+        if de22 != str(step.get("de22") or ""):
+            return False
+
+    step_de22_prefix = str(step.get("de22_prefix") or "").strip()
+    if step_de22_prefix:
+        if not de22.startswith(step_de22_prefix):
+            return False
+
+    step_any_de22_prefix = step.get("any_de22_prefix")
+    if isinstance(step_any_de22_prefix, list) and step_any_de22_prefix:
+        opts_de22 = [str(x).strip() for x in step_any_de22_prefix if str(x).strip()]
+        if not any(de22.startswith(pref) for pref in opts_de22):
+            return False
+
     # Validação opcional de IDs do Bit 47 no próprio passo da cadeia.
     # Exemplo:
     # "bit47": { "023": "02" }
@@ -2532,6 +3058,16 @@ def _step_matches(perna: dict, step: dict) -> bool:
                 return False
             if atual == str(expected):
                 return False
+
+    # Validação opcional de direction (RECEBIDA, ENVIADA, PROCESSADORA > FEPAS, etc)
+    step_direction = step.get("direction")
+    if step_direction:
+        perna_direction = str(perna.get("direction") or "")
+        perna_raw_direction = str(perna.get("raw_direction") or "")
+        step_direction_str = str(step_direction)
+        # Tenta match com direction mapeado ou raw_direction
+        if perna_direction != step_direction_str and perna_raw_direction != step_direction_str:
+            return False
 
     return True
 
@@ -2582,6 +3118,58 @@ def _find_chain_indexes(pernas: List[dict], required_chain: List[dict]) -> Tuple
     return indexes, erros
 
 
+def _validar_especificacao_nos_passos(
+    pernas: List[dict],
+    required_chain: List[dict],
+    chain_indexes: Optional[List[int]],
+    teste_id: str,
+) -> List[str]:
+    """
+    Garante conformidade com a especificação nos passos obrigatórios da cadeia.
+    Para cada passo encontrado, a perna correspondente precisa ter validação
+    individual executada e aprovada.
+    """
+    erros: List[str] = []
+    if not required_chain or not chain_indexes:
+        return erros
+
+    for idx_step, leg_idx in enumerate(chain_indexes):
+        if leg_idx is None or leg_idx < 0 or leg_idx >= len(pernas):
+            continue
+
+        step = required_chain[idx_step] if idx_step < len(required_chain) else {}
+        if bool((step or {}).get("optional", False)):
+            continue
+
+        perna = pernas[leg_idx]
+        label = str((step or {}).get("label") or f"passo_{idx_step + 1}")
+        mti = str(perna.get("mti") or "?")
+        de03 = str(perna.get("de03") or "?")
+        hdr = perna.get("header_line")
+        contexto = f"{label} (MTI={mti} DE03={de03}" + (f" linha {hdr}" if hdr else "") + ")"
+
+        if not perna.get("validacao_executada"):
+            erros.append(
+                f"Conformidade da especificação: validação individual não executada para {contexto}."
+            )
+            continue
+
+        if bool(perna.get("aprovado") is True):
+            continue
+
+        perna_erros = [str(e) for e in (perna.get("erros") or []) if str(e).strip()]
+        if perna_erros:
+            erros.append(
+                "Conformidade da especificação: "
+                + f"{contexto} reprovado. Motivos: "
+                + " | ".join(perna_erros[:4])
+            )
+        else:
+            erros.append(f"Conformidade da especificação: {contexto} reprovado na validação individual.")
+
+    return erros
+
+
 def _extrair_valor_ref(perna: dict, ref: dict) -> str:
     if "bit" in ref:
         bit = str(ref.get("bit") or "").zfill(2)
@@ -2606,10 +3194,83 @@ def _extrair_valor_ref(perna: dict, ref: dict) -> str:
     if field == "de39":
         bits = perna.get("bits") or {}
         return str(bits.get("39") or "")
+    if field == "de22":
+        bits = perna.get("bits") or {}
+        return str(bits.get("22") or "")
+    if field == "de37":
+        bits = perna.get("bits") or {}
+        return str(bits.get("37") or bits.get(37) or perna.get("de37") or "")
     if field == "de90_original_stan":
         return str(_extrair_stan_original_de90(perna) or "")
+    if field == "de90_original_rrn":
+        return str(_extrair_rrn_original_de90(perna) or "")
 
     return ""
+
+
+def _descricao_ref_comparacao(ref: dict) -> str:
+    if not isinstance(ref, dict):
+        return "referência"
+
+    mti = str(ref.get("mti") or "").strip()
+
+    if "bit" in ref:
+        bit = str(ref.get("bit") or "").zfill(2)
+        return f"MTI {mti} Bit {bit}" if mti else f"Bit {bit}"
+
+    field = str(ref.get("field") or "").strip()
+    field_labels = {
+        "de11": "DE11",
+        "de03": "DE03",
+        "de22": "DE22",
+        "de37": "DE37",
+        "de39": "DE39",
+        "de90_original_stan": "DE90 STAN original",
+        "de90_original_rrn": "DE90 RRN original",
+        "mti": "MTI",
+    }
+    if field:
+        field_desc = field_labels.get(field, field.upper())
+        return f"MTI {mti} {field_desc}" if mti else field_desc
+
+    return f"MTI {mti}" if mti else "referência"
+
+
+def _explicar_operador_comparacao(op: str) -> str:
+    return {
+        "==": "deve ser igual a",
+        "!=": "deve ser diferente de",
+        "<": "deve ser menor que",
+        ">": "deve ser maior que",
+        "<=": "deve ser menor ou igual a",
+        ">=": "deve ser maior ou igual a",
+    }.get(str(op or ""), f"deve satisfazer o operador '{op}' com")
+
+
+def _formatar_falha_comparacao(label: str, op: str, left_ref: dict, left_val: str, right_ref: dict, right_val: str) -> str:
+    left_desc = _descricao_ref_comparacao(left_ref)
+    right_desc = _descricao_ref_comparacao(right_ref)
+    regra = _explicar_operador_comparacao(op)
+
+    detalhe = (
+        f"Regra '{label}' falhou: {left_desc} ({left_val}) {regra} {right_desc} ({right_val})."
+    )
+
+    if op == "<" and str(left_val) == str(right_val):
+        detalhe += " Os valores vieram iguais, então a condição de 'menor que' não foi atendida."
+    elif op == ">" and str(left_val) == str(right_val):
+        detalhe += " Os valores vieram iguais, então a condição de 'maior que' não foi atendida."
+
+    if label == "Bit04_0400_vs_0210_compra_original":
+        detalhe += (
+            " Neste teste de cancelamento parcial, o valor da 0400 precisa ser menor que o valor da 0210 original."
+        )
+    elif label == "Bit04_0400_vs_0210_compra_original_total":
+        detalhe += (
+            " Neste teste, o valor da 0400 precisa seguir exatamente a regra configurada contra a 0210 original."
+        )
+
+    return detalhe
 
 
 def _avaliar_comparacoes(pernas: List[dict], comparacoes: List[dict]) -> List[str]:
@@ -2670,7 +3331,7 @@ def _avaliar_comparacoes(pernas: List[dict], comparacoes: List[dict]) -> List[st
 
         if not ok:
             erros.append(
-                f"Comparação '{label}' falhou: LEFT='{left_val}' {op} RIGHT='{right_val}'"
+                _formatar_falha_comparacao(label, op, left_ref, left_val, right_ref, right_val)
             )
 
     return erros
@@ -2942,9 +3603,13 @@ def _formatar_iso_perna(
     return "\n".join(linhas)
 
 
-def _avaliar_cadeias_completas_transacao(pernas: List[dict]) -> List[str]:
+def _avaliar_cadeias_completas_transacao(pernas: List[dict], skip_qr_chains: bool = False) -> List[str]:
     erros: List[str] = []
     if not pernas:
+        return erros
+
+    # Se for Autorizador (skip_qr_chains=True), pula TODAS as validações de cadeias com 9610
+    if skip_qr_chains:
         return erros
 
     tem_0200 = any(str(p.get("mti") or "") == "0200" for p in pernas)
@@ -2954,6 +3619,7 @@ def _avaliar_cadeias_completas_transacao(pernas: List[dict]) -> List[str]:
     tem_940600 = any(_step_matches(p, {"mti": "9610", "de03": "940600"}) for p in pernas)
 
     if tem_0200:
+        
         if tem_940600:
             chain_compra_cartao = [
                 {"label": "0200", "mti": "0200"},
@@ -3053,10 +3719,21 @@ def _build_ignore_leg_status_refs(rule: dict, required_chain: List[dict], teste_
             ):
                 refs.append({"mti": mti_presence_only})
 
+    # Regra de motor do teste 20:
+    # pernas 9600/940400 e 9600/940600 contam por presença, sem reprovação por dados.
+    if str(teste_id).zfill(2) == "20":
+        for pcode in ("940400", "940600"):
+            if not any(
+                str(r.get("mti") or "") == "9600" and str(r.get("de03") or "") == pcode
+                for r in refs
+                if isinstance(r, dict)
+            ):
+                refs.append({"mti": "9600", "de03": pcode})
+
     return refs
 
 
-def _build_ignore_leg_campos_refs(rule: dict) -> List[dict]:
+def _build_ignore_leg_campos_refs(rule: dict, teste_id: str = "") -> List[dict]:
     """Monta refs de pernas que nao entram na validacao de dados (bits/IDs), mas contam no fluxo."""
     refs: List[dict] = []
 
@@ -3065,6 +3742,17 @@ def _build_ignore_leg_campos_refs(rule: dict) -> List[dict]:
         for ref in configured:
             if isinstance(ref, dict):
                 refs.append(dict(ref))
+
+    # Regra de motor do teste 20:
+    # 9600/940400 e 9600/940600 não entram na validação de dados (bits/IDs).
+    if str(teste_id).zfill(2) == "20":
+        for pcode in ("940400", "940600"):
+            if not any(
+                str(r.get("mti") or "") == "9600" and str(r.get("de03") or "") == pcode
+                for r in refs
+                if isinstance(r, dict)
+            ):
+                refs.append({"mti": "9600", "de03": pcode})
 
     return refs
 
@@ -3172,22 +3860,75 @@ def _build_effective_forbidden_steps(rule: dict, required_chain: List[dict], tes
     return steps
 
 
-def _extrair_stan_original_de90(perna: dict) -> Optional[str]:
+def _extrair_refs_originais_de90(perna: dict) -> Tuple[Optional[str], Optional[str]]:
     """
-    Extrai o STAN original (6 dígitos) do DE90.
-    Formato esperado do DE90: MTI(4) + STAN(6) + ...
+    Extrai referências originais do DE90.
+    Convenção esperada no log: MTI(4) + STAN/bit11(6) + data(10) + RRN/bit37(12) + ...
     """
     bits = perna.get("bits") or {}
     de90_raw = str(bits.get("90") or bits.get(90) or "")
     if not de90_raw:
-        return None
+        return None, None
 
     de90_digits = "".join(ch for ch in de90_raw if ch.isdigit())
     if len(de90_digits) < 10:
-        return None
+        return None, None
 
     stan = de90_digits[4:10]
-    return stan if len(stan) == 6 and stan.isdigit() else None
+    rrn = de90_digits[20:32] if len(de90_digits) >= 32 else ""
+
+    stan_ref = stan if len(stan) == 6 and stan.isdigit() else None
+    rrn_ref = rrn if len(rrn) == 12 and rrn.isdigit() else None
+    return stan_ref, rrn_ref
+
+
+def _extrair_stan_original_de90(perna: dict) -> Optional[str]:
+    stan, _ = _extrair_refs_originais_de90(perna)
+    return stan
+
+
+def _extrair_rrn_original_de90(perna: dict) -> Optional[str]:
+    _, rrn = _extrair_refs_originais_de90(perna)
+    return rrn
+
+
+def _coletar_chaves_referencia_de90(pernas: List[dict]) -> Set[Tuple[str, str]]:
+    """Coleta pares (DE11, DE37) referenciados por DE90 em pernas de desfazimento/cancelamento."""
+    refs: Set[Tuple[str, str]] = set()
+    for p in (pernas or []):
+        mti = str(p.get("mti") or "")
+        if mti not in {"0400", "0420"}:
+            continue
+        de11_ref, de37_ref = _extrair_refs_originais_de90(p)
+        if not de11_ref:
+            continue
+        refs.add((str(de11_ref), str(de37_ref or "")))
+    return refs
+
+
+def _perna_eh_referencia_compra_via_de90(perna: dict, refs_de90: Set[Tuple[str, str]]) -> bool:
+    """Indica se uma perna de compra pertence à transação original referenciada via DE90."""
+    if not refs_de90:
+        return False
+    mti = str(perna.get("mti") or "")
+    if mti not in {"0200", "0210", "0202", "0212"}:
+        return False
+
+    de11 = str(perna.get("de11") or "")
+    bits = perna.get("bits") or {}
+    de37 = str(bits.get("37") or bits.get(37) or perna.get("de37") or "")
+    if not de11:
+        return False
+
+    for ref11, ref37 in refs_de90:
+        if de11 != str(ref11):
+            continue
+        if ref37:
+            if de37 == str(ref37):
+                return True
+            continue
+        return True
+    return False
 
 
 def _listar_transacoes_resultado(resultado_log: dict) -> List[dict]:
@@ -3206,14 +3947,36 @@ def _expandir_pernas_relacionadas_por_de90(
     incluir_reverso: bool = False,
     incluir_0400_original: bool = True,
     incluir_0420_original: bool = False,
+    mti_filtro_expansao_de90: Optional[Set[str]] = None,
 ) -> List[dict]:
-    """Expande pernas incluindo transacoes relacionadas por DE90 (STAN original)."""
+    """Expande pernas incluindo transacoes relacionadas por DE90 (STAN original).
+
+    Se ``mti_filtro_expansao_de90`` for fornecido, apenas as pernas cujo MTI
+    esteja nesse conjunto serão incluídas das transações *relacionadas* via DE90
+    (a transação alvo em si é sempre incluída por completo).
+    """
 
     def _pernas_tx(tx: dict) -> List[dict]:
         return list(tx.get("pernas_todas") or tx.get("pernas") or [])
 
     def _tx_key(tx: dict) -> Tuple[str, str]:
         return (str(tx.get("de11") or ""), str(tx.get("de41") or ""))
+
+    def _rrns_tx(tx: dict) -> Set[str]:
+        rrns: Set[str] = set()
+        for perna in _pernas_tx(tx):
+            bits = perna.get("bits") or {}
+            rrn = str(bits.get("37") or bits.get(37) or "").strip()
+            if rrn:
+                rrns.add(rrn)
+        return rrns
+
+    def _tx_matches_de90_ref(tx: dict, stan_ref: str, rrn_ref: Optional[str]) -> bool:
+        if str(tx.get("de11") or "") != str(stan_ref or ""):
+            return False
+        if rrn_ref:
+            return rrn_ref in _rrns_tx(tx)
+        return True
 
     de41_ref = str(de41_alvo or "")
     pernas_expandidas: List[dict] = sorted(
@@ -3243,6 +4006,8 @@ def _expandir_pernas_relacionadas_por_de90(
         included_tx_keys.add(k)
         fila.append(tx)
         for perna_rel in _pernas_tx(tx):
+            if mti_filtro_expansao_de90 and str(perna_rel.get("mti") or "") not in mti_filtro_expansao_de90:
+                continue
             pk = (perna_rel.get("header_line"), perna_rel.get("mti"), perna_rel.get("de11"), perna_rel.get("de41"))
             if pk in known_leg_keys:
                 continue
@@ -3263,19 +4028,39 @@ def _expandir_pernas_relacionadas_por_de90(
         for p in _pernas_tx(tx_atual):
             if str(p.get("mti") or "") not in mtis_direcao_1:
                 continue
-            stan_original = _extrair_stan_original_de90(p)
+            stan_original, rrn_original = _extrair_refs_originais_de90(p)
             if not stan_original:
                 continue
 
             for tx in transacoes_no_resultado:
-                if str(tx.get("de11") or "") != stan_original:
+                if not _tx_matches_de90_ref(tx, stan_original, rrn_original):
                     continue
                 if not _de41_ok(tx):
                     continue
                 _adicionar_tx(tx)
 
         # Direcao 2 (teste 14): compra (0200) -> cancelamentos que referenciam a compra via DE90.
-        if incluir_reverso and de11_atual:
+        # Primeiro, se a transacao alvo comeca com cancelamento (0400), vamos procurar a original.
+        de11_para_reverso = de11_atual
+        if incluir_reverso and not incluir_0400_original:
+            # Se nao estamos indo de 0400 para original (incluir_0400_original=False),
+            # significa que a transacao alvo JA EH uma reversa e precisamos ir para trás primeiro.
+            for p in _pernas_tx(tx_atual):
+                if str(p.get("mti") or "") == "0400":
+                    stan_original, rrn_original = _extrair_refs_originais_de90(p)
+                    if stan_original:
+                        # Encontrar a transacao original e usar seu DE11 para procurar reversas.
+                        for tx_orig in transacoes_no_resultado:
+                            if not _tx_matches_de90_ref(tx_orig, stan_original, rrn_original):
+                                continue
+                            if not _de41_ok(tx_orig):
+                                continue
+                            _adicionar_tx(tx_orig)
+                            de11_para_reverso = str(tx_orig.get("de11") or "")
+                            break
+                    break
+
+        if incluir_reverso and de11_para_reverso:
             for tx in transacoes_no_resultado:
                 if not _de41_ok(tx):
                     continue
@@ -3285,14 +4070,20 @@ def _expandir_pernas_relacionadas_por_de90(
                 for p in _pernas_tx(tx):
                     if str(p.get("mti") or "") != "0400":
                         continue
-                    if _extrair_stan_original_de90(p) == de11_atual:
-                        _adicionar_tx(tx)
-                        break
+                    stan_ref, rrn_ref = _extrair_refs_originais_de90(p)
+                    if stan_ref != de11_para_reverso:
+                        continue
+                    if rrn_ref:
+                        rrns_atual = _rrns_tx(tx_atual)
+                        if rrn_ref not in rrns_atual:
+                            continue
+                    _adicionar_tx(tx)
+                    break
 
     return sorted(pernas_expandidas, key=lambda x: x.get("header_line") or 0)
 
 
-def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_cfg: dict) -> dict:
+def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_cfg: dict, de42: str = "", roteiro_path: Optional[str] = None) -> dict:
     erros: List[str] = []
     teste_id = str(teste_cfg.get("id") or "00").zfill(2)
     chave_teste = f"teste_{int(teste_id)}" if teste_id.isdigit() else "teste"
@@ -3300,9 +4091,10 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
     rule = teste_cfg.get("rule") or {}
     presence_only_required_chain = bool(rule.get("presence_only_required_chain", False))
 
-    transacao_alvo = _buscar_transacao_por_chave(resultado_log, de11=de11, de41=de41)
+    transacao_alvo = _selecionar_transacao_alvo_por_regra(resultado_log, de11=de11, de41=de41, teste_cfg=teste_cfg, de42=de42)
     if transacao_alvo is None:
-        erros.append("Transação com DE11/DE41 informados não foi localizada no log.")
+        filtro_desc = f"DE11={de11 or '*'} DE41={de41 or '*'}" + (f" DE42={de42}" if de42 else "")
+        erros.append(f"Transação com {filtro_desc} não foi localizada no log.")
         campos_correspondentes_aprovado = False
         teste_aprovado = False
         return {
@@ -3329,16 +4121,29 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
 
     transacoes_no_resultado = _listar_transacoes_resultado(resultado_log)
     de41_alvo = str(transacao_alvo.get("de41") or de41 or "")
+    # Em testes que dependem da transação original via DE90, a compra pode vir com DE41 diferente.
+    de41_ref_expansao = "" if teste_id in {"11", "12", "13", "14", "20"} else de41_alvo
+    mti_filtro = None
+    if teste_id in {"11", "12"}:
+        mti_filtro = {"0210"}
+    elif teste_id == "13":
+        mti_filtro = {"0202"}
+    elif teste_id == "14":
+        mti_filtro = {"0200", "9600", "9610", "0210", "0202", "0212"}
+    elif teste_id == "20":
+        mti_filtro = {"0200", "9600", "9610", "0210", "0202", "0212", "0400", "0410", "0402", "0412"}
+    
     pernas = _expandir_pernas_relacionadas_por_de90(
         transacao_alvo,
         transacoes_no_resultado,
-        de41_alvo,
+        de41_ref_expansao,
         incluir_reverso=(teste_id in {"14", "20"}),
-        incluir_0400_original=(teste_id in {"14", "20"}),
+        incluir_0400_original=(teste_id in {"11", "12", "13"}),
         incluir_0420_original=(teste_id in {"15", "16"}),
+        mti_filtro_expansao_de90=mti_filtro,
     )
 
-    roteiro = load_roteiro()
+    roteiro = load_roteiro(roteiro_path) if roteiro_path else load_roteiro()
     required_chain = rule.get("required_chain") or []
     pernas = _sanitize_reversal_pcode_validation(pernas, required_chain)
     comparacoes = rule.get("comparacoes") or []
@@ -3348,7 +4153,7 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
     validate_only_when_has_mti = str(rule.get("validate_only_when_has_mti") or "").strip()
     restrict_campos_to_required_chain = bool(rule.get("restrict_campos_to_required_chain", False))
     ignore_leg_status_refs = _build_ignore_leg_status_refs(rule, required_chain, teste_id=teste_id)
-    ignore_leg_campos_refs = _build_ignore_leg_campos_refs(rule)
+    ignore_leg_campos_refs = _build_ignore_leg_campos_refs(rule, teste_id=teste_id)
 
     def _leg_ignorada_status(perna: dict) -> bool:
         if not isinstance(ignore_leg_status_refs, list) or not ignore_leg_status_refs:
@@ -3477,12 +4282,140 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
                 "Não foi possível identificar no detalhe quais campos/bits falharam; verifique os erros por perna na grade."
             )
 
-    _, chain_errors = _find_chain_indexes(pernas, required_chain)
+    chain_indexes, chain_errors = _find_chain_indexes(pernas, required_chain)
     erros.extend(chain_errors)
 
+    # =========================================================================
+    # REGRAS ESSENCIAIS para o produto Autorizador CARDSE
+    # =========================================================================
+
+    # REGRA 1: Validar Bit 22 (meio de entrada) em mensagens 0200/0400
+    # - Regra do motor: prefixos validos derivados de entry_mode_bit22_map no roteiro
+    # - O teste define entry_mode (ex: "digitado", "chip", "magnetico")
+    # - O motor resolve os prefixos aceitos a partir da configuracao central
+    entry_mode = teste_cfg.get("entry_mode")
+    bit22_required_prefixes = None
+    entry_mode_bit22_map = (roteiro.get("entry_mode_bit22_map") or {})
+    if entry_mode and entry_mode_bit22_map.get("enabled", True):
+        modo_cfg = (entry_mode_bit22_map.get("modos") or {}).get(str(entry_mode).lower())
+        if modo_cfg:
+            bit22_required_prefixes = modo_cfg.get("prefixes") or []
+
+    if bit22_required_prefixes:
+        perna_0200 = next((p for p in pernas if str(p.get("mti") or "") == "0200"), None)
+        if perna_0200:
+            de22 = str((perna_0200.get("bits") or {}).get("22") or "").strip()
+            if de22:
+                opts = [str(px).strip() for px in bit22_required_prefixes]
+                if not any(de22.startswith(px) for px in opts):
+                    entry_mode_map = {
+                        "01": "Entrada Manual (Digitado)",
+                        "79": "Fallback para Digitado",
+                        "02": "Tarja Magnetica",
+                        "80": "Contactless Tarja",
+                        "91": "Contactless Tarja (fallback)",
+                        "05": "Chip EMV (contato)",
+                        "07": "Contactless Chip",
+                        "50": "Carteira Digital",
+                        "00": "Nao especificado",
+                    }
+                    modo_recebido = entry_mode_map.get(de22[:2], f"desconhecido ('{de22[:2]}')")
+                    modo_desc = (modo_cfg or {}).get("descricao", entry_mode)
+                    modos_aceitos = ", ".join(
+                        f"'{px}' ({entry_mode_map.get(px, px)})" for px in opts
+                    )
+                    nome_teste = teste_cfg.get("nome", f"Teste {teste_id}")
+                    erros.append(
+                        f"[REGRA 1 - Bit 22] Modo de entrada incorreto para este teste. "
+                        f"O teste '{nome_teste}' exige: {modo_desc} ({modos_aceitos}). "
+                        f"Recebido: Bit 22='{de22}' ({modo_recebido}). "
+                        f"A transacao foi rejeitada porque o modo de entrada nao corresponde ao exigido pelo teste."
+                    )
+            else:
+                erros.append(
+                    f"[REGRA 1 - Bit 22] Bit 22 ausente na mensagem 0200; "
+                    f"nao foi possivel validar modo de entrada esperado: '{entry_mode}'."
+                )
+        else:
+            erros.append(
+                f"[REGRA 1 - Bit 22] Perna 0200 nao encontrada; "
+                f"nao foi possivel verificar modo de entrada esperado: '{entry_mode}'."
+            )
+
+    # REGRA 2: Validar toda a mensageria Processadora→FEPAS (0200 e 0400)
+    # - Verifica que a validação individual foi executada e APROVADA
+    # - Assegura conformidade de bits obrigatorios, formato e regras de Bit 22
+    # - Erros de validação individual da perna 0200/0400 são surfaceados no teste
+    for perna in pernas:
+        mti_perna = str(perna.get("mti") or "")
+        if mti_perna not in ("0200", "0400"):
+            continue
+        if not perna.get("validacao_executada"):
+            erros.append(
+                f"[REGRA 2 - Conteudo] Mensagem {mti_perna}: validacao individual nao executada "
+                f"(nao e possivel garantir conformidade de conteudo da mensagem)."
+            )
+            continue
+        if perna.get("aprovado") is not True:
+            perna_erros = [str(e) for e in (perna.get("erros") or []) if str(e).strip()]
+            if perna_erros:
+                for e in perna_erros[:5]:
+                    erros.append(f"[REGRA 2 - Conteudo] Mensagem {mti_perna}: {e}")
+            else:
+                erros.append(
+                    f"[REGRA 2 - Conteudo] Mensagem {mti_perna}: reprovada na validacao "
+                    f"individual de conteudo (bits obrigatorios/formato/regras)."
+                )
+
+    # REGRA 3: PCODE deve corresponder ao esperado pelo teste
+    # - Verifica o Bit 03 (Pcode) da mensagem 0200 contra expected_pcode do teste
+    # - Validacao RESTRITIVA: apenas o pcode exato é aceito
+    expected_pcode = teste_cfg.get("expected_pcode")
+    product_type = teste_cfg.get("product_type", "")
+    if expected_pcode:
+        perna_0200_pcode = next((p for p in pernas if str(p.get("mti") or "") == "0200"), None)
+        if perna_0200_pcode:
+            de03 = str((perna_0200_pcode.get("bits") or {}).get("03") or "")
+            pcode_recebido = extract_bit03_pcode({"03": de03}) if de03 else ""
+            if pcode_recebido:
+                if pcode_recebido != expected_pcode:
+                    erros.append(
+                        f"[REGRA 3 - PCODE] Pcode invalido na mensagem 0200: "
+                        f"recebido '{pcode_recebido}', esperado '{expected_pcode}'"
+                        + (f" (produto: {product_type})" if product_type else "") + "."
+                    )
+            else:
+                erros.append(
+                    f"[REGRA 3 - PCODE] Bit 03 (Pcode) ausente ou vazio na mensagem 0200; "
+                    f"esperado '{expected_pcode}'."
+                )
+        else:
+            erros.append(
+                f"[REGRA 3 - PCODE] Perna 0200 nao encontrada; "
+                f"nao foi possivel verificar Pcode esperado '{expected_pcode}'."
+            )
+
+    # =========================================================================
+    # FIM DAS REGRAS ESSENCIAIS
+    # =========================================================================
+
+    enforce_spec_on_required_chain = bool(rule.get("enforce_spec_on_required_chain", True))
+    if enforce_spec_on_required_chain and not chain_errors:
+        erros.extend(
+            _validar_especificacao_nos_passos(
+                pernas=pernas,
+                required_chain=required_chain,
+                chain_indexes=chain_indexes,
+                teste_id=teste_id,
+            )
+        )
+
     forbidden_seen: Set[str] = set()
+    refs_de90 = _coletar_chaves_referencia_de90(pernas)
     for p in pernas:
         if _leg_ignorada_campos(p):
+            continue
+        if _perna_eh_referencia_compra_via_de90(p, refs_de90):
             continue
         for step in forbidden_steps:
             if not isinstance(step, dict):
@@ -3514,7 +4447,10 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
 
     require_pernas_completas = bool(rule.get("require_pernas_completas", True))
     if require_pernas_completas:
-        erros.extend(_avaliar_cadeias_completas_transacao(pernas))
+        # Autorizador (expected_pcode iniciando com "00" = débito/crédito padrão, voucher) não valida cadeias com 9610
+        # 9610 é específico do QR Pago
+        skip_qr = bool(rule.get("ignore_qr_chains", False)) or (expected_pcode and expected_pcode.startswith("00"))
+        erros.extend(_avaliar_cadeias_completas_transacao(pernas, skip_qr_chains=skip_qr))
 
     erros.extend(_avaliar_comparacoes(pernas, comparacoes))
     erros.extend(_avaliar_any_of_conditions(pernas, any_of_conditions))
@@ -3525,8 +4461,6 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
         tipo_reprove_mode = tipo_reprove_mode_cfg
         if not target_cfg:
             target_cfg = {"mti": "9600", "de03": "940600"}
-
-        target_idx = next((i for i, p in enumerate(pernas) if _step_matches(p, target_cfg)), None)
         versao_bit61 = _extrair_versao_bit61_transacao(pernas)
         versao_num = _parse_versao_bit61(versao_bit61 or "")
 
@@ -3551,21 +4485,81 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
         elif source_kind == "bit48_text_after_second_at":
             id_fonte = "48_text"
             source_is_text = True
+        elif source_kind == "id253_from_original_0210_by_de90":
+            id_fonte = "253_de90_0210"
         elif versao_num is not None and versao_num <= (10, 44):
             id_fonte = "253"
+
+        def _find_original_0210_by_de90_idx(idx_alvo: int) -> Optional[int]:
+            stan_ref, rrn_ref = _extrair_refs_originais_de90(pernas[idx_alvo])
+            if not stan_ref:
+                return None
+            for j, pj in enumerate(pernas):
+                if str(pj.get("mti") or "") != "0210":
+                    continue
+                de11_j = str(pj.get("de11") or "")
+                bits_j = pj.get("bits") or {}
+                de37_j = str(bits_j.get("37") or bits_j.get(37) or pj.get("de37") or "")
+                if de11_j != str(stan_ref):
+                    continue
+                if rrn_ref and de37_j != str(rrn_ref):
+                    continue
+                return j
+            return None
+
+        target_candidates = [i for i, p in enumerate(pernas) if _step_matches(p, target_cfg)]
+        target_idx = target_candidates[0] if target_candidates else None
+        if target_candidates and id_fonte in {"62_text", "505", "506", "48_text"}:
+            # Em fluxos com múltiplas ocorrências (ex.: várias 0400), prioriza a perna
+            # que realmente contém fonte de tipo para evitar falso vazio no diagnóstico.
+            def _has_tipo_fonte(idx: int) -> bool:
+                perna_alvo = pernas[idx]
+                bits_alvo = perna_alvo.get("bits") or {}
+                raw62 = str(bits_alvo.get("62") or bits_alvo.get(62) or "").strip()
+                raw48 = str(bits_alvo.get("48") or bits_alvo.get(48) or "").strip()
+                if id_fonte == "62_text":
+                    if _extrair_texto_bit62_apos_segundo_arroba(perna_alvo):
+                        return True
+                    if _extrair_texto_id505_bit62(perna_alvo):
+                        return True
+                    if _extrair_id506_bit48_apos_segundo_arroba(perna_alvo):
+                        return True
+                    return bool(raw62 or raw48)
+                if id_fonte == "505":
+                    return bool(_extrair_id505_bit62(perna_alvo) or raw62)
+                if id_fonte in {"506", "48_text"}:
+                    return bool(_extrair_id506_bit48(perna_alvo) or raw48)
+                return True
+
+            target_com_fonte = next((idx for idx in target_candidates if _has_tipo_fonte(idx)), None)
+            if target_com_fonte is not None:
+                target_idx = target_com_fonte
+        elif target_candidates and id_fonte == "253_de90_0210":
+            target_com_origem = next(
+                (idx for idx in target_candidates if _find_original_0210_by_de90_idx(idx) is not None),
+                None,
+            )
+            if target_com_origem is not None:
+                target_idx = target_com_origem
 
         id_val = ""
         id505_val = ""
         id506_val = ""
+        id253_de90_val = ""
         tipo_detectado = None
         expected_tipo = expected_tipo_cfg
         mapa = tipo_cfg.get("prefix_map") or {"01": "credito", "02": "debito"}
+        fallback_de90_253_aplicado = False
 
         if target_idx is not None:
             id505_val = _extrair_id505_bit62(pernas[target_idx])
             id506_val = _extrair_id506_bit48(pernas[target_idx])
             if id_fonte == "253":
                 id_val = _extrair_id47_da_perna(pernas[target_idx], "253")
+            elif id_fonte == "253_de90_0210":
+                idx_0210_orig = _find_original_0210_by_de90_idx(target_idx)
+                if idx_0210_orig is not None:
+                    id_val = _extrair_id47_da_perna(pernas[idx_0210_orig], "253")
             elif id_fonte == "505":
                 if source_is_text:
                     id_val = _extrair_texto_id505_bit62(pernas[target_idx])
@@ -3588,6 +4582,13 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
                 id_val = _extrair_id283_da_perna(pernas[target_idx])
             if source_is_text or id_fonte in {"48_text", "62_text"}:
                 tipo_detectado = _tipo_por_texto_bit48(id_val)
+                # Fallback robusto: quando a extração textual principal falhar,
+                # tenta identificar o tipo no conteúdo bruto dos bits 62/48.
+                if tipo_detectado is None and id_fonte == "62_text":
+                    bits_alvo = pernas[target_idx].get("bits") or {}
+                    raw62 = str(bits_alvo.get("62") or bits_alvo.get(62) or "")
+                    raw48 = str(bits_alvo.get("48") or bits_alvo.get(48) or "")
+                    tipo_detectado = _tipo_por_texto_bit48(raw62) or _tipo_por_texto_bit48(raw48)
             else:
                 # Para 253/283, prioriza leitura por TAG 01 no formato compacto TAG/VALOR.
                 if id_fonte in {"253", "283"}:
@@ -3595,14 +4596,43 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
                 else:
                     tipo_detectado = _tipo_por_prefixo(mapa, id_val)
 
+            # Regra de motor: em cancelamento/desfazimento, se a fonte principal não
+            # determinar o tipo, tenta pela transação original referenciada no DE90,
+            # lendo ID 253 da 0210 original (01=credito, 02=debito).
+            if tipo_detectado is None:
+                mti_alvo = str(pernas[target_idx].get("mti") or "")
+                if mti_alvo in {"0400", "0410", "0420"}:
+                    idx_0210_orig = _find_original_0210_by_de90_idx(target_idx)
+                    if idx_0210_orig is not None:
+                        id253_de90_val = _extrair_id47_da_perna(pernas[idx_0210_orig], "253")
+                        tipo_de90 = _tipo_por_tag01_compacto(mapa, id253_de90_val) or _tipo_por_prefixo(mapa, id253_de90_val)
+                        if tipo_de90 is not None:
+                            tipo_detectado = tipo_de90
+                            fallback_de90_253_aplicado = True
+                            if not str(id_val or "").strip():
+                                id_val = id253_de90_val
+
         fonte_tipo_desc = _descricao_fonte_tipo(source_kind, id_fonte)
+        if fallback_de90_253_aplicado:
+            fonte_tipo_desc = f"{fonte_tipo_desc} (fallback motor: ID 253 da 0210 original via DE90)"
+
+        def _fmt_dbg(v: str) -> str:
+            txt = str(v or "").strip()
+            return txt if txt else "(vazio)"
+
+        tipo_diag = (
+            f"valor_lido={_fmt_dbg(id_val)}; "
+            f"id505={_fmt_dbg(id505_val)}; "
+            f"id506={_fmt_dbg(id506_val)}; "
+            f"id253_de90={_fmt_dbg(id253_de90_val)}"
+        )
 
         if expected_tipo:
             if tipo_reprove_mode == "mismatch_only":
                 if (target_idx is not None) and (tipo_detectado is not None) and (tipo_detectado != str(expected_tipo)):
                     erros.append(
-                        f"Tipo divergente via {fonte_tipo_desc}: esperado '{expected_tipo}', detectado '{tipo_detectado}' "
-                        f"(valor lido={id_val}) na perna 9600 pcode 940600 (versão Bit 61={versao_bit61 or 'N/D'})."
+                        f"VALIDAÇÃO TIPO DIVERGENTE: Esperado '{expected_tipo}', detectado '{tipo_detectado}' via {fonte_tipo_desc}. "
+                        f"Transação inválida para cancelamento de {expected_tipo} (valor lido={id_val}; Bit 61={versao_bit61 or 'N/D'})."
                     )
             else:
                 if target_idx is None:
@@ -3612,12 +4642,12 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
                 elif tipo_detectado is None:
                     erros.append(
                         f"Não foi possível determinar débito/crédito via {fonte_tipo_desc} "
-                        f"na perna alvo (versão Bit 61={versao_bit61 or 'N/D'})."
+                        f"na perna alvo (versão Bit 61={versao_bit61 or 'N/D'}; {tipo_diag})."
                     )
                 elif tipo_detectado != str(expected_tipo):
                     erros.append(
-                        f"Tipo divergente via {fonte_tipo_desc}: esperado '{expected_tipo}', detectado '{tipo_detectado}' "
-                        f"(valor lido={id_val}) na perna alvo (versão Bit 61={versao_bit61 or 'N/D'})."
+                        f"VALIDAÇÃO TIPO DIVERGENTE: Esperado '{expected_tipo}', detectado '{tipo_detectado}' via {fonte_tipo_desc}. "
+                        f"Transação inválida para cancelamento de {expected_tipo} (valor lido={id_val}; Bit 61={versao_bit61 or 'N/D'})."
                     )
 
         tipo_info = {
@@ -3634,6 +4664,8 @@ def _avaliar_teste_homologacao(resultado_log: dict, de11: str, de41: str, teste_
             "id283": (id_val if id_fonte == "283" else ""),
             "id505": id505_val,
             "id506": id506_val,
+            "id253_de90": id253_de90_val,
+            "diagnostico_tipo": tipo_diag,
             "cupom_via_cliente": id505_val,
             "cupom_via_loja": id506_val,
         }
@@ -3714,7 +4746,7 @@ def _avaliar_passos_objetivo(
                 "label": label,
                 "aprovado": False,
                 "status": "NEGADO",
-                "motivo": f"Passo esperado não encontrado no log: {label}",
+                "motivo": _motivo_negacao_explicito("NEGADO", "Passo esperado não encontrado no log", label_passo=label),
                 "perna_idx": None,
             })
             continue
@@ -3724,12 +4756,15 @@ def _avaliar_passos_objetivo(
         perna = pernas[found]
         perna_ok = bool(perna.get("aprovado") is True)
         perna_erros = perna.get("erros") or []
+        mti_perna = str(perna.get("mti") or "")
+        de03_perna = str(perna.get("de03") or "")
         if perna_ok:
             motivo = f"Passo encontrado e perna validada: {label}"
             status = "APROVADO"
         else:
             detalhe = "; ".join(str(x) for x in perna_erros[:3]) if perna_erros else "sem detalhe"
-            motivo = f"Passo encontrado, porém a perna reprovou validação: {detalhe}"
+            motivo_raw = f"Passo encontrado, porém a perna reprovou validação: {detalhe}"
+            motivo = _motivo_negacao_explicito("NEGADO", motivo_raw, mti=mti_perna, de03=de03_perna, label_passo=label)
             status = "NEGADO"
 
         resultados.append({
@@ -3744,6 +4779,142 @@ def _avaliar_passos_objetivo(
     return resultados, usados
 
 
+def _motivo_negacao_explicito(
+    status: str,
+    motivo_original: str,
+    mti: Optional[str] = None,
+    de03: Optional[str] = None,
+    label_passo: Optional[str] = None,
+) -> str:
+    """
+    Padroniza mensagens de negação/reprovação para serem mais explícitas.
+    Adiciona contexto da perna (MTI, DE03) e deixa claro o motivo exato.
+    """
+    status_upper = str(status or "").upper().strip()
+    motivo_orig = str(motivo_original or "").strip()
+    
+    mti_str = str(mti or "").strip()
+    de03_str = str(de03 or "").strip()
+    label_passo_str = str(label_passo or "").strip()
+    
+    # Construir contexto da perna
+    perna_contexto = []
+    if mti_str:
+        if de03_str:
+            perna_contexto.append(f"{mti_str} DE03={de03_str}")
+        else:
+            perna_contexto.append(mti_str)
+    
+    contexto_str = f" [{', '.join(perna_contexto)}]" if perna_contexto else ""
+    label_str = f" ({label_passo_str})" if label_passo_str else ""
+    
+    if status_upper == "REPROVADO":
+        if not motivo_orig:
+            return f"REPROVADO: Perna não atendeu aos critérios obrigatórios do teste{contexto_str}{label_str}."
+        elif "Tipo divergente" in motivo_orig or "VALIDAÇÃO TIPO" in motivo_orig:
+            # Já tem mensagem explícita
+            return f"REPROVADO: {motivo_orig}{contexto_str}."
+        elif "comparação" in motivo_orig.lower():
+            return f"REPROVADO: {motivo_orig}{contexto_str}{label_str}."
+        elif "regra" in motivo_orig.lower():
+            return f"REPROVADO: {motivo_orig}{contexto_str}{label_str}."
+        else:
+            return f"REPROVADO: {motivo_orig}{contexto_str}{label_str}."
+    
+    elif status_upper == "NEGADO":
+        if not motivo_orig:
+            return f"NEGADO: Perna esperada não encontrada no fluxo{contexto_str}{label_str}."
+        else:
+            return f"NEGADO: {motivo_orig}{contexto_str}{label_str}."
+    
+    else:
+        # Outros status (APROVADO, Não Aplica)
+        return motivo_orig if motivo_orig else f"{status}: sem detalhe adicional."
+
+
+def _assinatura_motivo_dedupe(motivo: str) -> str:
+    texto = str(motivo or "").strip()
+    if not texto:
+        return ""
+
+    texto = re.sub(r"^(REPROVADO|NEGADO)\s*:\s*", "", texto, flags=re.IGNORECASE)
+    texto = re.sub(r"\s*\[[^\]]+\]\.?\s*$", "", texto)
+    texto = re.sub(
+        r"^Passo encontrado, porém a perna reprovou validação:\s*",
+        "",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = re.sub(
+        r"^Perna esperada no objetivo, mas reprovada:\s*",
+        "",
+        texto,
+        flags=re.IGNORECASE,
+    )
+    texto = re.sub(
+        r"^Perna fora do objetivo, mas reprovada:\s*",
+        "",
+        texto,
+        flags=re.IGNORECASE,
+    )
+
+    texto_upper = texto.upper()
+    if "VALIDAÇÃO TIPO DIVERGENTE" in texto_upper:
+        return "VALIDACAO_TIPO_DIVERGENTE"
+
+    if "NÃO FOI POSSÍVEL DETERMINAR O TIPO NA PERNA ALVO" in texto_upper:
+        return "TIPO_NAO_DETERMINADO"
+
+    match_regra = re.search(r"Regra '([^']+)' falhou", texto, flags=re.IGNORECASE)
+    if match_regra:
+        return f"REGRA:{match_regra.group(1).strip().upper()}"
+
+    match_comp = re.search(r"Comparação '([^']+)'", texto, flags=re.IGNORECASE)
+    if match_comp:
+        return f"REGRA:{match_comp.group(1).strip().upper()}"
+
+    match_passo = re.search(r"Passo esperado não encontrado no log\s*\(?([^)]*)\)?", texto, flags=re.IGNORECASE)
+    if match_passo:
+        return f"PASSO_NAO_ENCONTRADO:{match_passo.group(1).strip().upper()}"
+
+    return re.sub(r"\s+", " ", texto_upper)
+
+
+def _coletar_assinaturas_motivos_negativos(itens: List[dict]) -> Set[str]:
+    assinaturas: Set[str] = set()
+    for item in (itens or []):
+        if not isinstance(item, dict):
+            continue
+        status = str(item.get("status") or "").strip().upper()
+        aprovado = item.get("aprovado")
+        if status not in {"NEGADO", "REPROVADO"} and aprovado is not False:
+            continue
+        assinatura = _assinatura_motivo_dedupe(str(item.get("motivo") or ""))
+        if assinatura:
+            assinaturas.add(assinatura)
+    return assinaturas
+
+
+def _deduplicar_motivos_status_geral(motivos_globais: List[str], passos_saida: List[dict], pernas_saida: List[dict]) -> List[str]:
+    assinaturas_saida = _coletar_assinaturas_motivos_negativos(passos_saida)
+    assinaturas_saida.update(_coletar_assinaturas_motivos_negativos(pernas_saida))
+
+    motivos_dedup: List[str] = []
+    assinaturas_vistas: Set[str] = set()
+    for motivo in (motivos_globais or []):
+        assinatura = _assinatura_motivo_dedupe(str(motivo or ""))
+        if not assinatura:
+            continue
+        if assinatura in assinaturas_vistas:
+            continue
+        if assinatura in assinaturas_saida:
+            continue
+        assinaturas_vistas.add(assinatura)
+        motivos_dedup.append(str(motivo))
+
+    return motivos_dedup
+
+
 def avaliar_teste_homologacao_web(
     conteudo_log: str,
     teste_id: str,
@@ -3751,13 +4922,16 @@ def avaliar_teste_homologacao_web(
     debug: bool = False,
     de11: Optional[str] = None,
     de41: Optional[str] = None,
+    de42: Optional[str] = None,
+    roteiro_path: Optional[str] = None,
 ) -> dict:
     """
     Avalia um log completo para um teste de homologação e retorna
     uma visão por perna orientada ao front-end.
-    Opcionalmente filtra por DE11/DE41 para encontrar a TRN desejada.
+    Opcionalmente filtra por DE11/DE41/DE42 para encontrar a TRN desejada.
+    Opcionalmente usa roteiro_path para carregar roteiro específico (ex: Autorizador).
     """
-    roteiro = load_roteiro()
+    roteiro = load_roteiro(roteiro_path) if roteiro_path else load_roteiro()
     homolog_tests = _get_homolog_tests(roteiro)
     tid = str(teste_id).zfill(2)
     if tid not in homolog_tests:
@@ -3772,7 +4946,7 @@ def avaliar_teste_homologacao_web(
     tipo_cfg = rule.get("tipo_por_id283") or {}
     presence_only_required_chain = bool(rule.get("presence_only_required_chain", False))
     ignore_leg_status_refs = _build_ignore_leg_status_refs(rule, required_chain, teste_id=tid)
-    ignore_leg_campos_refs = _build_ignore_leg_campos_refs(rule)
+    ignore_leg_campos_refs = _build_ignore_leg_campos_refs(rule, teste_id=tid)
     validate_only_when_has_mti_web = str(rule.get("validate_only_when_has_mti") or "").strip()
     restrict_campos_to_required_chain_web = bool(rule.get("restrict_campos_to_required_chain", False))
 
@@ -3781,21 +4955,30 @@ def avaliar_teste_homologacao_web(
         cliente=cliente,
         debug=debug,
         apenas_pernas_interesse=False,
+        roteiro_path=roteiro_path,
     )
+
+    filtro_de41_view = (de41 or None)
+    if tid in {"11", "12"}:
+        filtro_de41_view = None
 
     resultado_log_view = validar_log_iso_formatado(
         conteudo_log,
         cliente=cliente,
         debug=debug,
         filtro_de11=(de11 or None),
-        filtro_de41=(de41 or None),
+        filtro_de41=filtro_de41_view,
+        filtro_de42=(de42 or None),
         apenas_pernas_interesse=False,
+        roteiro_path=roteiro_path,
     )
     validacao_teste = _avaliar_teste_homologacao(
         resultado_log_full,
         de11=(de11 or ""),
         de41=(de41 or ""),
         teste_cfg=teste_cfg,
+        de42=(de42 or ""),
+        roteiro_path=roteiro_path,
     )
 
     transacoes: List[dict] = []
@@ -3806,16 +4989,47 @@ def avaliar_teste_homologacao_web(
     pernas: List[dict] = []
     de11_ref = str(de11 or "")
     de41_ref = str(de41 or "")
-    transacao_alvo_full = _buscar_transacao_por_chave(resultado_log_full, de11=de11_ref, de41=de41_ref)
+    de42_ref = str(de42 or "")
+    transacao_alvo_full = _selecionar_transacao_alvo_por_regra(
+        resultado_log_full,
+        de11=de11_ref,
+        de41=de41_ref,
+        teste_cfg=teste_cfg,
+        de42=de42_ref,
+    )
+
+    if transacao_alvo_full is not None and not resultado_log_view.get("transacao_selecionada") and not (resultado_log_view.get("transacoes") or []):
+        resultado_log_view = dict(resultado_log_view)
+        resultado_log_view["transacao_selecionada"] = transacao_alvo_full
+        resultado_log_view["transacoes"] = []
+        resultado_log_view["erros"] = [
+            e for e in (resultado_log_view.get("erros") or [])
+            if not str(e).startswith("Nenhuma transação encontrada para filtro")
+        ]
+        resumo_view = dict(resultado_log_view.get("resumo") or {})
+        resumo_view["transacoes_match_11_41"] = 1
+        resultado_log_view["resumo"] = resumo_view
 
     if transacao_alvo_full is not None:
+        de41_expansao_web = "" if tid in {"11", "12", "13", "14", "20"} else str(transacao_alvo_full.get("de41") or de41_ref or "")
+        mti_filtro_web = None
+        if tid in {"11", "12"}:
+            mti_filtro_web = {"0210"}
+        elif tid == "13":
+            mti_filtro_web = {"0202"}
+        elif tid == "14":
+            mti_filtro_web = {"0200", "9600", "9610", "0210", "0202", "0212"}
+        elif tid == "20":
+            mti_filtro_web = {"0200", "9600", "9610", "0210", "0202", "0212", "0400", "0410", "0402", "0412"}
+        
         pernas = _expandir_pernas_relacionadas_por_de90(
             transacao_alvo_full,
             _listar_transacoes_resultado(resultado_log_full),
-            str(transacao_alvo_full.get("de41") or de41_ref or ""),
+            de41_expansao_web,
             incluir_reverso=(tid in {"14", "20"}),
-            incluir_0400_original=(tid in {"14", "20"}),
+            incluir_0400_original=(tid in {"11", "12", "13"}),
             incluir_0420_original=(tid in {"15", "16"}),
+            mti_filtro_expansao_de90=mti_filtro_web,
         )
     else:
         for t in transacoes:
@@ -3914,8 +5128,11 @@ def avaliar_teste_homologacao_web(
         for s in passos:
             s["aprovado"] = False
             s["status"] = "NEGADO"
-            s["motivo"] = (
-                "Transação buscada não pertence ao objetivo esperado do teste; validação de pernas não aplicada."
+            label_passo = str(s.get("label") or "")
+            s["motivo"] = _motivo_negacao_explicito(
+                "NEGADO",
+                "Transação buscada não pertence ao objetivo esperado do teste",
+                label_passo=label_passo
             )
             s["perna_idx"] = None
         perna_indexes_objetivo = set()
@@ -3925,8 +5142,11 @@ def avaliar_teste_homologacao_web(
 
     forbidden_indexes: Set[int] = set()
     forbidden_motivos: Dict[int, str] = {}
+    refs_de90_web = _coletar_chaves_referencia_de90(pernas)
     for i, p in enumerate(pernas):
         if _leg_ignorada_campos(p):
+            continue
+        if _perna_eh_referencia_compra_via_de90(p, refs_de90_web):
             continue
         for step in forbidden_steps:
             if not isinstance(step, dict):
@@ -3953,8 +5173,6 @@ def avaliar_teste_homologacao_web(
                     forbidden_motivos[i] = f"{lbl}."
                 break
 
-    comparison_failed_indexes: Set[int] = set()
-    comparison_failed_reason_by_index: Dict[int, str] = {}
     for comp in comparacoes:
         if not isinstance(comp, dict):
             continue
@@ -3971,10 +5189,6 @@ def avaliar_teste_homologacao_web(
         left_val = _extrair_valor_ref(pernas[left_idx], left_ref)
         right_val = _extrair_valor_ref(pernas[right_idx], right_ref)
         if left_val == "" or right_val == "":
-            msg = f"Falha em comparação obrigatória '{label}': valor LEFT/RIGHT ausente."
-            for idx_fail in (int(left_idx), int(right_idx)):
-                comparison_failed_indexes.add(idx_fail)
-                comparison_failed_reason_by_index[idx_fail] = msg
             continue
 
         ok = True
@@ -3999,33 +5213,8 @@ def avaliar_teste_homologacao_web(
         else:
             ok = False
 
-        if not ok:
-            msg = (
-                f"Falha em comparação obrigatória '{label}': LEFT='{left_val}' {op} RIGHT='{right_val}'."
-            )
-            for idx_fail in (int(left_idx), int(right_idx)):
-                comparison_failed_indexes.add(idx_fail)
-                comparison_failed_reason_by_index[idx_fail] = msg
-
-    # Sincroniza falhas de comparação vindas da validação global (escopo completo)
-    # para a grade filtrada do front-end.
-    erros_globais_teste = [str(e) for e in (validacao_teste.get("erros") or [])]
-    for comp in comparacoes:
-        if not isinstance(comp, dict):
-            continue
-        label = str(comp.get("label") or "")
-        if not label:
-            continue
-        msg_match = next((e for e in erros_globais_teste if f"Comparação '{label}'" in e), None)
-        if not msg_match:
-            continue
-
-        left_ref = comp.get("left") or {}
-        right_ref = comp.get("right") or {}
-        for i, p in enumerate(pernas):
-            if _step_matches(p, left_ref) or _step_matches(p, right_ref):
-                comparison_failed_indexes.add(int(i))
-                comparison_failed_reason_by_index[int(i)] = msg_match
+        # Falhas de comparação são tratadas como erro global do teste.
+        # Não replicar o mesmo motivo nas pernas LEFT/RIGHT para evitar duplicidade no retorno.
 
     for s in passos:
         idx = s.get("perna_idx")
@@ -4044,7 +5233,8 @@ def avaliar_teste_homologacao_web(
         is_tipo_target = (tipo_target_idx is not None and i == int(tipo_target_idx))
         if is_tipo_target:
             fonte_desc = str(tipo_info.get("source_desc") or _descricao_fonte_tipo(str(tipo_info.get("source") or ""), str(tipo_info.get("id_fonte") or "")))
-            refs.append({"label": f"Validação tipo débito/crédito ({fonte_desc})", "perna_idx": i})
+            tipo_esperado_label = str(tipo_info.get("esperado") or "").upper()
+            refs.append({"label": f"Validação obrigatória: tipo '{tipo_esperado_label}' (detectado via {fonte_desc})", "perna_idx": i})
 
         is_objetivo = (i in perna_indexes_objetivo) or is_tipo_target
         perna_aprovado = p.get("aprovado")
@@ -4060,11 +5250,8 @@ def avaliar_teste_homologacao_web(
         elif i in forbidden_indexes:
             status = "REPROVADO"
             aprovado = False
-            motivo = forbidden_motivos.get(i) or "Reprovado por regra do teste."
-        elif i in comparison_failed_indexes:
-            status = "REPROVADO"
-            aprovado = False
-            motivo = comparison_failed_reason_by_index.get(i) or "Perna reprovada por falha em comparação obrigatória."
+            motivo_raw = forbidden_motivos.get(i) or "Reprovado por regra do teste."
+            motivo = _motivo_negacao_explicito(status, motivo_raw, mti=mti, de03=de03)
         elif is_tipo_target:
             esperado_tipo = str(tipo_info.get("esperado") or "")
             detectado_tipo = str(tipo_info.get("detectado") or "")
@@ -4073,15 +5260,20 @@ def avaliar_teste_homologacao_web(
             if esperado_tipo and not detectado_tipo:
                 status = "REPROVADO"
                 aprovado = False
+                diag_tipo = str(tipo_info.get("diagnostico_tipo") or "")
                 motivo = (
-                    f"Não foi possível determinar o tipo na perna alvo ({fonte_desc}); esperado '{esperado_tipo}'."
+                    f"Não foi possível determinar o tipo na perna alvo ({fonte_desc}); esperado '{esperado_tipo}'"
+                    + (f"; {diag_tipo}." if diag_tipo else ".")
                 )
             elif esperado_tipo and detectado_tipo and detectado_tipo != esperado_tipo:
                 status = "REPROVADO"
                 aprovado = False
-                motivo = (
-                    f"Tipo divergente ({fonte_desc}): esperado '{esperado_tipo}', detectado '{detectado_tipo}'."
+                motivo_raw = (
+                    f"VALIDAÇÃO TIPO DIVERGENTE: Esperado '{esperado_tipo}', mas foi detectado '{detectado_tipo}' "
+                    f"usando fonte '{fonte_desc}'. Esta transação não é válida para o teste {tid} "
+                    f"(cancelamento de {esperado_tipo})."
                 )
+                motivo = _motivo_negacao_explicito(status, motivo_raw, mti=mti, de03=de03)
             else:
                 status = "APROVADO"
                 aprovado = True
@@ -4104,9 +5296,10 @@ def avaliar_teste_homologacao_web(
             aprovado = False
             detalhe = "; ".join(str(x) for x in erros_perna[:3]) if erros_perna else "sem detalhe"
             if is_objetivo:
-                motivo = f"Perna esperada no objetivo, mas reprovada: {detalhe}"
+                motivo_raw = f"Perna esperada no objetivo, mas reprovada: {detalhe}"
             else:
-                motivo = f"Perna fora do objetivo, mas reprovada: {detalhe}"
+                motivo_raw = f"Perna fora do objetivo, mas reprovada: {detalhe}"
+            motivo = _motivo_negacao_explicito(status, motivo_raw, mti=mti, de03=de03)
         else:
             status = "Não Aplica"
             aprovado = None
@@ -4115,6 +5308,8 @@ def avaliar_teste_homologacao_web(
         pernas_saida.append({
             "ordem_log": i + 1,
             "header_line": p.get("header_line"),
+            "header_text": p.get("header_text"),
+            "direction": _map_direction_to_description(p.get("direction", ""), p.get("header_text", "")),
             "raw_iso_line": p.get("raw_iso_line"),
             "raw_iso": p.get("raw_iso"),
             "iso_formatado": _formatar_iso_perna(
@@ -4143,11 +5338,15 @@ def avaliar_teste_homologacao_web(
         })
 
     aprovado_geral = bool(validacao_teste.get("aprovado") is True) and not skip_validation_outside_objective
-    motivos_status_geral = list(validacao_teste.get("erros") or [])
+    motivos_status_geral = _deduplicar_motivos_status_geral(
+        list(validacao_teste.get("erros") or []),
+        passos,
+        pernas_saida,
+    )
     if skip_validation_outside_objective:
         motivos_status_geral.insert(
             0,
-            "Transação buscada não faz parte das pernas do objetivo esperado deste teste.",
+            "NEGADO: Transação buscada não faz parte do objetivo esperado para o teste {0}. Nenhuma perna foi validada.".format(tid),
         )
 
     return {

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal de Homologacao ISO 8583</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="/static/Fiserv_Logo.svg.png" type="image/png">
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="page">
+    <div class="brand-bar">
+      <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="brand-logo" />
+      <span class="brand-product" data-i18n="portal.brand">Portal de Homologacao</span>
+      <span class="brand-bar-sep"></span>
+      <span class="brand-version">v2.0</span>
+      <div class="language-switcher">
+        <label for="languageSelect" data-i18n="lang.label">Idioma</label>
+        <select id="languageSelect" aria-label="Idioma">
+          <option value="pt" data-i18n="lang.pt">Portugues</option>
+          <option value="es" data-i18n="lang.es">Espanhol</option>
+        </select>
+      </div>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow" data-i18n="portal.access">Acesso</p>
+      <h1 data-i18n="portal.selectProfile">Selecione seu perfil</h1>
+      <p class="subtitle" data-i18n="portal.subtitle">Cliente acessa o fluxo de auto-homologacao. Administrador acessa o painel interno com autenticação.</p>
+    </header>
+
+    <section class="panel role-grid-panel">
+      <div class="role-grid">
+        <article class="role-card">
+          <div class="role-card-icon" aria-hidden="true">
+            <img src="/static/auto homolog.png" alt="Auto-homologacao" class="role-card-icon-image" />
+          </div>
+          <p class="role-tag" data-i18n="portal.clientTag">CLIENTE</p>
+          <h2 data-i18n="portal.clientTitle">Auto-homologacao</h2>
+          <a href="/cliente" class="btn role-btn" data-i18n="portal.enterClient">Entrar como Cliente</a>
+        </article>
+
+        <article class="role-card role-card--admin">
+          <div class="role-card-icon" aria-hidden="true">
+            <img src="/static/time_homolog.png" alt="Time Certificacao" class="role-card-icon-image" />
+          </div>
+          <p class="role-tag" data-i18n="portal.adminTag">TIME CERTIFICAÇÃO</p>
+          <h2 data-i18n="portal.adminTitle">Painel Interno</h2>
+          <a href="/interno" class="btn role-btn" data-i18n="portal.enterAdmin">Entrar como Time Certificação</a>
+        </article>
+      </div>
+    </section>
+    <footer class="app-footer">
+      <div class="app-footer-brand">
+        <img src="/static/Fiserv_Logo.svg.png" alt="Fiserv" class="app-footer-logo" />
+        <div class="app-footer-text">
+          Portal de Homologacao ISO 8583<br>
+          Tecnologia e Inovacao — Fiserv Brasil
+        </div>
+      </div>
+      <span class="app-footer-copy">&copy; 2025 Fiserv, Inc. Todos os direitos reservados.</span>
+    </footer>
+  </main>
+  <script src="/static/i18n.js"></script>
+</body>
+</html>
