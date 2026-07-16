@@ -6,6 +6,7 @@ from flask import Flask, jsonify, render_template, request, url_for
 
 import homolog_service
 from services import homolog_service_multiproduct as homolog_service_mp
+from services import db_store
 
 BASE_DIR = homolog_service.BASE_DIR
 get_log_summary_payload = homolog_service.get_log_summary_payload
@@ -57,6 +58,7 @@ app = Flask(
     static_folder=str(BASE_DIR / "static"),
 )
 app.config["SECRET_KEY"] = os.environ.get("HOMOLOG_SECRET_KEY", "homolog-stage2-local-secret")
+db_store.init_db()
 
 
 @app.get("/")
@@ -334,6 +336,7 @@ def validate_roteiro_cliente_batch():
         # Salvar arquivo temporário na pasta temp/
         temp_dir = BASE_DIR / "temp"
         temp_dir.mkdir(parents=True, exist_ok=True)
+        original_filename = str(getattr(roteiro_file, "filename", "roteiro_cliente.docx") or "roteiro_cliente.docx")
         with tempfile.NamedTemporaryFile(suffix=".docx", delete=False, dir=str(temp_dir)) as tmp:
             roteiro_file.save(tmp.name)
             temp_roteiro_path = tmp.name
@@ -359,6 +362,18 @@ def validate_roteiro_cliente_batch():
             roteiro_path=temp_roteiro_path,
             debug=False,
         )
+
+        if db_store.is_enabled():
+            roteiro_bytes = Path(temp_roteiro_path).read_bytes()
+            db_store.save_roteiro_submission(
+                submissao_id=str(resultado_batch.get("submissao_id") or ""),
+                cnpj=cnpj,
+                produto_id=produto_id,
+                log_name=log_name,
+                roteiro_filename=original_filename,
+                roteiro_content=roteiro_bytes,
+                result=resultado_batch,
+            )
         
         # Limpeza (APÓS validação, que já salvou o roteiro)
         Path(temp_roteiro_path).unlink(missing_ok=True)

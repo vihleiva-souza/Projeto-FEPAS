@@ -14,6 +14,7 @@ from typing import Dict, Any, Optional, List
 
 from products_config import get_produto, listar_produtos, get_roteiro_path, get_validador_info
 from validador_0200 import load_roteiro
+from services import db_store
 
 # Importar o serviço base - importar diretamente de services.homolog_service
 from services.homolog_service import (
@@ -851,6 +852,18 @@ def validate_log_payload_with_product(
         "tipo_validacao": produto.get("tipo_validacao"),
         "cached": False,
     }
+
+    if db_store.is_enabled():
+        db_store.save_validation_run(
+            cnpj=str(cliente or "LOCAL"),
+            produto_id=str(produto_id or ""),
+            teste_id=teste_id,
+            log_name=path.name,
+            de11=str(de11 or "").strip(),
+            de41=str(de41 or "").strip(),
+            status=str(result.get("status") or ""),
+            result=result,
+        )
 
     # Cache result
     with _CACHE_LOCK:

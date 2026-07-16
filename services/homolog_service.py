@@ -18,6 +18,7 @@ from validador_0200 import (
     load_roteiro,
     parse_iso_formatted_blocks,
 )
+from services import db_store
 
 if getattr(sys, "frozen", False):
     BASE_DIR = Path(sys.executable).resolve().parent
@@ -132,6 +133,20 @@ def _default_client_stats(cnpj: str, produto_id: str = None) -> Dict[str, Any]:
 
 
 def _load_client_stats(cnpj: str, produto_id: str = None) -> Dict[str, Any]:
+    normalized_cnpj = _normalize_cnpj(cnpj)
+    normalized_pid = _normalize_product_id(produto_id) if produto_id else "__legacy__"
+
+    if db_store.is_enabled():
+        loaded = db_store.load_client_stats(normalized_cnpj, normalized_pid)
+        if isinstance(loaded, dict):
+            total_catalog_tests = len(_catalog_tests())
+            loaded.setdefault("cnpj", normalized_cnpj)
+            loaded.setdefault("assigned_tests", [])
+            loaded.setdefault("onboarding_completed", bool(loaded.get("assigned_tests")))
+            loaded.setdefault("tests", {})
+            loaded["resumo"] = _compute_progress_summary(loaded, total_catalog_tests)
+            return loaded
+
     stats_path = _client_stats_path(cnpj, produto_id)
     if not stats_path.is_file():
         return _default_client_stats(cnpj, produto_id)
@@ -151,9 +166,6 @@ def _load_client_stats(cnpj: str, produto_id: str = None) -> Dict[str, Any]:
 
 
 def _save_client_stats(cnpj: str, stats: Dict[str, Any], produto_id: str = None) -> Dict[str, Any]:
-    root_dir = _client_root_dir(cnpj, produto_id)
-    root_dir.mkdir(parents=True, exist_ok=True)
-
     total_catalog_tests = len(_catalog_tests())
     stats = dict(stats)
     stats["cnpj"] = _normalize_cnpj(cnpj)
@@ -161,6 +173,13 @@ def _save_client_stats(cnpj: str, stats: Dict[str, Any], produto_id: str = None)
     stats["assigned_tests"] = [str(item).zfill(2) for item in (stats.get("assigned_tests") or []) if str(item).strip()]
     stats["onboarding_completed"] = bool(stats.get("assigned_tests"))
     stats["resumo"] = _compute_progress_summary(stats, total_catalog_tests)
+
+    normalized_pid = _normalize_product_id(produto_id) if produto_id else "__legacy__"
+    if db_store.is_enabled() and db_store.save_client_stats(stats["cnpj"], normalized_pid, stats):
+        return stats
+
+    root_dir = _client_root_dir(cnpj, produto_id)
+    root_dir.mkdir(parents=True, exist_ok=True)
 
     stats_path = _client_stats_path(cnpj, produto_id)
     stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -982,6 +1001,18 @@ def validate_log_payload(
         "log_size_bytes": file_key[2],
         "cached": False,
     }
+
+    if db_store.is_enabled():
+        db_store.save_validation_run(
+            cnpj=str(cliente or "LOCAL"),
+            produto_id="__legacy__",
+            teste_id=teste_id,
+            log_name=path.name,
+            de11=str(de11 or "").strip(),
+            de41=str(de41 or "").strip(),
+            status=str(result.get("status") or ""),
+            result=result,
+        )
 
     with _CACHE_LOCK:
         _VALIDATION_CACHE.clear()
