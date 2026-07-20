@@ -62,7 +62,27 @@ app.config["SECRET_KEY"] = os.environ.get("HOMOLOG_SECRET_KEY", "homolog-stage2-
 # Force Render deployment: 2026-07-20 10:30:00
 print("[APP] Inicializando app_homolog_web com endpoint /api/admin/logs/upload ativo")
 
+# Log all registered routes at startup
+_admin_routes = [str(r) for r in app.url_map.iter_rules() if 'admin' in str(r) or 'upload' in str(r)]
+print(f"[APP] Rotas admin/upload registradas: {_admin_routes}")
+
 db_store.init_db()
+
+
+@app.get("/diagnostico")
+def diagnostico():
+    """Endpoint para diagnosticar rotas registradas."""
+    routes = []
+    for rule in app.url_map.iter_rules():
+        routes.append({
+            "rule": str(rule),
+            "methods": list(rule.methods - {"OPTIONS", "HEAD"}),
+        })
+    return jsonify({
+        "status": "ok",
+        "total_routes": len(routes),
+        "admin_routes": [r for r in routes if "admin" in r["rule"] or "upload" in r["rule"]],
+    })
 
 
 @app.get("/")
