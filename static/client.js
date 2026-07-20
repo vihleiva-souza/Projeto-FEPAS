@@ -666,6 +666,11 @@ accessForm.addEventListener("submit", async (ev) => {
       assignedTestIds = (data.assigned_tests || []).map((item) =>
         String(item.id || item).padStart(2, "0")
       );
+      // Salva os testes no localStorage para que getSelectedTests() funcione
+      const testsForStorage = (data.assigned_tests || []).map((item) =>
+        parseInt(item.id || item, 10)
+      ).filter((id) => !isNaN(id));
+      localStorage.setItem("selected_tests_" + pid, JSON.stringify(testsForStorage));
       const modePanel = document.getElementById("clientModeSelectionPanel");
       if (modePanel) modePanel.classList.remove("hidden");
     }

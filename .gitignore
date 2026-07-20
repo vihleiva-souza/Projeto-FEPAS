@@ -23,3 +23,6 @@ temp/
 
 # Runtime data
 HOMOLOGACAO_CLIENTES/
+
+# Logs de auditoria - enviados via publicar_log.py, nao vao para o git
+LOGS de TESTE/

@@ -109,6 +109,59 @@ def fetch_logs_by_date_for_product(produto_id: str):
         return jsonify({"error": f"Falha ao coletar logs por data: {exc}"}), 500
 
 
+@app.post("/api/admin/logs/upload")
+def admin_upload_log():
+    """Upload administrativo de log de auditoria. Protegido por HOMOLOG_ADMIN_KEY."""
+    from services.homolog_service import LOGS_DIR
+
+    # Autenticação por API key
+    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
+    if admin_key:
+        provided = (
+            request.headers.get("X-Admin-Key", "")
+            or request.form.get("admin_key", "")
+        )
+        if provided != admin_key:
+            return jsonify({"error": "Nao autorizado"}), 401
+
+    produto_id = str(request.form.get("produto_id") or "").strip()
+    data_teste = str(request.form.get("data_teste") or "").strip()
+
+    if not produto_id:
+        return jsonify({"error": "Campo produto_id obrigatorio"}), 400
+    if not data_teste:
+        return jsonify({"error": "Campo data_teste obrigatorio (formato YYYYMMDD)"}), 400
+
+    data_teste = data_teste.replace("-", "").replace("/", "").strip()
+    if len(data_teste) != 8 or not data_teste.isdigit():
+        return jsonify({"error": "data_teste invalido. Use YYYYMMDD"}), 400
+
+    if "log_file" not in request.files:
+        return jsonify({"error": "Nenhum arquivo enviado. Use o campo 'log_file'"}), 400
+
+    uploaded = request.files["log_file"]
+    if not uploaded.filename:
+        return jsonify({"error": "Arquivo sem nome"}), 400
+
+    if not uploaded.filename.lower().endswith(".txt"):
+        return jsonify({"error": "Apenas arquivos .txt sao aceitos"}), 400
+
+    pid = normalize_produto_id(produto_id)
+    dest_dir = LOGS_DIR / pid
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest_path = dest_dir / f"aud_{data_teste}.txt"
+
+    uploaded.save(str(dest_path))
+    size_mb = dest_path.stat().st_size / 1024 / 1024
+
+    return jsonify({
+        "success": True,
+        "message": f"Log salvo: {pid} / {data_teste}",
+        "path": str(dest_path),
+        "size_mb": round(size_mb, 2),
+    })
+
+
 @app.get("/api/health")
 def get_health():
     return jsonify(get_health_payload())

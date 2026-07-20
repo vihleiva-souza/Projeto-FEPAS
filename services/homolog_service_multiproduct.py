@@ -48,7 +48,8 @@ def fetch_logs_for_product_by_date(*, produto_id: str, data_teste: str, force: b
     Dispara ingestão de logs por data para o produto selecionado.
 
     Hoje suportado para QR (produto 01_QRCARDSE), executando o script
-    scripts/tools/coletor_audit_qr_diario.py com --date YYYYMMDD.
+    scripts/tools/coletor_audit_qr_http.py com --date YYYYMMDD.
+    Script funciona em qualquer ambiente (Windows, Linux, Render) sem dependências externas.
     """
     pid = _normalize_product_id(produto_id)
     _, compact_date = _parse_test_date(data_teste)
@@ -62,7 +63,8 @@ def fetch_logs_for_product_by_date(*, produto_id: str, data_teste: str, force: b
             "summary": "Ingestão automática por data disponível apenas para o produto QR (01_QRCARDSE).",
         }
 
-    script_path = BASE_DIR / "scripts" / "tools" / "coletor_audit_qr_diario.py"
+    # Script HTTP - compatível com Render
+    script_path = BASE_DIR / "scripts" / "tools" / "coletor_audit_qr_http.py"
     if not script_path.exists():
         raise FileNotFoundError(f"Script de coleta QR não encontrado: {script_path}")
 

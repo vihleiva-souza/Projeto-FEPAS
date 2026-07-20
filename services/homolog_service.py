@@ -306,6 +306,31 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
     candidates = strict_candidates or fallback_candidates
 
     if not candidates:
+        # Log não encontrado localmente - tentar coletar automaticamente
+        if pid == "01_QRCARDSE":
+            try:
+                print(f"[LOG AUTO-COLETA] Log nao encontrado para {compact_date}. Tentando coletar de {pid}...")
+                from services.homolog_service_multiproduct import fetch_logs_for_product_by_date
+                result = fetch_logs_for_product_by_date(produto_id=pid, data_teste=compact_date, force=False)
+                
+                if result.get("executed") and result.get("log_exists"):
+                    print(f"[LOG AUTO-COLETA] [OK] Coleta bem-sucedida para {compact_date}")
+                    # Tentar novamente após coleta
+                    for path in product_logs_dir.iterdir():
+                        if not path.is_file() or path.suffix.lower() not in ALLOWED_EXTENSIONS:
+                            continue
+                        name = path.name.lower()
+                        if name.startswith(prefix):
+                            strict_candidates.append(path)
+                    
+                    if strict_candidates:
+                        strict_candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
+                        return strict_candidates[0]
+                else:
+                    print(f"[LOG AUTO-COLETA] [FALHA] Coleta nao encontrou logs para {compact_date}")
+            except Exception as e:
+                print(f"[LOG AUTO-COLETA] [ERRO] Erro na coleta automatica: {e}")
+        
         raise FileNotFoundError(
             f"Nenhum log encontrado para a data {compact_date} no produto {pid}. Exemplo esperado: LOGS de TESTE/{pid}/aud_{compact_date}.txt"
         )
