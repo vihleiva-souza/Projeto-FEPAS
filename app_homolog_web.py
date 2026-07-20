@@ -188,7 +188,9 @@ def admin_upload_log():
 
 @app.get("/api/health")
 def get_health():
-    return jsonify(get_health_payload())
+    payload = get_health_payload()
+    payload["app_version"] = "20260720-v5-with-upload"
+    return jsonify(payload)
 
 
 @app.get("/api/config")
