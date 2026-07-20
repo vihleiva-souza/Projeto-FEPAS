@@ -6,22 +6,30 @@ services:
     startCommand: gunicorn app_homolog_web:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     plan: starter
 
-    # Disco persistente: logs e dados de clientes sobrevivem a deploys e reinícios
-    disk:
-      name: homolog-data
-      mountPath: /var/data
-      sizeGB: 10
+    # DISCO PERSISTENTE (PAGO)
+    # Descomente as linhas abaixo quando assinar o plano pago do Render Disk
+    # Custos: ~$0.25/GB/mês (10GB = ~$2,50/mês)
+    # O disco garante que logs e dados sobrevivam a deploys e reinícios
+    # disk:
+    #   name: homolog-data
+    #   mountPath: /var/data
+    #   sizeGB: 10
 
     envVars:
-      # Diretório dos logs de auditoria (arquivos .txt)
+      # DISCO PERSISTENTE: Descomente quando ativar o disco pago
+      # - key: HOMOLOG_LOGS_DIR
+      #   value: /var/data/LOGS de TESTE
+      # - key: HOMOLOG_CLIENT_STORE_DIR
+      #   value: /var/data/HOMOLOGACAO_CLIENTES
+
+      # Sem disco: logs e dados são temporários (reset a cada deploy/reinício)
+      # Importante: use publicar_log.py para reeniar os logs após deploy
       - key: HOMOLOG_LOGS_DIR
-        value: /var/data/LOGS de TESTE
-
-      # Diretório dos dados de homologação de clientes
+        value: ./LOGS de TESTE
       - key: HOMOLOG_CLIENT_STORE_DIR
-        value: /var/data/HOMOLOGACAO_CLIENTES
+        value: ./HOMOLOGACAO_CLIENTES
 
-      # Chave secreta da sessão Flask (troque por uma string aleatória longa)
+      # Chave secreta da sessão Flask (gerada automaticamente pelo Render)
       - key: HOMOLOG_SECRET_KEY
         generateValue: true
 
@@ -30,3 +38,4 @@ services:
       # Exemplo: HOMOLOG_ADMIN_KEY = minha-chave-secreta-2026
       - key: HOMOLOG_ADMIN_KEY
         value: ""
+
