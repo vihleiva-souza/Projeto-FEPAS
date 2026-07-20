@@ -58,6 +58,10 @@ app = Flask(
     static_folder=str(BASE_DIR / "static"),
 )
 app.config["SECRET_KEY"] = os.environ.get("HOMOLOG_SECRET_KEY", "homolog-stage2-local-secret")
+
+# Force Render deployment: 2026-07-20 10:30:00
+print("[APP] Inicializando app_homolog_web com endpoint /api/admin/logs/upload ativo")
+
 db_store.init_db()
 
 
