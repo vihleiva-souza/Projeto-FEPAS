@@ -2,9 +2,10 @@ services:
   - type: web
     name: homolog-app
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: gunicorn app_homolog_web:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
-    plan: starter
+    plan: free
+    # Force rebuild - sync deploy v4 20260720-1035
 
     # DISCO PERSISTENTE (PAGO)
     # Descomente as linhas abaixo quando assinar o plano pago do Render Disk
