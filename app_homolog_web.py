@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import os
+from functools import wraps
 
-from flask import Flask, jsonify, render_template, request, url_for
+from flask import Flask, jsonify, render_template, request, url_for, session, redirect
 
 import homolog_service
 from services import homolog_service_multiproduct as homolog_service_mp
@@ -57,6 +58,9 @@ app = Flask(
     template_folder=str(BASE_DIR / "templates"),
     static_folder=str(BASE_DIR / "static"),
 )
+
+# Configurar chave secreta para sessões
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-in-production")
 app.config["SECRET_KEY"] = os.environ.get("HOMOLOG_SECRET_KEY", "homolog-stage2-local-secret")
 
 # Force Render deployment: 2026-07-20 10:30:00
@@ -602,12 +606,184 @@ def admin_reset_tests_product(cnpj: str):
     return jsonify(result)
 
 
+@app.get("/admin/painel-login")
+def admin_painel_login():
+    """Página de login para acessar o painel interno."""
+    return """
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login - Painel Interno</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+            .login-container {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                width: 100%;
+                max-width: 400px;
+                padding: 40px;
+            }
+            .login-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .login-header h1 {
+                font-size: 24px;
+                color: #333;
+                margin-bottom: 10px;
+            }
+            .login-header p {
+                color: #999;
+                font-size: 14px;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #333;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            .form-group input {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                transition: border-color 0.2s;
+            }
+            .form-group input:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+            }
+            .btn-login {
+                width: 100%;
+                padding: 12px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+            .btn-login:hover {
+                transform: scale(1.02);
+            }
+            .btn-login:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+            .error-message {
+                background: #fee;
+                border: 1px solid #fcc;
+                padding: 12px;
+                border-radius: 5px;
+                color: #c33;
+                margin-bottom: 20px;
+                display: none;
+                font-size: 14px;
+            }
+            .loading {
+                display: none;
+                text-align: center;
+                color: #999;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🔐 Painel Interno</h1>
+                <p>Acesso exclusivo para equipe interna</p>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" name="password" placeholder="Digite a senha" required>
+                </div>
+                
+                <button type="submit" class="btn-login" id="submitBtn">Acessar Painel</button>
+                <div class="loading" id="loading">Verificando credenciais...</div>
+            </form>
+        </div>
+
+        <script>
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitBtn.style.display = 'none';
+                loading.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                const password = document.getElementById('password').value;
+                
+                try {
+                    const response = await fetch('/api/admin/painel-auth', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        window.location.href = '/admin/roteiros-dashboard';
+                    } else {
+                        throw new Error(data.error || 'Erro ao fazer login');
+                    }
+                } catch (error) {
+                    errorMessage.textContent = '❌ ' + error.message;
+                    errorMessage.style.display = 'block';
+                    submitBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            });
+        </script>
+    </body>
+    </html>
+    """
+
+
+@app.post("/api/admin/painel-logout")
+def admin_painel_logout():
+    """Faz logout e limpa a sessão."""
+    session.clear()
+    return jsonify({"success": True, "message": "Desconectado com sucesso"})
+
+
 @app.get("/admin/roteiros-dashboard")
 def admin_roteiros_dashboard():
-    """Dashboard visual para gerenciar roteiros. Protegido por HOMOLOG_ADMIN_KEY."""
-    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
-    if not admin_key or request.args.get("key") != admin_key:
-        return "Não autorizado", 401
+    """Dashboard visual para gerenciar roteiros. Protegido por autenticação de sessão."""
+    if not session.get("authenticated"):
+        return redirect("/admin/painel-login")
+    
+    if not db_store.is_enabled():
+        return "Banco de dados não configurado", 503
     
     return """
     <!DOCTYPE html>
@@ -636,10 +812,29 @@ def admin_roteiros_dashboard():
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
                 padding: 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .header-content {
                 text-align: center;
+                flex: 1;
             }
             .header h1 { font-size: 28px; margin-bottom: 5px; }
             .header p { font-size: 14px; opacity: 0.9; }
+            .btn-logout {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 1px solid white;
+                padding: 8px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 12px;
+                transition: background 0.2s;
+            }
+            .btn-logout:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
             .content { padding: 30px; }
             .loading { text-align: center; padding: 40px; color: #666; }
             .error { 
@@ -737,8 +932,11 @@ def admin_roteiros_dashboard():
     <body>
         <div class="container">
             <div class="header">
-                <h1>📋 Dashboard de Roteiros</h1>
-                <p>Gerenciador de submissões de roteiros do cliente</p>
+                <div class="header-content">
+                    <h1>📋 Dashboard de Roteiros</h1>
+                    <p>Gerenciador de submissões de roteiros do cliente</p>
+                </div>
+                <button id="logoutBtn" class="btn-logout">🚪 Sair</button>
             </div>
             <div class="content">
                 <div id="message"></div>
@@ -748,13 +946,20 @@ def admin_roteiros_dashboard():
         </div>
 
         <script>
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                const response = await fetch('/api/admin/painel-logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/admin/painel-login';
+                }
+            });
+            
             async function carregarRoteiros() {
                 try {
-                    const params = new URLSearchParams(window.location.search);
-                    const key = params.get('key');
-                    
-                    const response = await fetch(`/api/admin/roteiros?key=${key}`);
+                    const response = await fetch(`/api/admin/roteiros`);
                     if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/admin/painel-login';
+                        }
                         throw new Error('Erro ao carregar roteiros');
                     }
                     
@@ -799,7 +1004,7 @@ def admin_roteiros_dashboard():
                                         <div class="date">📅 ${data_formatada}</div>
                                     </div>
                                     <div class="card-footer">
-                                        <a href="/api/admin/roteiros/download/${sub.submissao_id}?key=${params.get('key')}" 
+                                        <a href="/api/admin/roteiros/download/${sub.submissao_id}" 
                                            download class="btn btn-download">
                                             ⬇️ Baixar Roteiro
                                         </a>
@@ -826,9 +1031,8 @@ def admin_roteiros_dashboard():
 
 @app.get("/api/admin/roteiros")
 def admin_list_roteiros():
-    """Lista todas as submissões de roteiro salvas no banco. Protegido por HOMOLOG_ADMIN_KEY."""
-    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
-    if not admin_key or request.args.get("key") != admin_key:
+    """Lista todas as submissões de roteiro salvas no banco. Protegido por autenticação de sessão."""
+    if not session.get("authenticated"):
         return jsonify({"error": "Não autorizado"}), 401
     if not db_store.is_enabled():
         return jsonify({"error": "Banco de dados não configurado"}), 503
@@ -838,10 +1042,9 @@ def admin_list_roteiros():
 
 @app.get("/api/admin/roteiros/download/<submissao_id>")
 def admin_download_roteiro(submissao_id: str):
-    """Faz download do arquivo .docx original enviado pelo cliente. Protegido por HOMOLOG_ADMIN_KEY."""
+    """Faz download do arquivo .docx original enviado pelo cliente. Protegido por autenticação de sessão."""
     from flask import Response
-    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
-    if not admin_key or request.args.get("key") != admin_key:
+    if not session.get("authenticated"):
         return jsonify({"error": "Não autorizado"}), 401
     if not db_store.is_enabled():
         return jsonify({"error": "Banco de dados não configurado"}), 503
