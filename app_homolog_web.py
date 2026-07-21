@@ -684,13 +684,13 @@ def admin_painel_login():
                 pointer-events: none;
             }
             .login-container {
-                background: var(--panel);
+                background: linear-gradient(135deg, rgba(255, 124, 44, 0.95), rgba(255, 154, 44, 0.95));
                 border-radius: 10px;
                 box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
                 width: 100%;
                 max-width: 400px;
                 padding: 40px;
-                border: 1px solid var(--line);
+                border: 1px solid rgba(255, 200, 100, 0.5);
                 position: relative;
                 z-index: 10;
             }
@@ -700,11 +700,12 @@ def admin_painel_login():
             }
             .login-header h1 {
                 font-size: 24px;
-                color: var(--brand-blue);
+                color: white;
                 margin-bottom: 10px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             }
             .login-header p {
-                color: var(--muted);
+                color: rgba(255, 255, 255, 0.9);
                 font-size: 14px;
             }
             .form-group {
@@ -713,29 +714,30 @@ def admin_painel_login():
             .form-group label {
                 display: block;
                 margin-bottom: 8px;
-                color: var(--ink);
+                color: white;
                 font-weight: bold;
                 font-size: 14px;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             }
             .form-group input {
                 width: 100%;
                 padding: 12px;
-                border: 1px solid var(--line);
+                border: 1px solid rgba(255, 255, 255, 0.3);
                 border-radius: 5px;
                 font-size: 14px;
                 transition: border-color 0.2s;
-                background: white;
+                background: rgba(255, 255, 255, 0.95);
                 color: var(--ink);
             }
             .form-group input:focus {
                 outline: none;
-                border-color: var(--brand-blue);
-                box-shadow: 0 0 0 2px rgba(0, 87, 184, 0.1);
+                border-color: white;
+                box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
             }
             .btn-login {
                 width: 100%;
                 padding: 12px;
-                background: linear-gradient(135deg, var(--brand-blue), #0066d9);
+                background: var(--brand-blue);
                 color: white;
                 border: none;
                 border-radius: 5px;
@@ -746,26 +748,27 @@ def admin_painel_login():
             }
             .btn-login:hover {
                 transform: scale(1.02);
-                background: linear-gradient(135deg, #0066d9, var(--brand-blue));
+                background: #0066d9;
             }
             .btn-login:disabled {
                 opacity: 0.7;
                 cursor: not-allowed;
             }
             .error-message {
-                background: rgba(193, 50, 50, 0.1);
-                border: 1px solid var(--bad);
+                background: rgba(193, 50, 50, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.5);
                 padding: 12px;
                 border-radius: 5px;
-                color: var(--bad);
+                color: white;
                 margin-bottom: 20px;
                 display: none;
                 font-size: 14px;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
             }
             .loading {
                 display: none;
                 text-align: center;
-                color: var(--muted);
+                color: rgba(255, 255, 255, 0.9);
                 font-size: 14px;
             }
         </style>
