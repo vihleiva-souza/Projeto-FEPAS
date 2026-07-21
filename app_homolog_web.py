@@ -643,13 +643,45 @@ def admin_painel_login():
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { 
                 font-family: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(120deg, rgba(8, 33, 66, 0.66), rgba(8, 56, 108, 0.52));
+                background: 
+                    linear-gradient(120deg, rgba(8, 33, 66, 0.66), rgba(8, 56, 108, 0.52)),
+                    radial-gradient(circle at 16% 20%, rgba(242, 106, 33, 0.58), transparent 44%),
+                    radial-gradient(circle at 82% 88%, rgba(255, 132, 48, 0.34), transparent 38%),
+                    url('/static/Fiserv_Teams_Backgrounds_V5.jpg') center center / cover no-repeat fixed;
                 min-height: 100vh;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 padding: 20px;
                 color: var(--ink);
+                position: relative;
+                overflow-x: hidden;
+            }
+            body::before {
+                content: '';
+                position: fixed;
+                width: 360px;
+                height: 360px;
+                background: #ff7c2c;
+                border-radius: 999px;
+                filter: blur(60px);
+                opacity: 0.34;
+                top: -120px;
+                left: -100px;
+                pointer-events: none;
+            }
+            body::after {
+                content: '';
+                position: fixed;
+                width: 340px;
+                height: 340px;
+                background: #ff9a2c;
+                border-radius: 999px;
+                filter: blur(60px);
+                opacity: 0.24;
+                bottom: -80px;
+                right: -60px;
+                pointer-events: none;
             }
             .login-container {
                 background: var(--panel);
@@ -659,6 +691,8 @@ def admin_painel_login():
                 max-width: 400px;
                 padding: 40px;
                 border: 1px solid var(--line);
+                position: relative;
+                z-index: 10;
             }
             .login-header {
                 text-align: center;
