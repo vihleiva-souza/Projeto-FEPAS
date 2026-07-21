@@ -769,10 +769,12 @@ def admin_painel_login():
     """
 
 
-@app.post("/api/admin/painel-logout")
+@app.route("/api/admin/painel-logout", methods=["GET", "POST"])
 def admin_painel_logout():
     """Faz logout e limpa a sessão."""
     session.clear()
+    if request.method == "GET":
+        return redirect("/admin/painel-login")
     return jsonify({"success": True, "message": "Desconectado com sucesso"})
 
 
