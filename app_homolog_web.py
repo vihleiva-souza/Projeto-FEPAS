@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import os
 from functools import wraps
+from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, url_for, session, redirect
 
 import homolog_service
 from services import homolog_service_multiproduct as homolog_service_mp
 from services import db_store
+from services import qr_logs_fetcher
 
 BASE_DIR = homolog_service.BASE_DIR
 get_log_summary_payload = homolog_service.get_log_summary_payload
@@ -133,12 +135,24 @@ def fetch_logs_by_date_for_product(produto_id: str):
     force = str(force_raw).strip().lower() in {"1", "true", "yes", "sim"}
 
     try:
-        result = fetch_logs_for_product_by_date(
-            produto_id=normalize_produto_id(produto_id),
-            data_teste=data_teste,
-            force=force,
-        )
-        return jsonify(result)
+        # Se é QR (01), busca da URL pública
+        if normalize_produto_id(produto_id) == "01_QRCARDSE":
+            log_file = qr_logs_fetcher.fetch_fps_logs_by_date(data_teste)
+            return jsonify({
+                "status": "sucesso",
+                "produto_id": "01_QRCARDSE",
+                "data_teste": data_teste,
+                "log_name": Path(log_file).name,
+                "message": f"Logs do QR obtidos e processados com sucesso"
+            })
+        else:
+            # Para Autorizador, usa o fluxo normal (manual)
+            result = fetch_logs_for_product_by_date(
+                produto_id=normalize_produto_id(produto_id),
+                data_teste=data_teste,
+                force=force,
+            )
+            return jsonify(result)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except FileNotFoundError as exc:
