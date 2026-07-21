@@ -762,7 +762,7 @@ def admin_painel_login():
                     const data = await response.json();
                     
                     if (response.ok && data.success) {
-                        window.location.href = '/admin/roteiros-dashboard';
+                        window.location.href = '/interno';
                     } else {
                         throw new Error(data.error || 'Erro ao fazer login');
                     }
