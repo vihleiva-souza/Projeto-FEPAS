@@ -96,6 +96,9 @@ def home():
 
 @app.get("/interno")
 def internal_home():
+    """Painel interno protegido por autenticação."""
+    if not session.get("authenticated"):
+        return redirect("/admin/painel-login")
     return render_template("index.html")
 
 
