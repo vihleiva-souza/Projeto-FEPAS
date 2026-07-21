@@ -769,7 +769,34 @@ def admin_painel_login():
     """
 
 
-@app.route("/api/admin/painel-logout", methods=["GET", "POST"])
+@app.post("/api/admin/painel-auth")
+def admin_painel_auth():
+    """Valida senha do painel interno e cria sessão."""
+    try:
+        data = request.get_json(silent=True) or {}
+        password = str(data.get("password") or "").strip()
+        
+        if not password:
+            return jsonify({"success": False, "error": "Senha é obrigatória"}), 400
+        
+        admin_password = os.environ.get("PAINEL_ADMIN_PASSWORD", "")
+        if not admin_password:
+            return jsonify({"success": False, "error": "Sistema não configurado"}), 500
+        
+        if password != admin_password:
+            return jsonify({"success": False, "error": "Senha incorreta"}), 401
+        
+        # Cria sessão
+        session["authenticated"] = True
+        session.permanent = True
+        
+        return jsonify({"success": True, "message": "Autenticado com sucesso"})
+    
+    except Exception as exc:
+        return jsonify({"success": False, "error": f"Erro: {exc}"}), 500
+
+
+
 def admin_painel_logout():
     """Faz logout e limpa a sessão."""
     session.clear()
