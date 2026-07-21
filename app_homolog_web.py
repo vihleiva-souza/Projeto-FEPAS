@@ -602,6 +602,228 @@ def admin_reset_tests_product(cnpj: str):
     return jsonify(result)
 
 
+@app.get("/admin/roteiros-dashboard")
+def admin_roteiros_dashboard():
+    """Dashboard visual para gerenciar roteiros. Protegido por HOMOLOG_ADMIN_KEY."""
+    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
+    if not admin_key or request.args.get("key") != admin_key:
+        return "Não autorizado", 401
+    
+    return """
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard de Roteiros</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                overflow: hidden;
+            }
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                text-align: center;
+            }
+            .header h1 { font-size: 28px; margin-bottom: 5px; }
+            .header p { font-size: 14px; opacity: 0.9; }
+            .content { padding: 30px; }
+            .loading { text-align: center; padding: 40px; color: #666; }
+            .error { 
+                background: #fee; 
+                border: 1px solid #fcc; 
+                padding: 15px; 
+                border-radius: 5px; 
+                color: #c33;
+                margin-bottom: 20px;
+            }
+            .success {
+                background: #efe;
+                border: 1px solid #cfc;
+                padding: 15px;
+                border-radius: 5px;
+                color: #3c3;
+                margin-bottom: 20px;
+            }
+            .cards-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+            }
+            .card {
+                border: 1px solid #eee;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            }
+            .card-header {
+                background: #f5f5f5;
+                padding: 15px;
+                border-bottom: 2px solid #667eea;
+            }
+            .card-header h3 {
+                font-size: 16px;
+                color: #333;
+                word-break: break-word;
+            }
+            .card-body {
+                padding: 15px;
+            }
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+            .info-label { font-weight: bold; color: #666; }
+            .info-value { color: #333; text-align: right; }
+            .badge {
+                display: inline-block;
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+            .badge-produto { background: #e3f2fd; color: #1976d2; }
+            .badge-cnpj { background: #f3e5f5; color: #7b1fa2; }
+            .card-footer {
+                padding: 15px;
+                background: #fafafa;
+                border-top: 1px solid #eee;
+                text-align: center;
+            }
+            .btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+                transition: background 0.2s;
+            }
+            .btn-download {
+                background: #667eea;
+                color: white;
+            }
+            .btn-download:hover { background: #764ba2; }
+            .empty {
+                text-align: center;
+                padding: 60px 20px;
+                color: #999;
+            }
+            .empty-icon { font-size: 48px; margin-bottom: 15px; }
+            .date { font-size: 12px; color: #999; margin-top: 10px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>📋 Dashboard de Roteiros</h1>
+                <p>Gerenciador de submissões de roteiros do cliente</p>
+            </div>
+            <div class="content">
+                <div id="message"></div>
+                <div id="loading" class="loading">Carregando roteiros...</div>
+                <div id="roteiros" style="display:none;"></div>
+            </div>
+        </div>
+
+        <script>
+            async function carregarRoteiros() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const key = params.get('key');
+                    
+                    const response = await fetch(`/api/admin/roteiros?key=${key}`);
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar roteiros');
+                    }
+                    
+                    const data = await response.json();
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    if (data.total === 0) {
+                        document.getElementById('roteiros').innerHTML = `
+                            <div class="empty">
+                                <div class="empty-icon">📭</div>
+                                <h3>Nenhum roteiro encontrado</h3>
+                                <p>Aguardando submissões dos clientes...</p>
+                            </div>
+                        `;
+                    } else {
+                        let html = '<div class="cards-grid">';
+                        data.submissoes.forEach(sub => {
+                            const data_formatada = new Date(sub.created_at).toLocaleDateString('pt-BR', {
+                                year: 'numeric', month: '2-digit', day: '2-digit', 
+                                hour: '2-digit', minute: '2-digit'
+                            });
+                            html += `
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>📄 ${sub.roteiro_filename}</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-row">
+                                            <span class="info-label">CNPJ:</span>
+                                            <span class="info-value"><strong>${sub.cnpj}</strong></span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Produto:</span>
+                                            <span class="info-value">${sub.produto_id}</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Log:</span>
+                                            <span class="info-value">${sub.log_name}</span>
+                                        </div>
+                                        <div class="badge badge-produto">Produto: ${sub.produto_id}</div>
+                                        <div class="badge badge-cnpj">CNPJ: ${sub.cnpj}</div>
+                                        <div class="date">📅 ${data_formatada}</div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="/api/admin/roteiros/download/${sub.submissao_id}?key=${params.get('key')}" 
+                                           download class="btn btn-download">
+                                            ⬇️ Baixar Roteiro
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        document.getElementById('roteiros').innerHTML = html;
+                    }
+                    document.getElementById('roteiros').style.display = 'block';
+                } catch (error) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('message').innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+                }
+            }
+            
+            carregarRoteiros();
+        </script>
+    </body>
+    </html>
+    """
+
+
 @app.get("/api/admin/roteiros")
 def admin_list_roteiros():
     """Lista todas as submissões de roteiro salvas no banco. Protegido por HOMOLOG_ADMIN_KEY."""
