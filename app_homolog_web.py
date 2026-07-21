@@ -627,23 +627,38 @@ def admin_painel_login():
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login - Painel Interno</title>
         <style>
+            :root {
+              --bg: #eef3fa;
+              --ink: #10243d;
+              --muted: #4a5f7d;
+              --panel: rgba(248, 251, 255, 0.9);
+              --line: #bcd0ea;
+              --ok: #0f6e4f;
+              --bad: #c13232;
+              --na: #4a5f77;
+              --accent: #f26a21;
+              --brand-blue: #0057b8;
+            }
+            
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { 
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                font-family: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(120deg, rgba(8, 33, 66, 0.66), rgba(8, 56, 108, 0.52));
                 min-height: 100vh;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 padding: 20px;
+                color: var(--ink);
             }
             .login-container {
-                background: white;
+                background: var(--panel);
                 border-radius: 10px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
                 width: 100%;
                 max-width: 400px;
                 padding: 40px;
+                border: 1px solid var(--line);
             }
             .login-header {
                 text-align: center;
@@ -651,11 +666,11 @@ def admin_painel_login():
             }
             .login-header h1 {
                 font-size: 24px;
-                color: #333;
+                color: var(--brand-blue);
                 margin-bottom: 10px;
             }
             .login-header p {
-                color: #999;
+                color: var(--muted);
                 font-size: 14px;
             }
             .form-group {
@@ -664,27 +679,29 @@ def admin_painel_login():
             .form-group label {
                 display: block;
                 margin-bottom: 8px;
-                color: #333;
+                color: var(--ink);
                 font-weight: bold;
                 font-size: 14px;
             }
             .form-group input {
                 width: 100%;
                 padding: 12px;
-                border: 1px solid #ddd;
+                border: 1px solid var(--line);
                 border-radius: 5px;
                 font-size: 14px;
                 transition: border-color 0.2s;
+                background: white;
+                color: var(--ink);
             }
             .form-group input:focus {
                 outline: none;
-                border-color: #667eea;
-                box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+                border-color: var(--brand-blue);
+                box-shadow: 0 0 0 2px rgba(0, 87, 184, 0.1);
             }
             .btn-login {
                 width: 100%;
                 padding: 12px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, var(--brand-blue), #0066d9);
                 color: white;
                 border: none;
                 border-radius: 5px;
@@ -695,17 +712,18 @@ def admin_painel_login():
             }
             .btn-login:hover {
                 transform: scale(1.02);
+                background: linear-gradient(135deg, #0066d9, var(--brand-blue));
             }
             .btn-login:disabled {
                 opacity: 0.7;
                 cursor: not-allowed;
             }
             .error-message {
-                background: #fee;
-                border: 1px solid #fcc;
+                background: rgba(193, 50, 50, 0.1);
+                border: 1px solid var(--bad);
                 padding: 12px;
                 border-radius: 5px;
-                color: #c33;
+                color: var(--bad);
                 margin-bottom: 20px;
                 display: none;
                 font-size: 14px;
@@ -713,7 +731,7 @@ def admin_painel_login():
             .loading {
                 display: none;
                 text-align: center;
-                color: #999;
+                color: var(--muted);
                 font-size: 14px;
             }
         </style>
