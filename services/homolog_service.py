@@ -286,22 +286,22 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
     
     # Buscar em LOGS_DIR/{produto_id}/
     product_logs_dir = LOGS_DIR / pid
-    if not product_logs_dir.is_dir():
-        raise FileNotFoundError(f"Diretório de logs não encontrado para o produto {pid}: {product_logs_dir}")
-
+    
     strict_candidates: List[Path] = []
     fallback_candidates: List[Path] = []
     prefix = f"aud_{compact_date}"
 
-    for path in product_logs_dir.iterdir():
-        if not path.is_file() or path.suffix.lower() not in ALLOWED_EXTENSIONS:
-            continue
-        name = path.name.lower()
-        if name.startswith(prefix):
-            strict_candidates.append(path)
-            continue
-        if compact_date in name:
-            fallback_candidates.append(path)
+    # Se o diretório existe, procura por logs lá
+    if product_logs_dir.is_dir():
+        for path in product_logs_dir.iterdir():
+            if not path.is_file() or path.suffix.lower() not in ALLOWED_EXTENSIONS:
+                continue
+            name = path.name.lower()
+            if name.startswith(prefix):
+                strict_candidates.append(path)
+                continue
+            if compact_date in name:
+                fallback_candidates.append(path)
 
     candidates = strict_candidates or fallback_candidates
 
@@ -310,29 +310,19 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
         if pid == "01_QRCARDSE":
             try:
                 print(f"[LOG AUTO-COLETA] Log nao encontrado para {compact_date}. Tentando coletar de {pid}...")
-                from services.homolog_service_multiproduct import fetch_logs_for_product_by_date
-                result = fetch_logs_for_product_by_date(produto_id=pid, data_teste=compact_date, force=False)
+                from services import qr_logs_fetcher
                 
-                if result.get("executed") and result.get("log_exists"):
-                    print(f"[LOG AUTO-COLETA] [OK] Coleta bem-sucedida para {compact_date}")
-                    # Tentar novamente após coleta
-                    for path in product_logs_dir.iterdir():
-                        if not path.is_file() or path.suffix.lower() not in ALLOWED_EXTENSIONS:
-                            continue
-                        name = path.name.lower()
-                        if name.startswith(prefix):
-                            strict_candidates.append(path)
-                    
-                    if strict_candidates:
-                        strict_candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
-                        return strict_candidates[0]
-                else:
-                    print(f"[LOG AUTO-COLETA] [FALHA] Coleta nao encontrou logs para {compact_date}")
+                # Busca automaticamente da URL pública e retorna o arquivo processado
+                log_file = qr_logs_fetcher.fetch_fps_logs_by_date(compact_date)
+                print(f"[LOG AUTO-COLETA] [OK] Coleta bem-sucedida para {compact_date}: {log_file}")
+                return Path(log_file)
             except Exception as e:
                 print(f"[LOG AUTO-COLETA] [ERRO] Erro na coleta automatica: {e}")
         
+        # Se for Autorizador ou coleta de QR falhou
         raise FileNotFoundError(
-            f"Nenhum log encontrado para a data {compact_date} no produto {pid}. Exemplo esperado: LOGS de TESTE/{pid}/aud_{compact_date}.txt"
+            f"Nenhum log encontrado para a data {compact_date} no produto {pid}. "
+            f"Esperado: LOGS de TESTE/{pid}/aud_{compact_date}.txt"
         )
 
     candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
