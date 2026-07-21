@@ -602,5 +602,38 @@ def admin_reset_tests_product(cnpj: str):
     return jsonify(result)
 
 
+@app.get("/api/admin/roteiros")
+def admin_list_roteiros():
+    """Lista todas as submissões de roteiro salvas no banco. Protegido por HOMOLOG_ADMIN_KEY."""
+    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
+    if not admin_key or request.args.get("key") != admin_key:
+        return jsonify({"error": "Não autorizado"}), 401
+    if not db_store.is_enabled():
+        return jsonify({"error": "Banco de dados não configurado"}), 503
+    submissoes = db_store.list_roteiro_submissions()
+    return jsonify({"total": len(submissoes), "submissoes": submissoes})
+
+
+@app.get("/api/admin/roteiros/download/<submissao_id>")
+def admin_download_roteiro(submissao_id: str):
+    """Faz download do arquivo .docx original enviado pelo cliente. Protegido por HOMOLOG_ADMIN_KEY."""
+    from flask import Response
+    admin_key = os.environ.get("HOMOLOG_ADMIN_KEY", "")
+    if not admin_key or request.args.get("key") != admin_key:
+        return jsonify({"error": "Não autorizado"}), 401
+    if not db_store.is_enabled():
+        return jsonify({"error": "Banco de dados não configurado"}), 503
+    result = db_store.get_roteiro_content(submissao_id)
+    if result is None:
+        return jsonify({"error": "Submissão não encontrada"}), 404
+    filename, content = result
+    safe_filename = filename if filename.lower().endswith(".docx") else filename + ".docx"
+    return Response(
+        content,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{safe_filename}"'},
+    )
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

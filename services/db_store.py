@@ -204,3 +204,60 @@ def save_roteiro_submission(
     except Exception as exc:  # pragma: no cover
         print(f"[db_store] Falha ao salvar submissão de roteiro no banco: {exc}")
         return False
+
+
+def list_roteiro_submissions() -> list:
+    """Retorna lista de submissões de roteiro (sem o conteúdo binário)."""
+    if not is_enabled():
+        return []
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT submissao_id, cnpj, produto_id, log_name,
+                           roteiro_filename, created_at
+                    FROM homolog_roteiro_submissions
+                    ORDER BY created_at DESC
+                    """
+                )
+                rows = cur.fetchall()
+                return [
+                    {
+                        "submissao_id": r[0],
+                        "cnpj": r[1],
+                        "produto_id": r[2],
+                        "log_name": r[3],
+                        "roteiro_filename": r[4],
+                        "created_at": r[5].isoformat() if r[5] else None,
+                    }
+                    for r in rows
+                ]
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao listar submissões de roteiro: {exc}")
+        return []
+
+
+def get_roteiro_content(submissao_id: str) -> Optional[tuple]:
+    """Retorna (roteiro_filename, roteiro_content) para download, ou None se não encontrado."""
+    if not is_enabled():
+        return None
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT roteiro_filename, roteiro_content
+                    FROM homolog_roteiro_submissions
+                    WHERE submissao_id = %s
+                    LIMIT 1
+                    """,
+                    (submissao_id,),
+                )
+                row = cur.fetchone()
+                if not row:
+                    return None
+                return (row[0], bytes(row[1]))
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao obter conteúdo do roteiro: {exc}")
+        return None
