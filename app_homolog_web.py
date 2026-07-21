@@ -63,6 +63,13 @@ app = Flask(
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-in-production")
 app.config["SECRET_KEY"] = os.environ.get("HOMOLOG_SECRET_KEY", "homolog-stage2-local-secret")
 
+# Configurações de sessão
+app.config["SESSION_PERMANENT"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = 86400  # 24 horas
+app.config["SESSION_COOKIE_SECURE"] = True  # HTTPS only
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
 # Force Render deployment: 2026-07-20 10:30:00
 print("[APP] Inicializando app_homolog_web com endpoint /api/admin/logs/upload ativo")
 
