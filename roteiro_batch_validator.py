@@ -13,6 +13,11 @@ from homolog_service import validate_log_payload
 from services.homolog_service_multiproduct import validate_log_payload_with_product
 
 
+def _is_autorizador_product(produto_id: str) -> bool:
+    pid = str(produto_id or "").strip().upper()
+    return pid in {"02", "2", "02_AUTORIZADORCARDSE"}
+
+
 def validar_roteiro_batch(
     log_name: str,
     testes: List[Dict[str, Any]],
@@ -113,7 +118,7 @@ def validar_roteiro_batch(
         
         try:
             # Chamar validador
-            if produto_id == "02":
+            if _is_autorizador_product(produto_id):
                 # CARDSE - usar validator específico
                 validacao = validate_log_payload_with_product(
                     produto_id=produto_id,
@@ -254,7 +259,7 @@ def validar_roteiro_batch(
         
         try:
             # Chamar validador
-            if produto_id == "02":
+            if _is_autorizador_product(produto_id):
                 # CARDSE - usar validator específico
                 validacao = validate_log_payload_with_product(
                     produto_id=produto_id,
