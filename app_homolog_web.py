@@ -1165,5 +1165,30 @@ def admin_download_roteiro(submissao_id: str):
     )
 
 
+@app.post("/api/admin/db/cleanup-homolog")
+def admin_cleanup_homolog_db():
+    """Limpa dados de homologação no banco remoto. Protegido por sessão e confirmação explícita."""
+    if not session.get("authenticated"):
+        return jsonify({"error": "Não autorizado"}), 401
+    if not db_store.is_enabled():
+        return jsonify({"error": "Banco de dados não configurado"}), 503
+
+    raw = request.get_json(silent=True) or {}
+    confirm = str(raw.get("confirm") or "").strip().upper()
+    if confirm != "APAGAR_HOMOLOGACAO":
+        return jsonify(
+            {
+                "error": "Confirmação inválida.",
+                "hint": "Envie {\"confirm\": \"APAGAR_HOMOLOGACAO\"} para confirmar a limpeza.",
+            }
+        ), 400
+
+    try:
+        result = db_store.truncate_homolog_data()
+        return jsonify({"ok": True, **result})
+    except Exception as exc:  # pragma: no cover
+        return jsonify({"error": f"Falha ao limpar dados de homologação: {exc}"}), 500
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)

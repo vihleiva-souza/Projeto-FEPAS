@@ -291,3 +291,46 @@ def get_roteiro_content(submissao_id: str) -> Optional[tuple]:
     except Exception as exc:  # pragma: no cover
         print(f"[db_store] Falha ao obter conteúdo do roteiro: {exc}")
         return None
+
+
+def get_homolog_counts() -> Dict[str, int]:
+    """Retorna contagem das tabelas de homologação."""
+    counts = {
+        "homolog_client_stats": 0,
+        "homolog_validation_runs": 0,
+        "homolog_roteiro_submissions": 0,
+    }
+    if not is_enabled():
+        return counts
+
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                for table_name in counts.keys():
+                    cur.execute(f"SELECT COUNT(*) FROM {table_name}")
+                    counts[table_name] = int(cur.fetchone()[0] or 0)
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao obter contagens de homologação: {exc}")
+    return counts
+
+
+def truncate_homolog_data() -> Dict[str, Dict[str, int]]:
+    """Limpa dados de homologação e retorna contagens antes/depois."""
+    if not is_enabled():
+        return {"before": get_homolog_counts(), "after": get_homolog_counts()}
+
+    before = get_homolog_counts()
+
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "TRUNCATE TABLE homolog_client_stats, homolog_validation_runs, homolog_roteiro_submissions"
+                )
+            conn.commit()
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao limpar dados de homologação: {exc}")
+        raise
+
+    after = get_homolog_counts()
+    return {"before": before, "after": after}
