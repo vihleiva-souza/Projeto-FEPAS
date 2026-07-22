@@ -7,6 +7,7 @@ Permite seleção entre QR Pago e Autorizador CARDSE.
 import importlib.util
 import inspect
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -170,6 +171,23 @@ def _get_product_catalog_by_id(produto_id: str) -> Dict[str, Dict[str, Any]]:
     return out
 
 
+def _normalize_client_identifier(value: str, produto_id: str) -> str:
+    """Normaliza o identificador do cliente conforme o produto.
+
+    - QR Pago (01): usa CNPJ/identificador normalizado (comportamento atual)
+    - Autorizador (02): exige codigo autorizador de 4 digitos numericos
+    """
+    pid = _normalize_product_id(produto_id)
+    raw_value = str(value or "").strip()
+
+    if pid == "02_AutorizadorCARDSE":
+        if not re.fullmatch(r"\d{4}", raw_value):
+            raise ValueError("Para o produto Autorizador, informe o codigo autorizador com 4 digitos.")
+        return raw_value
+
+    return _normalize_cnpj(raw_value)
+
+
 def _ensure_product_maps(stats: Dict[str, Any]) -> None:
     if not isinstance(stats.get("assigned_tests_by_product"), dict):
         stats["assigned_tests_by_product"] = {}
@@ -293,8 +311,8 @@ def _build_all_tests_progress_for_product(stats: Dict[str, Any], produto_id: str
 
 
 def enroll_client_tests_for_product(*, cnpj: str, produto_id: str, selected_test_ids: list[str]) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
     pid = _normalize_product_id(produto_id)
+    normalized_cnpj = _normalize_client_identifier(cnpj, pid)
     catalog_by_id = _get_product_catalog_by_id(pid)
     normalized_ids = sorted({str(item or "").strip().zfill(2) for item in selected_test_ids if str(item or "").strip()})
 
@@ -323,8 +341,8 @@ def enroll_client_tests_for_product(*, cnpj: str, produto_id: str, selected_test
 
 
 def get_client_progress_payload_for_product(*, cnpj: str, produto_id: str) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
     pid = _normalize_product_id(produto_id)
+    normalized_cnpj = _normalize_client_identifier(cnpj, pid)
     stats = _load_client_stats(normalized_cnpj, pid)
     catalog_by_id = _get_product_catalog_by_id(pid)
     assigned_ids = _get_assigned_tests_for_product(stats, pid)
@@ -386,70 +404,112 @@ def get_client_progress_payload_all_products(*, cnpj: str) -> Dict[str, Any]:
 
 
 def list_clients_payload_multiproduct() -> Dict[str, Any]:
-    clients: List[Dict[str, Any]] = []
-
     if not CLIENT_HOMOLOG_DIR.is_dir():
-        return {"clients": clients}
+        return {"clients": []}
 
     produtos = listar_produtos()
+    produto_meta: Dict[str, Dict[str, Any]] = {}
+    for produto in produtos:
+        pid_num = str(produto.get("id") or "").zfill(2)
+        if not pid_num:
+            continue
+        produto_meta[_normalize_product_id(pid_num)] = {
+            "produto_id": pid_num,
+            "produto_nome": str(produto.get("nome") or ""),
+        }
 
-    # Nova estrutura: CLIENT_HOMOLOG_DIR/{produto_id}/{cnpj}/
-    for produto_dir in sorted(CLIENT_HOMOLOG_DIR.iterdir()):
-        if not produto_dir.is_dir():
+    clients_map: Dict[str, Dict[str, Any]] = {}
+
+    def ensure_client_row(cnpj: str) -> Dict[str, Any]:
+        if cnpj not in clients_map:
+            clients_map[cnpj] = {
+                "cnpj": cnpj,
+                "products": [],
+                "updated_at": "",
+            }
+        return clients_map[cnpj]
+
+    def append_product_row(client_row: Dict[str, Any], stats: Dict[str, Any], produto_key: str) -> None:
+        meta = produto_meta.get(produto_key)
+        if not meta:
+            return
+
+        catalog_size = len(_get_product_catalog_by_id(produto_key))
+        summary = _compute_product_progress_summary(stats, produto_key, catalog_size)
+        assigned = _get_assigned_tests_for_product(stats, produto_key)
+        tests_state = _get_tests_state_for_product(stats, produto_key)
+
+        # Se não há qualquer informação para o produto, não polui a listagem.
+        if not assigned and not tests_state:
+            return
+
+        client_row["products"].append(
+            {
+                "produto_id": meta["produto_id"],
+                "produto_nome": meta["produto_nome"],
+                "assigned_tests": assigned,
+                "onboarding_completed": bool(assigned),
+                "summary": summary,
+            }
+        )
+
+        updated_at = str(stats.get("updated_at") or "")
+        if updated_at and updated_at > str(client_row.get("updated_at") or ""):
+            client_row["updated_at"] = updated_at
+
+    # Estrutura principal: HOMOLOGACAO_CLIENTES/{produto_key}/{cnpj}/stats.json
+    for produto_key in sorted(produto_meta.keys()):
+        produto_root = CLIENT_HOMOLOG_DIR / produto_key
+        if not produto_root.is_dir():
             continue
 
-        produto_id = produto_dir.name
-        if produto_id not in ("01_QRCARDSE", "02_AutorizadorCARDSE"):
-            continue
-
-        # Itera sobre CNPJs dentro de cada produto
-        for client_dir in sorted(produto_dir.iterdir()):
+        for client_dir in sorted(produto_root.iterdir()):
             if not client_dir.is_dir():
                 continue
 
             cnpj = client_dir.name
-            stats = _load_client_stats(cnpj, produto_id)
+            stats = _load_client_stats(cnpj, produto_key)
+            client_row = ensure_client_row(cnpj)
+            append_product_row(client_row, stats, produto_key)
 
-            product_rows: List[Dict[str, Any]] = []
-            total_planejados = 0
-            total_iniciados = 0
-            total_aprovados = 0
+    # Compatibilidade legada: HOMOLOGACAO_CLIENTES/{cnpj}/stats.json
+    for legacy_dir in sorted(CLIENT_HOMOLOG_DIR.iterdir()):
+        if not legacy_dir.is_dir():
+            continue
+        if legacy_dir.name in produto_meta:
+            continue
+        if not (legacy_dir / "stats.json").is_file():
+            continue
 
-            for produto in produtos:
-                pid = str(produto.get("id") or "").zfill(2)
-                if pid != produto_id:
-                    continue
-                catalog_size = len(_get_product_catalog_by_id(pid))
-            summary = _compute_product_progress_summary(stats, pid, catalog_size)
-            assigned = _get_assigned_tests_for_product(stats, pid)
+        cnpj = legacy_dir.name
+        stats = _load_client_stats(cnpj)
+        client_row = ensure_client_row(cnpj)
+        for produto_key in sorted(produto_meta.keys()):
+            append_product_row(client_row, stats, produto_key)
 
-            total_planejados += int(summary.get("total_testes_planejados") or 0)
-            total_iniciados += int(summary.get("testes_iniciados") or 0)
-            total_aprovados += int(summary.get("testes_aprovados") or 0)
+    clients: List[Dict[str, Any]] = []
+    for cnpj in sorted(clients_map.keys()):
+        row = clients_map[cnpj]
+        products = sorted(row.get("products") or [], key=lambda p: str(p.get("produto_id") or ""))
+        if not products:
+            continue
 
-            product_rows.append(
-                {
-                    "produto_id": pid,
-                    "produto_nome": str(produto.get("nome") or ""),
-                    "assigned_tests": assigned,
-                    "onboarding_completed": bool(assigned),
-                    "summary": summary,
-                }
-            )
-
+        total_planejados = sum(int((p.get("summary") or {}).get("total_testes_planejados") or 0) for p in products)
+        total_iniciados = sum(int((p.get("summary") or {}).get("testes_iniciados") or 0) for p in products)
+        total_aprovados = sum(int((p.get("summary") or {}).get("testes_aprovados") or 0) for p in products)
         percentual_geral = round((total_aprovados / total_planejados) * 100, 2) if total_planejados > 0 else 0.0
 
         clients.append(
             {
                 "cnpj": cnpj,
-                "onboarding_completed": any(bool(p.get("onboarding_completed")) for p in product_rows),
-                "assigned_tests": [tid for p in product_rows for tid in (p.get("assigned_tests") or [])],
+                "onboarding_completed": any(bool(p.get("onboarding_completed")) for p in products),
+                "assigned_tests": [tid for p in products for tid in (p.get("assigned_tests") or [])],
                 "total_testes_planejados": total_planejados,
                 "testes_iniciados": total_iniciados,
                 "testes_aprovados": total_aprovados,
                 "percentual_aprovacao_geral": percentual_geral,
-                "updated_at": str(stats.get("updated_at") or ""),
-                "products": product_rows,
+                "updated_at": str(row.get("updated_at") or ""),
+                "products": products,
             }
         )
 
@@ -457,8 +517,8 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
 
 
 def admin_set_client_tests_for_product(*, cnpj: str, produto_id: str, selected_test_ids: List[str]) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
     pid = _normalize_product_id(produto_id)
+    normalized_cnpj = _normalize_client_identifier(cnpj, pid)
     catalog_by_id = _get_product_catalog_by_id(pid)
     normalized_ids = sorted({str(item or "").strip().zfill(2) for item in selected_test_ids if str(item or "").strip()})
 
@@ -483,8 +543,8 @@ def admin_set_client_tests_for_product(*, cnpj: str, produto_id: str, selected_t
 
 
 def admin_reset_client_onboarding_for_product(*, cnpj: str, produto_id: str) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
     pid = _normalize_product_id(produto_id)
+    normalized_cnpj = _normalize_client_identifier(cnpj, pid)
 
     stats = _load_client_stats(normalized_cnpj, pid)
     _set_assigned_tests_for_product(stats, pid, [])
@@ -503,8 +563,8 @@ def admin_reset_client_onboarding_for_product(*, cnpj: str, produto_id: str) -> 
 
 
 def admin_reset_client_tests_for_product(*, cnpj: str, produto_id: str) -> Dict[str, Any]:
-    normalized_cnpj = _normalize_cnpj(cnpj)
     pid = _normalize_product_id(produto_id)
+    normalized_cnpj = _normalize_client_identifier(cnpj, pid)
 
     stats = _load_client_stats(normalized_cnpj, pid)
     _set_tests_state_for_product(stats, pid, {})
@@ -583,7 +643,7 @@ def get_tests_payload_for_product(produto_id: str, cnpj: Optional[str] = None) -
     # Se CNPJ fornecido, verificar se cliente já tem testes designados
     assigned_test_ids = None
     if cnpj:
-        cnpj_norm = _normalize_cnpj(cnpj)
+        cnpj_norm = _normalize_client_identifier(cnpj, produto_id)
         stats = _load_client_stats(cnpj_norm, produto_id)
         assigned_tests = _get_assigned_tests_for_product(stats, produto_id)
         assigned_test_ids = {str(item).zfill(2) for item in assigned_tests if str(item).strip()}
@@ -897,7 +957,7 @@ def validate_client_payload_with_product(
     # Validar produto
     produto = get_produto(produto_id)
     
-    cnpj_norm = _normalize_cnpj(cnpj)
+    cnpj_norm = _normalize_client_identifier(cnpj, produto_id)
     test_date_iso, _ = _parse_test_date(data_teste)
     stats = _load_client_stats(cnpj_norm, produto_id)
     assigned_tests = set(_get_assigned_tests_for_product(stats, produto_id))
@@ -912,10 +972,10 @@ def validate_client_payload_with_product(
 
     normalized_test_id = str(teste_id or "").strip().zfill(2)
     if not assigned_tests:
-        raise ValueError("Primeiro selecione os testes que este CNPJ irá homologar.")
+        raise ValueError("Primeiro selecione os testes que este cliente ira homologar.")
 
     if normalized_test_id not in assigned_tests:
-        raise ValueError(f"Teste {normalized_test_id} não foi designado para este CNPJ.")
+        raise ValueError(f"Teste {normalized_test_id} nao foi designado para este cliente.")
 
     # Executar validação
     log_path = _select_log_by_test_date(test_date_iso, produto_id)
