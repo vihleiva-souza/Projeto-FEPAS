@@ -449,9 +449,14 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
         if not include_empty and not assigned and not tests_state:
             return
 
+        produto_id_num = meta["produto_id"]
+        already_exists = any(str(p.get("produto_id") or "") == produto_id_num for p in (client_row.get("products") or []))
+        if already_exists:
+            return
+
         client_row["products"].append(
             {
-                "produto_id": meta["produto_id"],
+                "produto_id": produto_id_num,
                 "produto_nome": meta["produto_nome"],
                 "assigned_tests": assigned,
                 "onboarding_completed": bool(assigned),
@@ -492,6 +497,23 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
         client_row = ensure_client_row(cnpj)
         for produto_key in sorted(produto_meta.keys()):
             append_product_row(client_row, stats, produto_key)
+
+    # Cobertura para produção (Render): quando stats estão no PostgreSQL, pode não existir diretório local.
+    for row in db_store.list_client_stats_index():
+        cnpj = str(row.get("cnpj") or "").strip()
+        produto_raw = str(row.get("produto_id") or "").strip()
+        if not cnpj or not produto_raw:
+            continue
+        if produto_raw == "__legacy__":
+            continue
+
+        produto_key = _normalize_product_id(produto_raw)
+        if produto_key not in produto_meta:
+            continue
+
+        stats = _load_client_stats(cnpj, produto_key)
+        client_row = ensure_client_row(cnpj)
+        append_product_row(client_row, stats, produto_key, include_empty=True)
 
     clients: List[Dict[str, Any]] = []
     for cnpj in sorted(clients_map.keys()):

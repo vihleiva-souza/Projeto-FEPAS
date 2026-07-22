@@ -124,6 +124,36 @@ def save_client_stats(cnpj: str, produto_id: str, stats: Dict[str, Any]) -> bool
         return False
 
 
+def list_client_stats_index() -> list[Dict[str, Any]]:
+    """Lista clientes/produtos existentes na tabela de stats para popular visões administrativas."""
+    if not is_enabled():
+        return []
+
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT cnpj, produto_id, updated_at
+                    FROM homolog_client_stats
+                    ORDER BY updated_at DESC
+                    """
+                )
+                rows = cur.fetchall()
+                return [
+                    {
+                        "cnpj": str(r[0] or ""),
+                        "produto_id": str(r[1] or ""),
+                        "updated_at": r[2].isoformat() if r[2] else None,
+                    }
+                    for r in rows
+                    if str(r[0] or "").strip() and str(r[1] or "").strip()
+                ]
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao listar índice de clientes: {exc}")
+        return []
+
+
 def save_validation_run(
     *,
     cnpj: str,
