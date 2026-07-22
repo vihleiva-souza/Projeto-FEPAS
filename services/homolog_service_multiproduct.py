@@ -819,7 +819,8 @@ def validate_log_payload_with_product(
         raise ValueError("Selecione um teste de homologação.")
 
     # Ler log
-    path = _resolve_log_path(log_name)
+    # Importante: no multiproduto, o log precisa ser resolvido no diretório do produto selecionado.
+    path = _resolve_log_path(log_name, produto_id)
     text = _read_log_text(path)
     file_key = _cache_key_for_file(path)
     cache_key = (
