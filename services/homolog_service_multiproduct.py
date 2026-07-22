@@ -429,7 +429,12 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
             }
         return clients_map[cnpj]
 
-    def append_product_row(client_row: Dict[str, Any], stats: Dict[str, Any], produto_key: str) -> None:
+    def append_product_row(
+        client_row: Dict[str, Any],
+        stats: Dict[str, Any],
+        produto_key: str,
+        include_empty: bool = False,
+    ) -> None:
         meta = produto_meta.get(produto_key)
         if not meta:
             return
@@ -439,8 +444,9 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
         assigned = _get_assigned_tests_for_product(stats, produto_key)
         tests_state = _get_tests_state_for_product(stats, produto_key)
 
-        # Se não há qualquer informação para o produto, não polui a listagem.
-        if not assigned and not tests_state:
+        # Em cenários de onboarding, o cliente pode já existir no produto sem testes atribuídos.
+        # Nesses casos, incluímos a linha para aparecer em "clientes registrados".
+        if not include_empty and not assigned and not tests_state:
             return
 
         client_row["products"].append(
@@ -470,7 +476,7 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
             cnpj = client_dir.name
             stats = _load_client_stats(cnpj, produto_key)
             client_row = ensure_client_row(cnpj)
-            append_product_row(client_row, stats, produto_key)
+            append_product_row(client_row, stats, produto_key, include_empty=True)
 
     # Compatibilidade legada: HOMOLOGACAO_CLIENTES/{cnpj}/stats.json
     for legacy_dir in sorted(CLIENT_HOMOLOG_DIR.iterdir()):
