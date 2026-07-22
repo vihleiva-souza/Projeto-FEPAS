@@ -404,9 +404,6 @@ def get_client_progress_payload_all_products(*, cnpj: str) -> Dict[str, Any]:
 
 
 def list_clients_payload_multiproduct() -> Dict[str, Any]:
-    if not CLIENT_HOMOLOG_DIR.is_dir():
-        return {"clients": []}
-
     produtos = listar_produtos()
     produto_meta: Dict[str, Dict[str, Any]] = {}
     for produto in produtos:
@@ -469,34 +466,36 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
             client_row["updated_at"] = updated_at
 
     # Estrutura principal: HOMOLOGACAO_CLIENTES/{produto_key}/{cnpj}/stats.json
-    for produto_key in sorted(produto_meta.keys()):
-        produto_root = CLIENT_HOMOLOG_DIR / produto_key
-        if not produto_root.is_dir():
-            continue
-
-        for client_dir in sorted(produto_root.iterdir()):
-            if not client_dir.is_dir():
+    if CLIENT_HOMOLOG_DIR.is_dir():
+        for produto_key in sorted(produto_meta.keys()):
+            produto_root = CLIENT_HOMOLOG_DIR / produto_key
+            if not produto_root.is_dir():
                 continue
 
-            cnpj = client_dir.name
-            stats = _load_client_stats(cnpj, produto_key)
-            client_row = ensure_client_row(cnpj)
-            append_product_row(client_row, stats, produto_key, include_empty=True)
+            for client_dir in sorted(produto_root.iterdir()):
+                if not client_dir.is_dir():
+                    continue
+
+                cnpj = client_dir.name
+                stats = _load_client_stats(cnpj, produto_key)
+                client_row = ensure_client_row(cnpj)
+                append_product_row(client_row, stats, produto_key, include_empty=True)
 
     # Compatibilidade legada: HOMOLOGACAO_CLIENTES/{cnpj}/stats.json
-    for legacy_dir in sorted(CLIENT_HOMOLOG_DIR.iterdir()):
-        if not legacy_dir.is_dir():
-            continue
-        if legacy_dir.name in produto_meta:
-            continue
-        if not (legacy_dir / "stats.json").is_file():
-            continue
+    if CLIENT_HOMOLOG_DIR.is_dir():
+        for legacy_dir in sorted(CLIENT_HOMOLOG_DIR.iterdir()):
+            if not legacy_dir.is_dir():
+                continue
+            if legacy_dir.name in produto_meta:
+                continue
+            if not (legacy_dir / "stats.json").is_file():
+                continue
 
-        cnpj = legacy_dir.name
-        stats = _load_client_stats(cnpj)
-        client_row = ensure_client_row(cnpj)
-        for produto_key in sorted(produto_meta.keys()):
-            append_product_row(client_row, stats, produto_key)
+            cnpj = legacy_dir.name
+            stats = _load_client_stats(cnpj)
+            client_row = ensure_client_row(cnpj)
+            for produto_key in sorted(produto_meta.keys()):
+                append_product_row(client_row, stats, produto_key)
 
     # Cobertura para produção (Render): quando stats estão no PostgreSQL, pode não existir diretório local.
     for row in db_store.list_client_stats_index():
