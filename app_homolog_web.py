@@ -79,7 +79,9 @@ print("[APP] Inicializando app_homolog_web com endpoint /api/admin/logs/upload a
 _admin_routes = [str(r) for r in app.url_map.iter_rules() if 'admin' in str(r) or 'upload' in str(r)]
 print(f"[APP] Rotas admin/upload registradas: {_admin_routes}")
 
-db_store.init_db()
+db_enabled = db_store.is_enabled()
+db_initialized = db_store.init_db()
+print(f"[APP] Banco habilitado via DATABASE_URL: {db_enabled}; init_db_ok: {db_initialized}")
 
 
 @app.get("/diagnostico")
