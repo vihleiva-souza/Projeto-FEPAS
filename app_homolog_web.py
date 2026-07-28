@@ -216,6 +216,32 @@ def get_config():
     return jsonify(get_api_config_payload())
 
 
+@app.get("/api/admin/logs/listar")
+def admin_listar_logs():
+    """Lista todos os arquivos de log disponíveis no servidor, por produto."""
+    from services.homolog_service import LOGS_DIR
+    resultado = {}
+    total = 0
+    for produto_dir in sorted(LOGS_DIR.iterdir()) if LOGS_DIR.is_dir() else []:
+        if not produto_dir.is_dir():
+            continue
+        arquivos = sorted(
+            [
+                {
+                    "nome": f.name,
+                    "tamanho_mb": round(f.stat().st_size / 1024 / 1024, 2),
+                }
+                for f in produto_dir.iterdir()
+                if f.is_file() and f.suffix.lower() in {".txt"}
+            ],
+            key=lambda x: x["nome"],
+            reverse=True,
+        )
+        resultado[produto_dir.name] = arquivos
+        total += len(arquivos)
+    return jsonify({"total": total, "logs": resultado})
+
+
 @app.get("/api/produtos")
 def get_produtos():
     """Lista produtos disponíveis para homologação."""
