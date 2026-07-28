@@ -306,20 +306,6 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
     candidates = strict_candidates or fallback_candidates
 
     if not candidates:
-        # Log não encontrado localmente - tentar coletar automaticamente
-        if pid == "01_QRCARDSE":
-            try:
-                print(f"[LOG AUTO-COLETA] Log nao encontrado para {compact_date}. Tentando coletar de {pid}...")
-                from services import qr_logs_fetcher
-                
-                # Busca automaticamente da URL pública e retorna o arquivo processado
-                log_file = qr_logs_fetcher.fetch_fps_logs_by_date(compact_date)
-                print(f"[LOG AUTO-COLETA] [OK] Coleta bem-sucedida para {compact_date}: {log_file}")
-                return Path(log_file)
-            except Exception as e:
-                print(f"[LOG AUTO-COLETA] [ERRO] Erro na coleta automatica: {e}")
-        
-        # Se for Autorizador ou coleta de QR falhou
         raise FileNotFoundError(
             f"Nenhum log encontrado para a data {compact_date} no produto {pid}. "
             f"Esperado: LOGS de TESTE/{pid}/aud_{compact_date}.txt"

@@ -34,6 +34,15 @@ services:
       - key: HOMOLOG_SECRET_KEY
         generateValue: true
 
+      # Chave secreta usada por app.secret_key (sessao Flask)
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+
+      # Senha de acesso ao painel interno (/admin/painel-login)
+      # Configure manualmente no painel do Render
+      - key: PAINEL_ADMIN_PASSWORD
+        value: ""
+
       # Chave de autenticação para upload administrativo de logs
       # Configure manualmente no painel do Render após o deploy
       # Exemplo: HOMOLOG_ADMIN_KEY = minha-chave-secreta-2026

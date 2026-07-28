@@ -46,85 +46,18 @@ from services.homolog_service import (
 
 def fetch_logs_for_product_by_date(*, produto_id: str, data_teste: str, force: bool = False) -> Dict[str, Any]:
     """
-    Dispara ingestão de logs por data para o produto selecionado.
-
-    Hoje suportado para QR (produto 01_QRCARDSE), executando o script
-    scripts/tools/coletor_audit_qr_http.py com --date YYYYMMDD.
-    Script funciona em qualquer ambiente (Windows, Linux, Render) sem dependências externas.
+    Ingestão de logs por data é manual para todos os produtos.
+    Use o endpoint /api/admin/logs/upload para enviar o arquivo de log.
     """
     pid = _normalize_product_id(produto_id)
     _, compact_date = _parse_test_date(data_teste)
-
-    if pid != "01_QRCARDSE":
-        return {
-            "ok": True,
-            "produto_id": pid,
-            "data": compact_date,
-            "executed": False,
-            "summary": "Ingestão automática por data disponível apenas para o produto QR (01_QRCARDSE).",
-        }
-
-    # Script HTTP - compatível com Render
-    script_path = BASE_DIR / "scripts" / "tools" / "coletor_audit_qr_http.py"
-    if not script_path.exists():
-        raise FileNotFoundError(f"Script de coleta QR não encontrado: {script_path}")
-
-    expected_name = f"aud_{compact_date}.txt"
-    expected_path = LOGS_DIR / "01_QRCARDSE" / expected_name
-
-    python_exe = sys.executable or "python"
-    cmd: List[str] = [
-        python_exe,
-        str(script_path),
-        "--date",
-        compact_date,
-    ]
-    if force:
-        cmd.append("--force")
-
-    proc = subprocess.run(
-        cmd,
-        cwd=str(BASE_DIR),
-        capture_output=True,
-        text=True,
-        timeout=60 * 20,
-        shell=False,
-    )
-
-    stdout = str(proc.stdout or "").strip()
-    stderr = str(proc.stderr or "").strip()
-
-    if proc.returncode != 0:
-        detail = stderr or stdout or f"Processo finalizou com código {proc.returncode}."
-        raise RuntimeError(f"Falha ao coletar logs QR para {compact_date}: {detail}")
-
-    # Se o arquivo ainda não existe após a primeira tentativa, tenta novamente com --force
-    if not expected_path.exists() and not force:
-        cmd.append("--force")
-        proc = subprocess.run(
-            cmd,
-            cwd=str(BASE_DIR),
-            capture_output=True,
-            text=True,
-            timeout=60 * 20,
-            shell=False,
-        )
-        stdout = str(proc.stdout or "").strip()
-        stderr = str(proc.stderr or "").strip()
-        
-        if proc.returncode != 0:
-            detail = stderr or stdout or f"Processo finalizou com código {proc.returncode}."
-            raise RuntimeError(f"Falha ao coletar logs QR com --force para {compact_date}: {detail}")
 
     return {
         "ok": True,
         "produto_id": pid,
         "data": compact_date,
-        "executed": True,
-        "log_name": expected_name,
-        "log_exists": expected_path.exists(),
-        "summary": f"Coleta QR executada para {compact_date}.",
-        "stdout_tail": "\n".join(stdout.splitlines()[-8:]) if stdout else "",
+        "executed": False,
+        "summary": "Ingestão automática não disponível. Use o endpoint /api/admin/logs/upload para enviar o arquivo de log manualmente.",
     }
 
 

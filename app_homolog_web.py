@@ -130,31 +130,19 @@ def get_logs():
 
 @app.post("/api/produtos/<produto_id>/logs/fetch-by-date")
 def fetch_logs_by_date_for_product(produto_id: str):
-    """Dispara coleta de logs por data para o produto informado."""
+    """Ingestão de logs é manual para todos os produtos. Use /api/admin/logs/upload."""
     payload = request.get_json(silent=True) or {}
     data_teste = str(payload.get("data_teste") or request.form.get("data_teste") or "").strip()
     force_raw = payload.get("force", request.form.get("force", False))
     force = str(force_raw).strip().lower() in {"1", "true", "yes", "sim"}
 
     try:
-        # Se é QR (01), busca da URL pública
-        if normalize_produto_id(produto_id) == "01_QRCARDSE":
-            log_file = qr_logs_fetcher.fetch_fps_logs_by_date(data_teste)
-            return jsonify({
-                "status": "sucesso",
-                "produto_id": "01_QRCARDSE",
-                "data_teste": data_teste,
-                "log_name": Path(log_file).name,
-                "message": f"Logs do QR obtidos e processados com sucesso"
-            })
-        else:
-            # Para Autorizador, usa o fluxo normal (manual)
-            result = fetch_logs_for_product_by_date(
-                produto_id=normalize_produto_id(produto_id),
-                data_teste=data_teste,
-                force=force,
-            )
-            return jsonify(result)
+        result = fetch_logs_for_product_by_date(
+            produto_id=normalize_produto_id(produto_id),
+            data_teste=data_teste,
+            force=force,
+        )
+        return jsonify(result)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except FileNotFoundError as exc:
