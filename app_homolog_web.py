@@ -719,7 +719,7 @@ def admin_reset_tests_product(cnpj: str):
 @app.get("/api/admin/test-logs")
 def admin_list_test_logs():
     """Lista logs de validação dos clientes. Protegido por autenticação de sessão."""
-    if not session.get("painel_autenticado"):
+    if not session.get("authenticated"):
         return jsonify({"error": "Não autorizado"}), 401
     cnpj_filter = str(request.args.get("cnpj") or "").strip() or None
     logs = db_store.list_test_logs(cnpj=cnpj_filter)
@@ -729,7 +729,7 @@ def admin_list_test_logs():
 @app.get("/api/admin/test-logs/<int:log_id>/download")
 def admin_download_test_log(log_id: int):
     """Retorna o conteúdo .txt de um log de validação para download."""
-    if not session.get("painel_autenticado"):
+    if not session.get("authenticated"):
         return jsonify({"error": "Não autorizado"}), 401
     row = db_store.get_test_log_content(log_id)
     if not row:
