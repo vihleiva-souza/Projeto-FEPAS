@@ -189,7 +189,19 @@ def admin_upload_log():
         return jsonify({"error": "Apenas arquivos .txt sao aceitos"}), 400
 
     pid = normalize_produto_id(produto_id)
-    dest_dir = LOGS_DIR / pid
+
+    # Para Autorizador: salvar em subpasta pelo codigo do autorizador (4 digitos)
+    if pid == "02_AutorizadorCARDSE":
+        import re as _re
+        codigo_autorizador = str(request.form.get("codigo_autorizador") or "").strip()
+        if not codigo_autorizador:
+            return jsonify({"error": "Para produto Autorizador, informe o campo codigo_autorizador"}), 400
+        if not _re.fullmatch(r"\d{4}", codigo_autorizador):
+            return jsonify({"error": "codigo_autorizador deve ter exatamente 4 digitos numericos"}), 400
+        dest_dir = LOGS_DIR / pid / codigo_autorizador
+    else:
+        dest_dir = LOGS_DIR / pid
+
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest_path = dest_dir / f"aud_{data_teste}.txt"
 

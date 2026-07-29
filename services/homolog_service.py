@@ -280,12 +280,15 @@ def _parse_test_date(value: str) -> Tuple[str, str]:
     raise ValueError("Data do teste inválida. Use YYYY-MM-DD, DD/MM/YYYY ou YYYYMMDD.")
 
 
-def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
+def _select_log_by_test_date(test_date: str, produto_id: str = None, codigo_autorizador: str = None) -> Path:
     _, compact_date = _parse_test_date(test_date)
     pid = _normalize_product_id(produto_id or "01")
-    
-    # Buscar em LOGS_DIR/{produto_id}/
-    product_logs_dir = LOGS_DIR / pid
+
+    # Para Autorizador: buscar dentro da subpasta pelo codigo do autorizador
+    if pid == "02_AutorizadorCARDSE" and str(codigo_autorizador or "").strip():
+        product_logs_dir = LOGS_DIR / pid / str(codigo_autorizador).strip()
+    else:
+        product_logs_dir = LOGS_DIR / pid
     
     strict_candidates: List[Path] = []
     fallback_candidates: List[Path] = []
@@ -308,7 +311,9 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None) -> Path:
     if not candidates:
         raise FileNotFoundError(
             f"Nenhum log encontrado para a data {compact_date} no produto {pid}. "
-            f"Esperado: LOGS de TESTE/{pid}/aud_{compact_date}.txt"
+            f"Esperado: LOGS de TESTE/{pid}/" +
+            (f"{codigo_autorizador}/aud_{compact_date}.txt" if pid == "02_AutorizadorCARDSE" and codigo_autorizador
+             else f"aud_{compact_date}.txt")
         )
 
     candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
