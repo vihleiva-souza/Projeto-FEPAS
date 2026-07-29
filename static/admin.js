@@ -28,6 +28,9 @@ navItems.forEach((item) => {
     if (item.dataset.tab === "tab-gestao") {
       loadGestaoClientsList();
     }
+    if (item.dataset.tab === "tab-test-logs") {
+      loadTestLogs();
+    }
   });
 });
 
@@ -613,6 +616,76 @@ function initializeValidatorMode() {
     manualPanel.classList.add("hidden");
     batchPanel.classList.add("hidden");
   }
+}
+
+// =====================================================================
+// ABA 4 – LOGS DE VALIDAÇÃO
+// =====================================================================
+
+const testLogsTableBody = document.getElementById("testLogsTableBody");
+const testLogsSearchInput = document.getElementById("testLogsSearchInput");
+const testLogsSearchBtn = document.getElementById("testLogsSearchBtn");
+const refreshTestLogsBtn = document.getElementById("refreshTestLogsBtn");
+
+async function loadTestLogs(cnpjFilter) {
+  if (!testLogsTableBody) return;
+  testLogsTableBody.innerHTML = `<tr><td colspan="8">Carregando...</td></tr>`;
+  try {
+    const url = cnpjFilter
+      ? `/api/admin/test-logs?cnpj=${encodeURIComponent(cnpjFilter)}`
+      : "/api/admin/test-logs";
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || "Erro ao carregar logs");
+    renderTestLogsTable(data.logs || []);
+  } catch (err) {
+    if (testLogsTableBody)
+      testLogsTableBody.innerHTML = `<tr><td colspan="8">${escapeAdm("Falha: " + err.message)}</td></tr>`;
+  }
+}
+
+function renderTestLogsTable(logs) {
+  if (!testLogsTableBody) return;
+  if (!logs || logs.length === 0) {
+    testLogsTableBody.innerHTML = `<tr><td colspan="8">Nenhum log registrado ainda.</td></tr>`;
+    return;
+  }
+  testLogsTableBody.innerHTML = logs
+    .map((item) => {
+      const statusClass = String(item.status || "").toUpperCase() === "APROVADO" ? "tag ok" : "tag na";
+      const dt = String(item.created_at || "").replace("T", " ").substring(0, 19);
+      return `
+        <tr>
+          <td>${escapeAdm(String(item.id))}</td>
+          <td>${escapeAdm(item.cnpj || "-")}</td>
+          <td>${escapeAdm(item.produto_id || "-")}</td>
+          <td><strong>${escapeAdm(item.teste_id || "-")}</strong></td>
+          <td><span class="${statusClass}">${escapeAdm(item.status || "-")}</span></td>
+          <td style="font-size:0.75rem;">${escapeAdm(item.protocolo || "-")}</td>
+          <td style="font-size:0.8rem;">${escapeAdm(dt)}</td>
+          <td>
+            <a href="/api/admin/test-logs/${escapeAdm(String(item.id))}/download"
+               download
+               class="btn secondary-btn"
+               style="padding:4px 10px; font-size:0.8rem;">&#x2B73; .txt</a>
+          </td>
+        </tr>`;
+    })
+    .join("");
+}
+
+if (testLogsSearchBtn) {
+  testLogsSearchBtn.addEventListener("click", () => {
+    const q = (testLogsSearchInput ? testLogsSearchInput.value.trim() : "");
+    loadTestLogs(q || undefined);
+  });
+}
+
+if (refreshTestLogsBtn) {
+  refreshTestLogsBtn.addEventListener("click", () => {
+    const q = (testLogsSearchInput ? testLogsSearchInput.value.trim() : "");
+    loadTestLogs(q || undefined);
+  });
 }
 
 /**

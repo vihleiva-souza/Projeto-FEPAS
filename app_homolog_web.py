@@ -353,6 +353,58 @@ def validate_client_with_product():
     except Exception as exc:  # pragma: no cover
         return jsonify({"error": f"Falha ao processar homologação do cliente: {exc}"}), 500
 
+    # Salvar log de validação em texto para download posterior
+    try:
+        from datetime import datetime
+        from products_config import listar_produtos as _listar_produtos
+        _produto_nome = next(
+            (str(p.get("nome") or "") for p in _listar_produtos()
+             if str(p.get("id") or "").zfill(2) == str(produto_id or "").replace("_QRCARDSE", "").replace("_AutorizadorCARDSE", "").zfill(2)),
+            produto_id,
+        )
+        _resultado = str(result.get("resultado") or "NEGADO")
+        _protocolo = str(result.get("protocolo") or "")
+        _cnpj_log = str(result.get("cnpj") or "")
+        _teste_id_log = str(result.get("teste_id") or "")
+        _data_teste_log = str(result.get("data_teste") or "")
+
+        linhas = [
+            "============================================================",
+            "  REGISTRO DE VALIDAÇÃO DE HOMOLOGAÇÃO",
+            "============================================================",
+            f"Protocolo  : {_protocolo}",
+            f"Data/Hora  : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"CNPJ       : {_cnpj_log}",
+            f"Produto    : {_produto_nome}",
+            f"Teste      : {_teste_id_log}",
+            f"Data Teste : {_data_teste_log}",
+            f"Resultado  : {_resultado}",
+            "------------------------------------------------------------",
+        ]
+        if _resultado != "APROVADO":
+            linhas.append(f"Perna negada : {result.get('perna_negada', '-')}")
+            linhas.append(f"Motivo       : {result.get('motivo_negacao', '-')}")
+            motivos = result.get("motivos_negacao") or []
+            if motivos:
+                linhas.append("Motivos detalhados:")
+                for m in motivos:
+                    linhas.append(f"  - {m}")
+        else:
+            linhas.append("Todos os critérios de homologação foram atendidos.")
+        linhas.append("============================================================")
+        _log_content = "\n".join(linhas)
+
+        db_store.save_test_log(
+            cnpj=_cnpj_log,
+            produto_id=str(produto_id or ""),
+            teste_id=_teste_id_log,
+            protocolo=_protocolo,
+            status=_resultado,
+            log_content=_log_content,
+        )
+    except Exception:  # pragma: no cover
+        pass  # Falha no log não deve interromper a resposta ao cliente
+
     return jsonify(result)
 
 
@@ -644,6 +696,34 @@ def admin_reset_tests_product(cnpj: str):
     except Exception as exc:  # pragma: no cover
         return jsonify({"error": f"Falha ao resetar testes por produto: {exc}"}), 500
     return jsonify(result)
+
+
+@app.get("/api/admin/test-logs")
+def admin_list_test_logs():
+    """Lista logs de validação dos clientes. Protegido por autenticação de sessão."""
+    if not session.get("painel_autenticado"):
+        return jsonify({"error": "Não autorizado"}), 401
+    cnpj_filter = str(request.args.get("cnpj") or "").strip() or None
+    logs = db_store.list_test_logs(cnpj=cnpj_filter)
+    return jsonify({"total": len(logs), "logs": logs})
+
+
+@app.get("/api/admin/test-logs/<int:log_id>/download")
+def admin_download_test_log(log_id: int):
+    """Retorna o conteúdo .txt de um log de validação para download."""
+    if not session.get("painel_autenticado"):
+        return jsonify({"error": "Não autorizado"}), 401
+    row = db_store.get_test_log_content(log_id)
+    if not row:
+        return jsonify({"error": "Log não encontrado"}), 404
+    protocolo, cnpj, teste_id, status, log_content = row
+    filename = f"validacao_{cnpj}_{teste_id}_{protocolo}.txt".replace("/", "_").replace(" ", "_")
+    from flask import Response
+    return Response(
+        log_content,
+        mimetype="text/plain; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/admin/painel-login")

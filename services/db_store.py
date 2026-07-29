@@ -62,6 +62,17 @@ def init_db() -> bool:
         result_json JSONB NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS homolog_test_logs (
+        id BIGSERIAL PRIMARY KEY,
+        cnpj TEXT NOT NULL,
+        produto_id TEXT,
+        teste_id TEXT,
+        protocolo TEXT,
+        status TEXT,
+        log_content TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
     """
 
     try:
@@ -293,12 +304,115 @@ def get_roteiro_content(submissao_id: str) -> Optional[tuple]:
         return None
 
 
+def save_test_log(
+    *,
+    cnpj: str,
+    produto_id: str,
+    teste_id: str,
+    protocolo: str,
+    status: str,
+    log_content: str,
+) -> bool:
+    """Salva o log de texto de uma validação de teste do cliente."""
+    if not is_enabled():
+        return False
+
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO homolog_test_logs
+                        (cnpj, produto_id, teste_id, protocolo, status, log_content)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (cnpj, produto_id, teste_id, protocolo, status, log_content),
+                )
+        return True
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao salvar log de teste: {exc}")
+        return False
+
+
+def list_test_logs(cnpj: Optional[str] = None) -> list:
+    """Lista logs de validação. Se cnpj fornecido, filtra por cliente."""
+    if not is_enabled():
+        return []
+
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                if cnpj:
+                    cur.execute(
+                        """
+                        SELECT id, cnpj, produto_id, teste_id, protocolo, status,
+                               created_at::text
+                        FROM homolog_test_logs
+                        WHERE cnpj = %s
+                        ORDER BY created_at DESC
+                        LIMIT 500
+                        """,
+                        (cnpj,),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        SELECT id, cnpj, produto_id, teste_id, protocolo, status,
+                               created_at::text
+                        FROM homolog_test_logs
+                        ORDER BY created_at DESC
+                        LIMIT 500
+                        """
+                    )
+                rows = cur.fetchall()
+                return [
+                    {
+                        "id": row[0],
+                        "cnpj": row[1],
+                        "produto_id": row[2],
+                        "teste_id": row[3],
+                        "protocolo": row[4],
+                        "status": row[5],
+                        "created_at": row[6],
+                    }
+                    for row in rows
+                ]
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao listar logs de teste: {exc}")
+        return []
+
+
+def get_test_log_content(log_id: int) -> Optional[tuple]:
+    """Retorna (protocolo, cnpj, teste_id, status, log_content) de um log."""
+    if not is_enabled():
+        return None
+
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT protocolo, cnpj, teste_id, status, log_content
+                    FROM homolog_test_logs
+                    WHERE id = %s
+                    LIMIT 1
+                    """,
+                    (log_id,),
+                )
+                row = cur.fetchone()
+                return tuple(row) if row else None
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao obter conteúdo do log: {exc}")
+        return None
+
+
 def get_homolog_counts() -> Dict[str, int]:
     """Retorna contagem das tabelas de homologação."""
     counts = {
         "homolog_client_stats": 0,
         "homolog_validation_runs": 0,
         "homolog_roteiro_submissions": 0,
+        "homolog_test_logs": 0,
     }
     if not is_enabled():
         return counts

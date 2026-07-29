@@ -56,6 +56,14 @@
             </div>
             <span class="nav-arrow">→</span>
           </button>
+          <button class="workspace-nav-item" data-tab="tab-test-logs" title="Logs de Validacao">
+            <span class="nav-icon">📋</span>
+            <div class="nav-content">
+              <h3>Logs de Validação</h3>
+              <p>Histórico de testes</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
         </nav>
       </aside>
 
@@ -438,6 +446,47 @@
         <button class="btn" id="gestaoSalvarTestesBtn" type="button" style="margin-top:16px;" data-i18n="admin.saveEnabledTests">Salvar testes habilitados</button>
       </section>
     </div><!-- /tab-gestao -->
+
+    <!-- ============================================================ -->
+    <!-- ABA 4: LOGS DE VALIDAÇÃO                                     -->
+    <!-- ============================================================ -->
+    <div id="tab-test-logs" class="admin-tab-panel hidden">
+      <header class="hero">
+        <p class="eyebrow">Painel Admin</p>
+        <h1>Logs de Validação</h1>
+        <p class="subtitle">Histórico de todos os testes realizados pelos clientes. Cada validação gera um arquivo .txt disponível para download.</p>
+      </header>
+
+      <section class="panel">
+        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px;">
+          <label class="field" style="margin:0; flex:1; min-width:200px;">
+            <span>Filtrar por CNPJ</span>
+            <input id="testLogsSearchInput" type="text" placeholder="Deixe vazio para ver todos" style="width:100%;" />
+          </label>
+          <button class="btn secondary-btn" id="testLogsSearchBtn" type="button" style="margin-top:0;">Buscar</button>
+          <button class="btn secondary-btn" id="refreshTestLogsBtn" type="button" style="margin-top:0;">&#x21bb; Atualizar</button>
+        </div>
+        <div class="table-wrapper" style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>CNPJ</th>
+                <th>Produto</th>
+                <th>Teste</th>
+                <th>Resultado</th>
+                <th>Protocolo</th>
+                <th>Data/Hora</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody id="testLogsTableBody">
+              <tr><td colspan="8">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div><!-- /tab-test-logs -->
 
       </main><!-- /workspace-main -->
     </div><!-- /workspace-container -->
