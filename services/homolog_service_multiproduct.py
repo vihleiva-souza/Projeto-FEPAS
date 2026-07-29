@@ -297,7 +297,19 @@ def get_client_progress_payload_all_products(*, cnpj: str) -> Dict[str, Any]:
         pid = str(produto.get("id") or "")
         if not pid:
             continue
-        payload = get_client_progress_payload_for_product(cnpj=normalized_cnpj, produto_id=pid)
+        try:
+            payload = get_client_progress_payload_for_product(cnpj=normalized_cnpj, produto_id=pid)
+        except ValueError:
+            # O identificador do cliente (CNPJ) não é compatível com o formato
+            # exigido por este produto (ex.: Autorizador exige código de 4 dígitos).
+            # Retorna progresso vazio para este produto sem interromper os demais.
+            payload = {
+                "cnpj": normalized_cnpj,
+                "onboarding_required": True,
+                "assigned_tests": [],
+                "summary": {},
+                "tests": [],
+            }
         progress_by_product.append(
             {
                 "produto": {
@@ -389,7 +401,11 @@ def list_clients_payload_multiproduct() -> Dict[str, Any]:
                 "produto_id": produto_id_num,
                 "produto_nome": meta["produto_nome"],
                 "assigned_tests": assigned,
-                "onboarding_completed": bool(assigned),
+                "onboarding_completed": (
+                    int((summary or {}).get("testes_aprovados") or 0)
+                    >= int((summary or {}).get("total_testes_planejados") or 0)
+                    > 0
+                ),
                 "summary": summary,
             }
         )
