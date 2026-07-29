@@ -974,7 +974,19 @@ def validate_client_payload_with_product(
 
     # Gerar record_id simples
     record_id = f"{cnpj_norm}_{normalized_test_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    
+
+    # Gerar texto de evidência detalhado perna a perna (aprovadas e reprovadas)
+    _evidencia_txt: str = ""
+    try:
+        from services.homolog_service import _build_evidence_payload as _bep
+        if result.get("pernas"):
+            _ev = _bep(result, log_path.name)
+            _evidencia_txt = str(_ev.get("content") or "")
+        elif result.get("evidencia"):
+            _evidencia_txt = str((result["evidencia"] or {}).get("content") or "")
+    except Exception:
+        pass
+
     progress = _update_client_stats_for_product(cnpj_norm, produto_id, teste, is_approved)
 
     response: Dict[str, Any] = {
@@ -984,6 +996,7 @@ def validate_client_payload_with_product(
         "teste_id": normalized_test_id,
         "data_teste": test_date_iso,
         "progresso": progress,
+        "_evidencia_txt": _evidencia_txt,
     }
 
     if not is_approved:

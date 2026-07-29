@@ -368,31 +368,49 @@ def validate_client_with_product():
         _teste_id_log = str(result.get("teste_id") or "")
         _data_teste_log = str(result.get("data_teste") or "")
 
-        linhas = [
-            "============================================================",
-            "  REGISTRO DE VALIDAÇÃO DE HOMOLOGAÇÃO",
-            "============================================================",
-            f"Protocolo  : {_protocolo}",
-            f"Data/Hora  : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-            f"CNPJ       : {_cnpj_log}",
-            f"Produto    : {_produto_nome}",
-            f"Teste      : {_teste_id_log}",
-            f"Data Teste : {_data_teste_log}",
-            f"Resultado  : {_resultado}",
-            "------------------------------------------------------------",
-        ]
-        if _resultado != "APROVADO":
-            linhas.append(f"Perna negada : {result.get('perna_negada', '-')}")
-            linhas.append(f"Motivo       : {result.get('motivo_negacao', '-')}")
-            motivos = result.get("motivos_negacao") or []
-            if motivos:
-                linhas.append("Motivos detalhados:")
-                for m in motivos:
-                    linhas.append(f"  - {m}")
+        # Usar evidência detalhada perna a perna quando disponível
+        _evidencia_txt = str(result.pop("_evidencia_txt", "") or "")
+        if _evidencia_txt:
+            _cabecalho = "\n".join([
+                "============================================================",
+                "  REGISTRO DE VALIDAÇÃO DE HOMOLOGAÇÃO",
+                "============================================================",
+                f"Protocolo  : {_protocolo}",
+                f"Data/Hora  : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+                f"CNPJ       : {_cnpj_log}",
+                f"Produto    : {_produto_nome}",
+                f"Resultado  : {_resultado}",
+                "============================================================",
+                "",
+            ])
+            _log_content = _cabecalho + _evidencia_txt
         else:
-            linhas.append("Todos os critérios de homologação foram atendidos.")
-        linhas.append("============================================================")
-        _log_content = "\n".join(linhas)
+            # Fallback: resumo simples se não houver pernas
+            linhas = [
+                "============================================================",
+                "  REGISTRO DE VALIDAÇÃO DE HOMOLOGAÇÃO",
+                "============================================================",
+                f"Protocolo  : {_protocolo}",
+                f"Data/Hora  : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+                f"CNPJ       : {_cnpj_log}",
+                f"Produto    : {_produto_nome}",
+                f"Teste      : {_teste_id_log}",
+                f"Data Teste : {_data_teste_log}",
+                f"Resultado  : {_resultado}",
+                "------------------------------------------------------------",
+            ]
+            if _resultado != "APROVADO":
+                linhas.append(f"Perna negada : {result.get('perna_negada', '-')}")
+                linhas.append(f"Motivo       : {result.get('motivo_negacao', '-')}")
+                motivos = result.get("motivos_negacao") or []
+                if motivos:
+                    linhas.append("Motivos detalhados:")
+                    for m in motivos:
+                        linhas.append(f"  - {m}")
+            else:
+                linhas.append("Todos os critérios de homologação foram atendidos.")
+            linhas.append("============================================================")
+            _log_content = "\n".join(linhas)
 
         db_store.save_test_log(
             cnpj=_cnpj_log,
