@@ -64,6 +64,14 @@
             </div>
             <span class="nav-arrow">→</span>
           </button>
+          <button class="workspace-nav-item" data-tab="tab-roteiros" title="Roteiros dos Clientes">
+            <span class="nav-icon">📄</span>
+            <div class="nav-content">
+              <h3>Roteiros dos Clientes</h3>
+              <p>Submissões de roteiro</p>
+            </div>
+            <span class="nav-arrow">→</span>
+          </button>
         </nav>
       </aside>
 
@@ -487,6 +495,44 @@
         </div>
       </section>
     </div><!-- /tab-test-logs -->
+
+    <!-- ============================================================ -->
+    <!-- ABA 5: ROTEIROS DOS CLIENTES                                 -->
+    <!-- ============================================================ -->
+    <div id="tab-roteiros" class="admin-tab-panel hidden">
+      <header class="hero">
+        <p class="eyebrow">Painel Admin</p>
+        <h1>Roteiros dos Clientes</h1>
+        <p class="subtitle">Submissões de roteiro enviadas pelos clientes via validação automática.</p>
+      </header>
+      <section class="panel">
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:14px;">
+          <button class="btn secondary-btn" id="refreshRoteirosBtn" type="button">&#x21bb; Atualizar</button>
+        </div>
+        <div id="roteirosLoading" style="padding:20px; text-align:center; color:var(--text-muted);">Carregando roteiros...</div>
+        <div id="roteirosContent" style="display:none;">
+          <div class="table-wrapper" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Arquivo</th>
+                  <th>CNPJ / ID</th>
+                  <th>Produto</th>
+                  <th>Status</th>
+                  <th>Data/Hora</th>
+                  <th>Download</th>
+                </tr>
+              </thead>
+              <tbody id="roteirosTableBody">
+                <tr><td colspan="7">Nenhum roteiro encontrado.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="roteirosEmpty" style="display:none; padding:20px; text-align:center; color:var(--text-muted);">Nenhum roteiro enviado ainda.</div>
+      </section>
+    </div><!-- /tab-roteiros -->
 
       </main><!-- /workspace-main -->
     </div><!-- /workspace-container -->

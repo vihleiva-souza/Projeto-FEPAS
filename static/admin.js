@@ -31,6 +31,9 @@ navItems.forEach((item) => {
     if (item.dataset.tab === "tab-test-logs") {
       loadTestLogs();
     }
+    if (item.dataset.tab === "tab-roteiros") {
+      loadRoteiros();
+    }
   });
 });
 
@@ -686,6 +689,61 @@ if (refreshTestLogsBtn) {
     const q = (testLogsSearchInput ? testLogsSearchInput.value.trim() : "");
     loadTestLogs(q || undefined);
   });
+}
+
+// ---- Aba: Roteiros dos Clientes ----
+const roteirosTableBody = document.getElementById("roteirosTableBody");
+const roteirosLoading = document.getElementById("roteirosLoading");
+const roteirosContent = document.getElementById("roteirosContent");
+const roteirosEmpty = document.getElementById("roteirosEmpty");
+const refreshRoteirosBtn = document.getElementById("refreshRoteirosBtn");
+
+async function loadRoteiros() {
+  if (!roteirosTableBody) return;
+  if (roteirosLoading) roteirosLoading.style.display = "block";
+  if (roteirosContent) roteirosContent.style.display = "none";
+  if (roteirosEmpty) roteirosEmpty.style.display = "none";
+  try {
+    const resp = await fetch("/api/admin/roteiros");
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || "Erro ao carregar roteiros");
+    const subs = data.submissoes || [];
+    if (roteirosLoading) roteirosLoading.style.display = "none";
+    if (subs.length === 0) {
+      if (roteirosEmpty) roteirosEmpty.style.display = "block";
+      return;
+    }
+    roteirosTableBody.innerHTML = subs.map((s, idx) => {
+      const status = String(s.status || "").toUpperCase();
+      const statusClass = status === "APROVADO" ? "tag ok" : status === "REPROVADO" ? "tag na" : "tag";
+      const dt = String(s.created_at || "").replace("T", " ").substring(0, 19);
+      return `
+        <tr>
+          <td>${idx + 1}</td>
+          <td>${escapeAdm(s.roteiro_filename || "-")}</td>
+          <td>${escapeAdm(s.cnpj || "-")}</td>
+          <td>${escapeAdm(s.produto_id || "-")}</td>
+          <td><span class="${statusClass}">${escapeAdm(s.status || "-")}</span></td>
+          <td style="font-size:0.8rem;">${escapeAdm(dt)}</td>
+          <td>
+            <a href="/api/admin/roteiros/download/${escapeAdm(s.submissao_id)}"
+               download
+               class="btn secondary-btn"
+               style="padding:4px 10px; font-size:0.8rem;">&#x2B73; .docx</a>
+          </td>
+        </tr>`;
+    }).join("");
+    if (roteirosContent) roteirosContent.style.display = "block";
+  } catch (err) {
+    if (roteirosLoading) roteirosLoading.style.display = "none";
+    if (roteirosTableBody)
+      roteirosTableBody.innerHTML = `<tr><td colspan="7">${escapeAdm("Falha: " + err.message)}</td></tr>`;
+    if (roteirosContent) roteirosContent.style.display = "block";
+  }
+}
+
+if (refreshRoteirosBtn) {
+  refreshRoteirosBtn.addEventListener("click", loadRoteiros);
 }
 
 /**
