@@ -955,6 +955,7 @@ def validate_client_payload_with_product(
         raise ValueError(f"Teste {normalized_test_id} nao foi designado para este cliente.")
 
     # Executar validação
+    pid = _normalize_product_id(produto_id)
     log_path = _select_log_by_test_date(
         test_date_iso,
         produto_id,
