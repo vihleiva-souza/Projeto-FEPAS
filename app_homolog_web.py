@@ -208,6 +208,16 @@ def admin_upload_log():
     uploaded.save(str(dest_path))
     size_mb = dest_path.stat().st_size / 1024 / 1024
 
+    # Persistir no banco para sobreviver a restarts do Render
+    from services import db_store as _db
+    _db.save_audit_log(
+        produto_id=pid,
+        data_teste=data_teste,
+        codigo_autorizador=codigo_autorizador if pid == "02_AutorizadorCARDSE" else "",
+        log_filename=dest_path.name,
+        log_content=dest_path.read_bytes(),
+    )
+
     return jsonify({
         "success": True,
         "message": f"Log salvo: {pid} / {data_teste}",

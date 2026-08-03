@@ -73,6 +73,17 @@ def init_db() -> bool:
         log_content TEXT NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+
+    CREATE TABLE IF NOT EXISTS homolog_audit_logs (
+        id BIGSERIAL PRIMARY KEY,
+        produto_id TEXT NOT NULL,
+        data_teste TEXT NOT NULL,
+        codigo_autorizador TEXT NOT NULL DEFAULT '',
+        log_filename TEXT NOT NULL,
+        log_content BYTEA NOT NULL,
+        uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (produto_id, data_teste, codigo_autorizador)
+    );
     """
 
     try:
@@ -406,6 +417,75 @@ def get_test_log_content(log_id: int) -> Optional[tuple]:
         return None
 
 
+def save_audit_log(
+    *,
+    produto_id: str,
+    data_teste: str,
+    codigo_autorizador: str = "",
+    log_filename: str,
+    log_content: bytes,
+) -> bool:
+    """Persiste o arquivo de log de auditoria no banco para sobreviver a restarts."""
+    if not is_enabled():
+        return False
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO homolog_audit_logs
+                        (produto_id, data_teste, codigo_autorizador, log_filename, log_content)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (produto_id, data_teste, codigo_autorizador)
+                    DO UPDATE SET
+                        log_filename = EXCLUDED.log_filename,
+                        log_content  = EXCLUDED.log_content,
+                        uploaded_at  = NOW()
+                    """,
+                    (
+                        produto_id,
+                        data_teste,
+                        codigo_autorizador or "",
+                        log_filename,
+                        psycopg2.Binary(log_content),
+                    ),
+                )
+        return True
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao salvar audit log: {exc}")
+        return False
+
+
+def get_audit_log(
+    produto_id: str,
+    data_teste: str,
+    codigo_autorizador: str = "",
+) -> Optional[tuple]:
+    """Retorna (log_filename, log_content_bytes) ou None se não encontrado."""
+    if not is_enabled():
+        return None
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT log_filename, log_content
+                    FROM homolog_audit_logs
+                    WHERE produto_id = %s AND data_teste = %s AND codigo_autorizador = %s
+                    ORDER BY uploaded_at DESC
+                    LIMIT 1
+                    """,
+                    (produto_id, data_teste, codigo_autorizador or ""),
+                )
+                row = cur.fetchone()
+                if not row:
+                    return None
+                return (str(row[0]), bytes(row[1]))
+    except Exception as exc:  # pragma: no cover
+        print(f"[db_store] Falha ao recuperar audit log: {exc}")
+        return None
+
+
 def get_homolog_counts() -> Dict[str, int]:
     """Retorna contagem das tabelas de homologação."""
     counts = {
@@ -413,6 +493,7 @@ def get_homolog_counts() -> Dict[str, int]:
         "homolog_validation_runs": 0,
         "homolog_roteiro_submissions": 0,
         "homolog_test_logs": 0,
+        "homolog_audit_logs": 0,
     }
     if not is_enabled():
         return counts

@@ -309,12 +309,24 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None, codigo_auto
     candidates = strict_candidates or fallback_candidates
 
     if not candidates:
-        raise FileNotFoundError(
-            f"Nenhum log encontrado para a data {compact_date} no produto {pid}. "
-            f"Esperado: LOGS de TESTE/{pid}/" +
-            (f"{codigo_autorizador}/aud_{compact_date}.txt" if pid == "02_AutorizadorCARDSE" and codigo_autorizador
-             else f"aud_{compact_date}.txt")
-        )
+        # Tentar restaurar do banco (arquivo perdido após restart do Render)
+        from services import db_store as _db
+        cod_aut = str(codigo_autorizador or "").strip()
+        db_row = _db.get_audit_log(pid, compact_date, cod_aut)
+        if db_row:
+            log_filename, log_bytes = db_row
+            product_logs_dir.mkdir(parents=True, exist_ok=True)
+            restored_path = product_logs_dir / log_filename
+            restored_path.write_bytes(log_bytes)
+            print(f"[homolog_service] Log restaurado do banco: {restored_path}")
+            candidates = [restored_path]
+        else:
+            raise FileNotFoundError(
+                f"Nenhum log encontrado para a data {compact_date} no produto {pid}. "
+                f"Esperado: LOGS de TESTE/{pid}/" +
+                (f"{codigo_autorizador}/aud_{compact_date}.txt" if pid == "02_AutorizadorCARDSE" and codigo_autorizador
+                 else f"aud_{compact_date}.txt")
+            )
 
     candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
     return candidates[0]
