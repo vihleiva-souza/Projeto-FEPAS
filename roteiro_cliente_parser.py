@@ -55,13 +55,14 @@ def parsear_roteiro_docx(file_path: str) -> List[Dict[str, Any]]:
             if not rows or len(rows) < 3:  # Precisa ter pelo menos header + 1 dado
                 continue
             
-            # Procurar por header com "Seq."
+            # Procurar por header com "Seq." ou variações (e.g. "Sec.", "N°", "No.")
+            _SEQ_HEADERS = {"seq.", "sec.", "n°", "no.", "#"}
             header_row_idx = None
             for check_row_idx in range(min(3, len(rows))):
                 cells = rows[check_row_idx].findall('.//w:tc', ns)
                 if cells:
-                    first_cell_text = _extract_cell_text(cells[0], ns).strip()
-                    if first_cell_text == "Seq.":
+                    first_cell_text = _extract_cell_text(cells[0], ns).strip().lower()
+                    if first_cell_text in _SEQ_HEADERS or first_cell_text.startswith("seq") or first_cell_text.startswith("sec"):
                         header_row_idx = check_row_idx
                         break
             
@@ -70,9 +71,11 @@ def parsear_roteiro_docx(file_path: str) -> List[Dict[str, Any]]:
                 header_cells = rows[header_row_idx].findall('.//w:tc', ns)
                 col_evidencia_idx = None
                 
+                # Aceita nomes em português e espanhol para a coluna de evidências
+                _EVIDENCIA_KEYWORDS = ("evidência", "evidencia", "fecha", "hora", "nsu")
                 for col_idx, cell in enumerate(header_cells):
                     cell_text = _extract_cell_text(cell, ns).strip().lower()
-                    if "evidência" in cell_text or "evidencia" in cell_text:
+                    if any(kw in cell_text for kw in _EVIDENCIA_KEYWORDS):
                         col_evidencia_idx = col_idx
                         break
                 
@@ -138,10 +141,9 @@ def _parsear_evidencia(evidencia_text: str, teste_id: int = None) -> Dict[str, A
     if not evidencia_text.strip():
         return None
     
-    # Normalizar: adicionar quebra de linha antes de cada label conhecido
+    # Normalizar: adicionar quebra de linha antes de cada label conhecido (pt e es)
     normalized = evidencia_text
-    for label in ["Resultado:", "Data/Hora", "BIT 11:", "BIT 42:"]:
-        # Se a label não está no início de uma linha, adicionar quebra antes
+    for label in ["Resultado:", "Resultado ", "Data/Hora", "Fecha", "BIT 11:", "BIT 41:", "BIT 42:", "NSU:", "NSU "]:
         normalized = normalized.replace(label, f"\n{label}")
     
     resultado = None
@@ -159,26 +161,26 @@ def _parsear_evidencia(evidencia_text: str, teste_id: int = None) -> Dict[str, A
         if line.lower().startswith('resultado:'):
             resultado = line.split(':', 1)[1].strip() if ':' in line else None
         
-        # Data/Hora (várias variações)
-        elif 'data' in line.lower() and 'hora' in line.lower():
+        # Data/Hora (português e espanhol)
+        elif ('data' in line.lower() and 'hora' in line.lower()) or line.lower().startswith('fecha'):
             if ':' in line:
                 data_hora = line.split(':', 1)[1].strip()
             else:
                 data_hora = line
         
-        # BIT 11
-        elif 'bit' in line.lower() and '11' in line:
+        # BIT 11 ou NSU (Número Único de Sequência)
+        elif ('bit' in line.lower() and '11' in line) or line.lower().startswith('nsu'):
             if ':' in line:
                 bit11 = line.split(':', 1)[1].strip()
             else:
-                bit11 = line.replace('BIT 11', '').replace('BIT11', '').strip()
+                bit11 = line.replace('BIT 11', '').replace('BIT11', '').replace('NSU', '').strip()
         
-        # BIT 42
-        elif 'bit' in line.lower() and '42' in line:
+        # BIT 41 (QR) ou BIT 42 (Autorizador) — ambos mapeiam para de41 no validador
+        elif 'bit' in line.lower() and ('41' in line or '42' in line):
             if ':' in line:
                 bit42 = line.split(':', 1)[1].strip()
             else:
-                bit42 = line.replace('BIT 42', '').replace('BIT42', '').strip()
+                bit42 = line.replace('BIT 42', '').replace('BIT42', '').replace('BIT 41', '').replace('BIT41', '').strip()
     
     # Validar: precisa de bit11 e bit42 não vazios
     if not (bit11 and bit11.strip()) or not (bit42 and bit42.strip()):
