@@ -4,6 +4,7 @@ Permite validação em lote de múltiplos testes contra um log.
 """
 
 import json
+import re
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
@@ -16,6 +17,24 @@ from services.homolog_service_multiproduct import validate_log_payload_with_prod
 def _is_autorizador_product(produto_id: str) -> bool:
     pid = str(produto_id or "").strip().upper()
     return pid in {"02", "2", "02_AUTORIZADORCARDSE"}
+
+
+def _date_from_log_name(log_name: str) -> str:
+    """Extrai YYYYMMDD do nome do log (ex: aud_20260803.txt → '20260803')."""
+    m = re.search(r'(\d{8})', str(log_name or ""))
+    return m.group(1) if m else ""
+
+
+def _date_from_test(data_hora: str) -> str:
+    """Converte DD/MM/YYYY (ou DD/MM/YY) do roteiro para YYYYMMDD."""
+    m = re.search(r'(\d{2})/(\d{2})/(\d{4})', str(data_hora or ""))
+    if m:
+        return f"{m.group(3)}{m.group(2)}{m.group(1)}"
+    # Fallback: YYYY-MM-DD
+    m2 = re.search(r'(\d{4})-(\d{2})-(\d{2})', str(data_hora or ""))
+    if m2:
+        return f"{m2.group(1)}{m2.group(2)}{m2.group(3)}"
+    return ""
 
 
 def validar_roteiro_batch(
@@ -93,7 +112,9 @@ def validar_roteiro_batch(
     if testes_selecionados:
         print(f"   Testes selecionados para homologar: {testes_selecionados}")
     print("-" * 80)
-    
+
+    log_date = _date_from_log_name(log_name)  # ex: "20260803"
+
     for teste in testes:
         teste_id = teste.get("teste_id")
         bit11 = teste.get("bit11", "").strip()
@@ -105,6 +126,16 @@ def validar_roteiro_batch(
             testes_ignorados.append({
                 "teste_id": teste_id,
                 "motivo": "Não estava na seleção de testes a homologar"
+            })
+            continue
+
+        # Filtrar por data: ignorar testes cuja data não corresponde ao log
+        test_date = _date_from_test(teste.get("data_hora", ""))
+        if log_date and test_date and log_date != test_date:
+            print(f"\n⏭️  Teste {teste_id}: DATA {test_date} != LOG {log_date} - Pulando")
+            testes_ignorados.append({
+                "teste_id": teste_id,
+                "motivo": f"Data do teste ({test_date[6:]}/{test_date[4:6]}/{test_date[:4]}) não corresponde à data do log ({log_date[6:]}/{log_date[4:6]}/{log_date[:4]})"
             })
             continue
         
