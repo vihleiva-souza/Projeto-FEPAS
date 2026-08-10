@@ -152,7 +152,8 @@ def validar_roteiro_batch(
                 print(f"   ✅ {status}")
             else:
                 reprovados += 1
-                motivo = validacao.get("resumo", validacao.get("motivos_status_geral", ["Falha na validação"])[0] if isinstance(validacao.get("motivos_status_geral", []), list) else "Falha")
+                _motivos_list = validacao.get("motivos_status_geral", [])
+                motivo = _motivos_list[0] if isinstance(_motivos_list, list) and _motivos_list else validacao.get("motivo_negacao", "Falha na valida\u00e7\u00e3o")
                 print(f"   ❌ {status}")
                 if motivo:
                     print(f"      Motivo: {str(motivo)[:80]}")
@@ -293,7 +294,8 @@ def validar_roteiro_batch(
                 print(f"   ✅ {status}")
             else:
                 reprovados += 1
-                motivo = validacao.get("resumo", validacao.get("motivos_status_geral", ["Falha na validação"])[0] if isinstance(validacao.get("motivos_status_geral", []), list) else "Falha")
+                _ml = validacao.get("motivos_status_geral", [])
+                motivo = _ml[0] if isinstance(_ml, list) and _ml else validacao.get("motivo_negacao", "Falha na validação")
                 print(f"   ❌ {status}")
                 if motivo:
                     print(f"      Motivo: {str(motivo)[:80]}")
@@ -301,7 +303,12 @@ def validar_roteiro_batch(
             # Montar resultado individual
             pernas = validacao.get("pernas", [])
             cadeia = ", ".join(leg.get("mti", "?") for leg in pernas if "mti" in leg)
-            
+            _motivos_l2 = validacao.get("motivos_status_geral", [])
+            _motivo_txt2 = (
+                _motivos_l2[0] if isinstance(_motivos_l2, list) and _motivos_l2
+                else validacao.get("motivo_negacao", "Sem detalhes")
+            )
+            _resumo2 = validacao.get("resumo", {})
             resultado = {
                 "teste_id": teste_id,
                 "status": status,
@@ -309,10 +316,10 @@ def validar_roteiro_batch(
                 "bit42": bit42,
                 "resultado_esperado": teste.get("resultado", ""),
                 "data_hora": teste.get("data_hora", ""),
-                "motivo": validacao.get("resumo", validacao.get("motivos_status_geral", ["Sem detalhes"])[0] if isinstance(validacao.get("motivos_status_geral", []), list) else "Sem detalhes"),
+                "motivo": str(_motivo_txt2) if _motivo_txt2 else "Sem detalhes",
                 "cadeia": cadeia if cadeia else "Nenhuma",
-                "pernas_totais": validacao.get("resumo", {}).get("total_pernas", 0) if isinstance(validacao.get("resumo"), dict) else 0,
-                "pernas_aprovadas": validacao.get("resumo", {}).get("pernas_aprovadas", 0) if isinstance(validacao.get("resumo"), dict) else 0,
+                "pernas_totais": _resumo2.get("total_pernas", 0) if isinstance(_resumo2, dict) else 0,
+                "pernas_aprovadas": _resumo2.get("pernas_aprovadas", 0) if isinstance(_resumo2, dict) else 0,
                 "validacao_resposta": validacao,
             }
             resultados.append(resultado)
