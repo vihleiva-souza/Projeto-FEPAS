@@ -196,6 +196,14 @@ def validar_roteiro_batch(
             _ml = validacao.get("motivos_status_geral", [])
             _motivo = _ml[0] if isinstance(_ml, list) and _ml else validacao.get("motivo_negacao", "Sem detalhes")
             _resumo = validacao.get("resumo", {})
+            pernas_negadas = [
+                {
+                    "mti": leg.get("mti", "?"),
+                    "motivo": str(leg.get("motivo") or ""),
+                }
+                for leg in pernas
+                if leg.get("aprovado") is False
+            ]
             resultado = {
                 "teste_id": teste_id,
                 "status": status,
@@ -207,9 +215,39 @@ def validar_roteiro_batch(
                 "cadeia": cadeia if cadeia else "Nenhuma",
                 "pernas_totais": _resumo.get("total_pernas", 0) if isinstance(_resumo, dict) else 0,
                 "pernas_aprovadas": _resumo.get("pernas_aprovadas", 0) if isinstance(_resumo, dict) else 0,
-                "validacao_resposta": validacao,
+                "pernas_negadas_detalhes": pernas_negadas,
             }
             resultados.append(resultado)
+
+            # Salvar log de validação individual no banco
+            try:
+                from services import db_store as _db
+                if _db.is_enabled():
+                    _log_lines = [
+                        "VALIDAÇÃO EM BATCH — REGISTRO INDIVIDUAL",
+                        "=" * 60,
+                        f"Produto : {produto_id}",
+                        f"CNPJ    : {cnpj}",
+                        f"Teste   : {teste_id}",
+                        f"BIT 11  : {bit11}",
+                        f"BIT 41  : {bit42}",
+                        f"Log     : {log_name}",
+                        f"Status  : {status}",
+                        f"Motivo  : {str(_motivo) if _motivo else '-'}",
+                        "-" * 60,
+                    ]
+                    for p in pernas_negadas:
+                        _log_lines.append(f"  Perna {p['mti']} REPROVADA: {p['motivo']}")
+                    _db.save_test_log(
+                        cnpj=cnpj,
+                        produto_id=produto_id,
+                        teste_id=str(teste_id),
+                        protocolo=submissao_id,
+                        status=status,
+                        log_content="\n".join(_log_lines),
+                    )
+            except Exception:
+                pass  # log não deve interromper validação
         
         except FileNotFoundError as e:
             print(f"   ⚠️  Log não encontrado: {e}")

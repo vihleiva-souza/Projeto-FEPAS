@@ -968,6 +968,13 @@ function renderBatchValidationResult(data) {
           if (teste.pernas_totais) {
             resultText += `    Pernas: ${teste.pernas_aprovadas}/${teste.pernas_totais} aprovadas\n`;
           }
+
+          if (Array.isArray(teste.pernas_negadas_detalhes) && teste.pernas_negadas_detalhes.length > 0) {
+            resultText += `    Pernas reprovadas:\n`;
+            teste.pernas_negadas_detalhes.forEach((p) => {
+              resultText += `      • MTI ${p.mti}: ${p.motivo || "sem detalhe"}\n`;
+            });
+          }
         });
         resultText += `\n`;
       }
