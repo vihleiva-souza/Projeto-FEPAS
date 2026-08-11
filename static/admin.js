@@ -594,14 +594,15 @@ function loadProductsForBatch() {
     .then(res => res.json())
     .then(data => {
       productSelect.innerHTML = '<option value="">Selecione um produto</option>';
-      if (Array.isArray(data)) {
-        data.forEach(prod => {
+      const produtos = Array.isArray(data)
+        ? data
+        : (Array.isArray(data.produtos) ? data.produtos : []);
+      produtos.forEach(prod => {
           const opt = document.createElement("option");
           opt.value = prod.id;
           opt.textContent = prod.nome;
           productSelect.appendChild(opt);
         });
-      }
     })
     .catch(err => console.error("Erro ao carregar produtos:", err));
 }
