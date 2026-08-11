@@ -14,6 +14,22 @@ from xml.etree import ElementTree as ET
 from typing import List, Dict, Any
 
 
+def _normalize_bit11(value: str) -> str:
+    """Normaliza BIT 11 mantendo apenas dígitos."""
+    return re.sub(r"\D", "", str(value or ""))
+
+
+def _normalize_bit41_42(value: str) -> str:
+    """Normaliza BIT 41/42 removendo separadores e mantendo alfanumérico."""
+    return re.sub(r"[^A-Za-z0-9]", "", str(value or ""))
+
+
+def _extract_value_from_line(line: str, label_regex: str) -> str:
+    """Extrai o valor após um rótulo aceitando ':', '-', '=' ou espaço."""
+    m = re.search(label_regex + r"\s*(?:[:=\-]|\s)\s*(.+)$", str(line or ""), flags=re.IGNORECASE)
+    return m.group(1).strip() if m else ""
+
+
 def parsear_roteiro_docx(file_path: str) -> List[Dict[str, Any]]:
     """
     Extrai testes do arquivo Word do cliente.
@@ -143,7 +159,12 @@ def _parsear_evidencia(evidencia_text: str, teste_id: int = None) -> Dict[str, A
     
     # Normalizar: adicionar quebra de linha antes de cada label conhecido (pt e es)
     normalized = evidencia_text
-    for label in ["Resultado:", "Resultado ", "Data/Hora", "Fecha", "BIT 11:", "BIT 41:", "BIT 42:", "NSU:", "NSU "]:
+    for label in [
+        "Resultado:", "Resultado ",
+        "Data/Hora", "Data/Hora da transação", "Data Hora", "Fecha",
+        "BIT 11:", "BIT11:", "BIT 41:", "BIT41:", "BIT 42:", "BIT42:",
+        "NSU:", "NSU "
+    ]:
         normalized = normalized.replace(label, f"\n{label}")
     
     resultado = None
@@ -158,29 +179,30 @@ def _parsear_evidencia(evidencia_text: str, teste_id: int = None) -> Dict[str, A
         line = line.strip()
         
         # Resultado
-        if line.lower().startswith('resultado:'):
-            resultado = line.split(':', 1)[1].strip() if ':' in line else None
+        if line.lower().startswith('resultado'):
+            extracted = _extract_value_from_line(line, r"resultado")
+            resultado = extracted if extracted else resultado
         
         # Data/Hora (português e espanhol)
         elif ('data' in line.lower() and 'hora' in line.lower()) or line.lower().startswith('fecha'):
-            if ':' in line:
-                data_hora = line.split(':', 1)[1].strip()
-            else:
-                data_hora = line
+            extracted = _extract_value_from_line(line, r"(?:data\s*/?\s*hora(?:\s+da\s+transa[cç][aã]o)?|fecha)")
+            data_hora = extracted if extracted else line
         
         # BIT 11 ou NSU (Número Único de Sequência)
         elif ('bit' in line.lower() and '11' in line) or line.lower().startswith('nsu'):
-            if ':' in line:
-                bit11 = line.split(':', 1)[1].strip()
-            else:
-                bit11 = line.replace('BIT 11', '').replace('BIT11', '').replace('NSU', '').strip()
+            extracted = _extract_value_from_line(line, r"(?:bit\s*11|nsu)")
+            candidate = extracted if extracted else line.replace('BIT 11', '').replace('BIT11', '').replace('NSU', '').strip()
+            bit11 = _normalize_bit11(candidate)
         
         # BIT 41 (QR) ou BIT 42 (Autorizador) — ambos mapeiam para de41 no validador
         elif 'bit' in line.lower() and ('41' in line or '42' in line):
-            if ':' in line:
-                bit42 = line.split(':', 1)[1].strip()
-            else:
-                bit42 = line.replace('BIT 42', '').replace('BIT42', '').replace('BIT 41', '').replace('BIT41', '').strip()
+            extracted = _extract_value_from_line(line, r"bit\s*(?:41|42)")
+            candidate = (
+                extracted
+                if extracted
+                else line.replace('BIT 42', '').replace('BIT42', '').replace('BIT 41', '').replace('BIT41', '').strip()
+            )
+            bit42 = _normalize_bit41_42(candidate)
     
     # Validar: precisa de bit11 e bit42 não vazios
     if not (bit11 and bit11.strip()) or not (bit42 and bit42.strip()):
@@ -190,8 +212,8 @@ def _parsear_evidencia(evidencia_text: str, teste_id: int = None) -> Dict[str, A
         "teste_id": teste_id,
         "resultado": (resultado or "").strip(),
         "data_hora": (data_hora or "").strip(),
-        "bit11": bit11.strip(),
-        "bit42": bit42.strip(),
+        "bit11": _normalize_bit11(bit11).strip(),
+        "bit42": _normalize_bit41_42(bit42).strip(),
     }
 
 

@@ -26,14 +26,31 @@ def _date_from_log_name(log_name: str) -> str:
 
 
 def _date_from_test(data_hora: str) -> str:
-    """Converte DD/MM/YYYY (ou DD/MM/YY) do roteiro para YYYYMMDD."""
-    m = re.search(r'(\d{2})/(\d{2})/(\d{4})', str(data_hora or ""))
+    """Converte datas do roteiro para YYYYMMDD com separadores flexíveis."""
+    raw = str(data_hora or "")
+
+    # DD/MM/YY, DD-MM-YY, DD.MM.YY
+    m0 = re.search(r'(\d{2})[\/\-.](\d{2})[\/\-.](\d{2})', raw)
+    if m0:
+        yy = int(m0.group(3))
+        yyyy = 2000 + yy if yy <= 69 else 1900 + yy
+        return f"{yyyy:04d}{m0.group(2)}{m0.group(1)}"
+
+    # DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    m = re.search(r'(\d{2})[\/\-.](\d{2})[\/\-.](\d{4})', raw)
     if m:
         return f"{m.group(3)}{m.group(2)}{m.group(1)}"
-    # Fallback: YYYY-MM-DD
-    m2 = re.search(r'(\d{4})-(\d{2})-(\d{2})', str(data_hora or ""))
+
+    # YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD
+    m2 = re.search(r'(\d{4})[\/\-.](\d{2})[\/\-.](\d{2})', raw)
     if m2:
         return f"{m2.group(1)}{m2.group(2)}{m2.group(3)}"
+
+    # Fallback compacto: YYYYMMDD
+    m3 = re.search(r'\b(\d{8})\b', raw)
+    if m3:
+        return m3.group(1)
+
     return ""
 
 
