@@ -1,14 +1,54 @@
-// =====================================================================
-// product-selection.js – Seleção de Produto no Portal do Cliente
-// =====================================================================
-
 const PRODUCT_STORAGE_KEY = "homolog_selected_product";
 let selectedProductId = localStorage.getItem(PRODUCT_STORAGE_KEY) || "";
+let selectedValidationMode = "";
 
 // Global error handler
 window.addEventListener("error", function(e) {
   console.error("[GLOBAL ERROR]", e.error, e.message);
 });
+
+function highlightProduct(productId) {
+  ["01_QRCARDSE", "02_AutorizadorCARDSE"].forEach((id) => {
+    const card = document.getElementById("card_" + id);
+    if (card) {
+      card.style.borderColor = id === productId ? "#0066cc" : "#ddd";
+      card.style.background = id === productId ? "#f0f7ff" : "";
+    }
+  });
+  selectedProductId = productId;
+  localStorage.setItem(PRODUCT_STORAGE_KEY, selectedProductId);
+  updateAccessFormForProduct(selectedProductId);
+  checkProsseguirEnabled();
+}
+
+function highlightMode(mode) {
+  ["manual", "batch"].forEach((m) => {
+    const card = document.getElementById("mode_" + m);
+    if (card) {
+      const color = m === "manual" ? "#0066cc" : "#00a84f";
+      card.style.borderColor = m === mode ? color : "#ddd";
+      card.style.background = m === mode ? (m === "manual" ? "#f0f7ff" : "#f0fff6") : "";
+    }
+  });
+  selectedValidationMode = mode;
+  checkProsseguirEnabled();
+}
+
+function checkProsseguirEnabled() {
+  const btn = document.getElementById("btnProsseguirSetup");
+  if (btn) btn.disabled = !(selectedProductId && selectedValidationMode);
+}
+
+function proceedWithProductAndMode() {
+  if (!selectedProductId || !selectedValidationMode) return;
+  const productPanel = document.getElementById("clientProductSelectionPanel");
+  if (productPanel) productPanel.classList.add("hidden");
+  const accessPanel = document.getElementById("clientAccessPanel");
+  if (accessPanel) accessPanel.classList.remove("hidden");
+  const input = document.getElementById("cnpjInput");
+  if (input) input.focus();
+}
+
 
 /**
  * Seleciona um produto e mostra o painel de identificação
@@ -306,11 +346,8 @@ function proceedWithTestSelection() {
     testSelectionPanel.classList.add("hidden");
   }
   
-  // Mostra o painel de seleção de modo
-  const modePanel = document.getElementById("clientModeSelectionPanel");
-  if (modePanel) {
-    modePanel.classList.remove("hidden");
-  }
+  // Vai direto para validação manual (sem tela intermediária de modo)
+  selectValidationMode('manual');
 }
 
 /**

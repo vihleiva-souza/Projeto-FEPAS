@@ -658,22 +658,25 @@ accessForm.addEventListener("submit", async (ev) => {
       !Array.isArray(data.assigned_tests) || data.assigned_tests.length === 0;
 
     if (isFirstAccess) {
-      // Primeiro acesso: carrega testes disponíveis e mostra seleção
-      await loadAvailableTests(pid);
+      // Primeiro acesso: carrega todos os testes e auto-seleciona para ir direto ao modo
+      const testsResp = await fetch(`/api/produtos/${encodeURIComponent(pid)}/tests`);
+      const testsData = await testsResp.json();
+      const allTests = (testsData.tests || testsData.testes || []).map((t) => parseInt(t.id, 10)).filter((id) => !isNaN(id));
+      localStorage.setItem("selected_tests_" + pid, JSON.stringify(allTests));
+      assignedTestIds = allTests.map((id) => String(id).padStart(2, "0"));
     } else {
-      // Cliente retornando: vai direto para seleção de modo
-      // Restaura assignedTestIds a partir dos testes designados
+      // Cliente retornando: restaura testes designados
       assignedTestIds = (data.assigned_tests || []).map((item) =>
         String(item.id || item).padStart(2, "0")
       );
-      // Salva os testes no localStorage para que getSelectedTests() funcione
       const testsForStorage = (data.assigned_tests || []).map((item) =>
         parseInt(item.id || item, 10)
       ).filter((id) => !isNaN(id));
       localStorage.setItem("selected_tests_" + pid, JSON.stringify(testsForStorage));
-      const modePanel = document.getElementById("clientModeSelectionPanel");
-      if (modePanel) modePanel.classList.remove("hidden");
     }
+    // Sempre vai direto para o modo já escolhido na tela inicial
+    const chosenMode = (typeof selectedValidationMode !== "undefined" && selectedValidationMode) || "manual";
+    selectValidationMode(chosenMode);
   } catch (err) {
     clearWorkspaceCnpj();
     const msg = err instanceof Error && err.message

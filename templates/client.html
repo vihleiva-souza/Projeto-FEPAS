@@ -71,33 +71,52 @@
 
     <!-- SEÇÃO 1: SELEÇÃO DE PRODUTO - PRIMEIRO PASSO -->
     <section class="panel form-panel client-section" id="clientProductSelectionPanel">
-      <div class="product-selection-container" style="text-align: center; padding: 40px 20px;">
-        <h2 style="margin-bottom: 30px; font-size: 1.4rem;">Qual tipo de homologação você deseja realizar?</h2>
-        
-        <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
-          <!-- QR Pago Card -->
-          <div class="product-card" style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
-               data-product-id="01_QRCARDSE">
-            <div style="font-size: 3rem; margin-bottom: 15px;">🟢</div>
-            <h3 style="margin: 15px 0; font-size: 1.2rem;">QR Pago</h3>
-            <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
-              Homologação de Transação QR com validação de TEF (TEF → FEPAS)
-            </p>
-            <button type="button" class="btn" style="width: 100%; margin-top: 15px;" onclick="selectProduct('01_QRCARDSE', event)">Selecionar</button>
-          </div>
+      <div class="product-selection-container" style="padding: 40px 20px; max-width: 700px; margin: 0 auto;">
+        <h2 style="margin-bottom: 8px; font-size: 1.4rem; text-align: center;">Configurar Homologação</h2>
+        <p style="color: #666; text-align: center; margin-bottom: 30px;">Selecione o produto e o modo de validação</p>
 
-          <!-- Autorizador Card -->
-          <div class="product-card" style="border: 2px solid #ddd; border-radius: 12px; padding: 30px; cursor: pointer; transition: all 0.3s;" 
-               data-product-id="02_AutorizadorCARDSE">
-            <div style="font-size: 3rem; margin-bottom: 15px;">🔵</div>
-            <h3 style="margin: 15px 0; font-size: 1.2rem;">Autorizador CARDSE</h3>
-            <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
-              Homologação de autorizador com validação de processadora (PROCESSADORA → FEPAS)
-            </p>
-            <button type="button" class="btn" style="width: 100%; margin-top: 15px; background: #00a84f;" onclick="selectProduct('02_AutorizadorCARDSE', event)">Selecionar</button>
+        <!-- Produto -->
+        <div style="margin-bottom: 28px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; color: #333;">1. Produto</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div id="card_01_QRCARDSE" onclick="highlightProduct('01_QRCARDSE')"
+                 style="border: 2px solid #ddd; border-radius: 10px; padding: 18px; cursor: pointer; transition: all 0.2s; text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 8px;">🟢</div>
+              <strong style="font-size: 1rem;">QR Pago</strong>
+              <p style="color: #888; font-size: 0.82rem; margin: 6px 0 0;">TEF → FEPAS</p>
+            </div>
+            <div id="card_02_AutorizadorCARDSE" onclick="highlightProduct('02_AutorizadorCARDSE')"
+                 style="border: 2px solid #ddd; border-radius: 10px; padding: 18px; cursor: pointer; transition: all 0.2s; text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 8px;">🔵</div>
+              <strong style="font-size: 1rem;">Autorizador CARDSE</strong>
+              <p style="color: #888; font-size: 0.82rem; margin: 6px 0 0;">PROCESSADORA → FEPAS</p>
+            </div>
           </div>
         </div>
 
+        <!-- Modo -->
+        <div style="margin-bottom: 32px;">
+          <label style="display: block; font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; color: #333;">2. Modo de Validação</label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div id="mode_manual" onclick="highlightMode('manual')"
+                 style="border: 2px solid #ddd; border-radius: 10px; padding: 18px; cursor: pointer; transition: all 0.2s; text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 8px;">🔍</div>
+              <strong style="font-size: 1rem;">Manual</strong>
+              <p style="color: #888; font-size: 0.82rem; margin: 6px 0 0;">Valida teste a teste</p>
+            </div>
+            <div id="mode_batch" onclick="highlightMode('batch')"
+                 style="border: 2px solid #ddd; border-radius: 10px; padding: 18px; cursor: pointer; transition: all 0.2s; text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 8px;">📋</div>
+              <strong style="font-size: 1rem;">Automático (Batch)</strong>
+              <p style="color: #888; font-size: 0.82rem; margin: 6px 0 0;">Envia roteiro Word</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn" id="btnProsseguirSetup" onclick="proceedWithProductAndMode()"
+                style="width: 100%; padding: 14px; font-size: 1rem;" disabled>
+          Prosseguir →
+        </button>
       </div>
     </section>
 
