@@ -284,18 +284,33 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None, codigo_auto
     _, compact_date = _parse_test_date(test_date)
     pid = _normalize_product_id(produto_id or "01")
 
-    # Para Autorizador: buscar dentro da subpasta pelo codigo do autorizador
-    if pid == "02_AutorizadorCARDSE" and str(codigo_autorizador or "").strip():
-        product_logs_dir = LOGS_DIR / pid / str(codigo_autorizador).strip()
+    cod_aut = str(codigo_autorizador or "").strip()
+
+    # Para Autorizador, suportar layouts:
+    # 1) LOGS de TESTE/02_AutorizadorCARDSE/<codigo>/aud_YYYYMMDD.txt
+    # 2) LOGS de TESTE/02_AutorizadorCARDSE/aud_YYYYMMDD.txt
+    # 3) LOGS de TESTE/02_AutorizadorCARDSE/<qualquer_subpasta>/aud_YYYYMMDD.txt
+    search_dirs: List[Path] = []
+    if pid == "02_AutorizadorCARDSE":
+        product_root = LOGS_DIR / pid
+        if cod_aut:
+            search_dirs.append(product_root / cod_aut)
+        search_dirs.append(product_root)
+        if product_root.is_dir():
+            for child in product_root.iterdir():
+                if child.is_dir() and child not in search_dirs:
+                    search_dirs.append(child)
     else:
-        product_logs_dir = LOGS_DIR / pid
+        search_dirs.append(LOGS_DIR / pid)
     
     strict_candidates: List[Path] = []
     fallback_candidates: List[Path] = []
     prefix = f"aud_{compact_date}"
 
-    # Se o diretório existe, procura por logs lá
-    if product_logs_dir.is_dir():
+    # Procura por logs em todos os diretórios candidatos.
+    for product_logs_dir in search_dirs:
+        if not product_logs_dir.is_dir():
+            continue
         for path in product_logs_dir.iterdir():
             if not path.is_file() or path.suffix.lower() not in ALLOWED_EXTENSIONS:
                 continue
@@ -311,21 +326,28 @@ def _select_log_by_test_date(test_date: str, produto_id: str = None, codigo_auto
     if not candidates:
         # Tentar restaurar do banco (arquivo perdido após restart do Render)
         from services import db_store as _db
-        cod_aut = str(codigo_autorizador or "").strip()
         db_row = _db.get_audit_log(pid, compact_date, cod_aut)
+        if not db_row and pid == "02_AutorizadorCARDSE":
+            # Alguns registros antigos foram persistidos sem código autorizador.
+            db_row = _db.get_audit_log(pid, compact_date, "")
         if db_row:
             log_filename, log_bytes = db_row
-            product_logs_dir.mkdir(parents=True, exist_ok=True)
-            restored_path = product_logs_dir / log_filename
+            target_dir = search_dirs[0] if search_dirs else (LOGS_DIR / pid)
+            target_dir.mkdir(parents=True, exist_ok=True)
+            restored_path = target_dir / log_filename
             restored_path.write_bytes(log_bytes)
             print(f"[homolog_service] Log restaurado do banco: {restored_path}")
             candidates = [restored_path]
         else:
+            expected_layouts: List[str] = []
+            if pid == "02_AutorizadorCARDSE" and cod_aut:
+                expected_layouts.append(f"LOGS de TESTE/{pid}/{cod_aut}/aud_{compact_date}.txt")
+            expected_layouts.append(f"LOGS de TESTE/{pid}/aud_{compact_date}.txt")
+            if pid == "02_AutorizadorCARDSE":
+                expected_layouts.append(f"LOGS de TESTE/{pid}/*/aud_{compact_date}.txt")
             raise FileNotFoundError(
                 f"Nenhum log encontrado para a data {compact_date} no produto {pid}. "
-                f"Esperado: LOGS de TESTE/{pid}/" +
-                (f"{codigo_autorizador}/aud_{compact_date}.txt" if pid == "02_AutorizadorCARDSE" and codigo_autorizador
-                 else f"aud_{compact_date}.txt")
+                f"Procurado em: {' | '.join(expected_layouts)}"
             )
 
     candidates.sort(key=lambda p: p.stat().st_mtime_ns, reverse=True)
@@ -658,23 +680,52 @@ def _safe_log_name(log_name: str) -> str:
     return Path(str(log_name or "").strip()).name
 
 
-def _resolve_log_path(log_name: str, produto_id: str = None) -> Path:
+def _resolve_log_path(log_name: str, produto_id: str = None, codigo_autorizador: str = "") -> Path:
     safe_name = _safe_log_name(log_name)
     if not safe_name:
         raise ValueError("Selecione um arquivo de log.")
 
     pid = _normalize_product_id(produto_id or "01")
-    product_logs_dir = LOGS_DIR / pid
-    product_logs_dir.mkdir(parents=True, exist_ok=True)
-    
-    path = (product_logs_dir / safe_name).resolve()
-    if path.parent != product_logs_dir:
+
+    search_dirs: List[Path] = []
+    cod_aut = str(codigo_autorizador or "").strip()
+
+    if pid == "02_AutorizadorCARDSE":
+        product_root = LOGS_DIR / pid
+        if cod_aut:
+            search_dirs.append(product_root / cod_aut)
+        search_dirs.append(product_root)
+        if product_root.is_dir():
+            for child in product_root.iterdir():
+                if child.is_dir() and child not in search_dirs:
+                    search_dirs.append(child)
+    else:
+        search_dirs.append(LOGS_DIR / pid)
+
+    for d in search_dirs:
+        d.mkdir(parents=True, exist_ok=True)
+
+    # Segurança: só aceita nome de arquivo simples, sem path traversal.
+    if Path(safe_name).name != safe_name:
         raise ValueError("Nome de arquivo inválido.")
-    if path.suffix.lower() not in ALLOWED_EXTENSIONS:
+
+    if Path(safe_name).suffix.lower() not in ALLOWED_EXTENSIONS:
         raise ValueError("Extensão de log inválida. Use .txt ou .log.")
-    if not path.is_file():
-        raise FileNotFoundError(f"Arquivo não encontrado: {safe_name} em LOGS de TESTE/{pid}/")
-    return path
+
+    for d in search_dirs:
+        candidate = (d / safe_name).resolve()
+        if candidate.parent != d.resolve():
+            continue
+        if candidate.is_file():
+            return candidate
+
+    expected_layouts: List[str] = []
+    if pid == "02_AutorizadorCARDSE" and cod_aut:
+        expected_layouts.append(f"LOGS de TESTE/{pid}/{cod_aut}/{safe_name}")
+    expected_layouts.append(f"LOGS de TESTE/{pid}/{safe_name}")
+    if pid == "02_AutorizadorCARDSE":
+        expected_layouts.append(f"LOGS de TESTE/{pid}/*/{safe_name}")
+    raise FileNotFoundError(f"Arquivo não encontrado: {safe_name}. Procurado em: {' | '.join(expected_layouts)}")
 
 
 def _read_log_text(path: Path) -> str:

@@ -55,6 +55,7 @@ def normalize_produto_id(produto_id: str) -> str:
     # Padrão
     return "01_QRCARDSE"
 
+
 app = Flask(
     __name__,
     template_folder=str(BASE_DIR / "templates"),
@@ -329,13 +330,26 @@ def validate_log_with_product():
     try:
         produto_id = normalize_produto_id(request.form.get("produto_id") or "01")
         _de_filtro = str(request.form.get("de42" if produto_id == "02_AutorizadorCARDSE" else "de41") or "").strip()
+        cliente_id = "LOCAL"
+        if produto_id == "02_AutorizadorCARDSE":
+            cliente_id = str(
+                request.form.get("codigo_autorizador")
+                or request.form.get("identificador_autorizador")
+                or request.form.get("cnpj")
+                or ""
+            ).strip()
+            if not cliente_id:
+                return jsonify({"error": "Para produto Autorizador, informe o identificador do autorizador (4 dígitos)."}), 400
+            if len(cliente_id) != 4 or not cliente_id.isdigit():
+                return jsonify({"error": "Identificador do autorizador deve ter exatamente 4 dígitos numéricos."}), 400
+
         result = validate_log_payload_with_product(
             produto_id=produto_id,
             teste_id=str(request.form.get("teste_id") or "").strip(),
             log_name=str(request.form.get("log_name") or "").strip(),
             de11=str(request.form.get("de11") or "").strip(),
             de41=_de_filtro,
-            cliente="LOCAL",
+            cliente=cliente_id,
             debug=False,
         )
     except ValueError as exc:
@@ -563,7 +577,7 @@ def validate_roteiro_cliente_batch():
             Path(temp_roteiro_path).unlink(missing_ok=True)
             return jsonify({
                 "error": "Nenhum teste com dados completos encontrado no roteiro",
-                "detalhes": "O roteiro deve ter testes com BIT 11 e BIT 42 preenchidos"
+                "detalhes": "O roteiro deve ter testes com BIT 11 e BIT 41 ou BIT 42 preenchidos"
             }), 400
         
         # Etapa 2: Validar em batch (apenas testes selecionados)

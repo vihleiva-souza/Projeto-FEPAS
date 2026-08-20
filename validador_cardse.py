@@ -481,6 +481,69 @@ def get_mti_key_for_product_type(mti: str, product_type: str) -> str:
     return mti
 
 
+def _normalize_bit_key(bit: Any) -> str:
+    return str(bit or "").strip().lstrip("0") or "0"
+
+
+def _extract_replica_rules(mti_config: Dict[str, Any]) -> List[Tuple[str, List[str]]]:
+    """Extrai regras do tipo replica_from_XXXX_bits -> (mti_origem, [bits...])."""
+    rules: List[Tuple[str, List[str]]] = []
+    for key, value in (mti_config or {}).items():
+        m = re.match(r"^replica_from_(\d{4})_bits$", str(key or ""))
+        if not m:
+            continue
+        source_mti = m.group(1)
+        bits = [_normalize_bit_key(b) for b in (value or [])]
+        bits = [b for b in bits if b]
+        if bits:
+            rules.append((source_mti, bits))
+    return rules
+
+
+def _extract_conditional_replica_rules(mti_config: Dict[str, Any]) -> List[Tuple[str, str]]:
+    """Extrai regras condicionais no formato {bit: 'replica_if_present_in_XXXX'}."""
+    rules: List[Tuple[str, str]] = []
+    for bit, condition in (mti_config or {}).get("conditional_replica", {}).items():
+        m = re.match(r"^replica_if_present_in_(\d{4})$", str(condition or "").strip())
+        if m:
+            rules.append((m.group(1), _normalize_bit_key(bit)))
+    return rules
+
+
+def _find_best_reference_message(
+    all_tx_messages: List[Dict[str, Any]],
+    current_msg: Dict[str, Any],
+    source_mti: str,
+) -> Optional[Dict[str, Any]]:
+    """
+    Busca a melhor mensagem de referência para réplica:
+    1) mesma MTI, anterior no log, priorizando direções de request
+    2) mesma MTI, qualquer posição, priorizando direções de request
+    """
+    source_mti_norm = _normalize_mti(source_mti)
+    cur_order = current_msg.get("_order", 10**9)
+
+    request_dirs = {"TEF->FEPAS", "FEPAS->PROC", "WEB-TX"}
+    same_mti = [
+        m for m in all_tx_messages
+        if _normalize_mti(m.get("mti")) == source_mti_norm
+    ]
+    if not same_mti:
+        return None
+
+    prev_same_mti = [m for m in same_mti if m.get("_order", 10**9) < cur_order]
+
+    def _rank(msg: Dict[str, Any]) -> Tuple[int, int]:
+        # Menor rank = melhor: prioriza request_dirs e maior ordem (mais próximo do atual).
+        dir_rank = 0 if msg.get("direcao") in request_dirs else 1
+        ord_rank = -int(msg.get("_order", 0))
+        return (dir_rank, ord_rank)
+
+    if prev_same_mti:
+        return sorted(prev_same_mti, key=_rank)[0]
+    return sorted(same_mti, key=_rank)[0]
+
+
 def validar_mensagens_processadora(
     log_text: str,
     teste_id: str = "",
@@ -648,6 +711,7 @@ def validar_mensagens_processadora(
     product_type_eff = teste_cfg.get("product_type", product_type)
     cadeia_req = teste_cfg.get("rule", {}).get("required_chain", [])
     mtis_esperados = [str(step.get("mti") or "") for step in cadeia_req if step]
+    mtis_esperados_set = {m for m in mtis_esperados if m}
 
     # Separar mensagens por direção
     messages_proc = [m for m in messages if m.get("direcao") in ("PROC->FEPAS", "WEB-RX")]
@@ -671,6 +735,7 @@ def validar_mensagens_processadora(
     # Validar cada mensagem encontrada contra regras de campo do roteiro
     validacoes = []
     mti_bit_rules = roteiro.get("mti_bit_rules", {})
+    all_tx_messages = sorted(messages, key=lambda m: m.get("_order", float("inf")))
     
     # Validar mensagens da Processadora (PROC->FEPAS): verificar bits obrigatórios
     for msg in messages_proc:
@@ -695,10 +760,84 @@ def validar_mensagens_processadora(
                     if tlv_pattern not in str(bit47_value):
                         val_erros.append(f"TLV ID {tlv_id} obrigatório ausente no Bit 47 da mensagem MTI {msg['mti']} (transação voucher)")
 
+            # Validação de réplica mandatória (replica_from_XXXX_bits)
+            for source_mti, bits_to_replicate in _extract_replica_rules(mti_config):
+                # Só aplica réplica quando a MTI de origem faz parte do objetivo esperado
+                # do teste atual (required_chain).
+                if source_mti not in mtis_esperados_set:
+                    continue
+
+                source_msg = _find_best_reference_message(all_tx_messages, msg, source_mti)
+                if not source_msg:
+                    # Em fluxos como cancelamento (0400/0410/0402/0412), a origem pode
+                    # não estar presente no recorte filtrado da transação atual.
+                    # Nesses casos, não reprova por ausência da MTI de origem.
+                    continue
+
+                source_campos = source_msg.get("campos") or {}
+                for bit_key in bits_to_replicate:
+                    source_value = str(source_campos.get(bit_key, "") or "").strip()
+                    target_value = str(campos_msg.get(bit_key, "") or "").strip()
+                    bit_display = str(bit_key).zfill(2)
+
+                    if source_value == "":
+                        val_erros.append(
+                            f"Réplica MTI {msg['mti']} bit {bit_display}: "
+                            f"bit ausente/sem valor na origem MTI {source_mti}."
+                        )
+                        continue
+
+                    if target_value == "":
+                        val_erros.append(
+                            f"Réplica MTI {msg['mti']} bit {bit_display}: "
+                            f"bit obrigatório de réplica ausente no destino "
+                            f"(origem MTI {source_mti}='{source_value}')."
+                        )
+                        continue
+
+                    if target_value != source_value:
+                        val_erros.append(
+                            f"Réplica MTI {msg['mti']} bit {bit_display} divergente: "
+                            f"origem MTI {source_mti}='{source_value}' != destino MTI {msg['mti']}='{target_value}'."
+                        )
+
+            # Validação de réplica condicional (replica_if_present_in_XXXX)
+            for source_mti, bit_key in _extract_conditional_replica_rules(mti_config):
+                # Mesma regra: só valida quando a origem está no objetivo esperado.
+                if source_mti not in mtis_esperados_set:
+                    continue
+
+                source_msg = _find_best_reference_message(all_tx_messages, msg, source_mti)
+                if not source_msg:
+                    # Mesma lógica: sem origem no recorte atual, não reprova.
+                    continue
+
+                source_campos = source_msg.get("campos") or {}
+                source_value = str(source_campos.get(bit_key, "") or "").strip()
+                if source_value == "":
+                    # Condicional: só replica quando existe na origem.
+                    continue
+
+                target_value = str(campos_msg.get(bit_key, "") or "").strip()
+                bit_display = str(bit_key).zfill(2)
+                if target_value == "":
+                    val_erros.append(
+                        f"Réplica condicional MTI {msg['mti']} bit {bit_display}: "
+                        f"origem MTI {source_mti} possui valor '{source_value}', mas o destino não enviou o bit."
+                    )
+                    continue
+
+                if target_value != source_value:
+                    val_erros.append(
+                        f"Réplica condicional MTI {msg['mti']} bit {bit_display} divergente: "
+                        f"origem MTI {source_mti}='{source_value}' != destino MTI {msg['mti']}='{target_value}'."
+                    )
+
         aprovado = len(val_erros) == 0
         validacoes.append({
             "mti": msg["mti"],
             "direcao": msg.get("direcao", "-"),
+            "_order": msg.get("_order"),
             "aprovado": aprovado,
             "erros": val_erros,
             "campos": campos_msg,  # Incluir todos os campos para evidência
@@ -738,6 +877,7 @@ def validar_mensagens_processadora(
         validacoes.append({
             "mti": mti,
             "direcao": msg.get("direcao", "-"),
+            "_order": msg.get("_order"),
             "aprovado": aprovado,
             "erros": val_erros,
             "campos": campos_msg,  # Incluir todos os campos para evidência
@@ -756,6 +896,7 @@ def validar_mensagens_processadora(
         validacoes.append({
             "mti": msg["mti"],
             "direcao": msg.get("direcao", "-"),
+            "_order": msg.get("_order"),
             "aprovado": aprovado,
             "erros": val_erros,
             "campos": msg.get("campos", {}),  # Incluir todos os campos para evidência
@@ -787,8 +928,10 @@ def validar_mensagens_processadora(
     pernas = []
     
     # Criar mapa: _order -> validacao (usa _order como chave primária para evitar conflitos)
-    val_by_order = {}
-    for msg in sorted([m for m in messages_proc + messages_tef + messages_fepas_to_proc], 
+    val_by_order = {
+        v.get("_order"): v for v in validacoes if v.get("_order") is not None
+    }
+    for msg in sorted([m for m in messages_proc + messages_tef + messages_fepas_to_proc],
                       key=lambda m: m.get("_order", float('inf'))):
         mti = msg.get("mti", "")
         direcao = msg.get("direcao", "-")
@@ -798,12 +941,11 @@ def validar_mensagens_processadora(
         val_erros = []
         val_aprovado = True
         
-        # Encontrar erros na lista de validacoes
-        for val in validacoes:
-            if val.get("mti") == mti and val.get("direcao") == direcao:
-                val_erros = val.get("erros", [])
-                val_aprovado = val.get("aprovado", True)
-                break
+        # Encontrar erros na validação exatamente desta ocorrência no log.
+        val = val_by_order.get(msg.get("_order"))
+        if val:
+            val_erros = val.get("erros", [])
+            val_aprovado = val.get("aprovado", True)
         
         # Construir ISO bruto formatado (como seria exibido no log)
         iso_bruto_lines = []

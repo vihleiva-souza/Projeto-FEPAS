@@ -769,7 +769,12 @@ def validate_log_payload_with_product(
 
     # Ler log
     # Importante: no multiproduto, o log precisa ser resolvido no diretório do produto selecionado.
-    path = _resolve_log_path(log_name, produto_id)
+    pid_norm = _normalize_product_id(produto_id)
+    path = _resolve_log_path(
+        log_name,
+        produto_id,
+        codigo_autorizador=(str(cliente or "").strip() if pid_norm == "02_AutorizadorCARDSE" else ""),
+    )
     text = _read_log_text(path)
     file_key = _cache_key_for_file(path)
     cache_key = (
